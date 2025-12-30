@@ -2,74 +2,248 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Social</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <style>
-        :root { --ana-renk: #6C5CE7; --gradient: linear-gradient(135deg, #6C5CE7, #A29BFE); --arka-plan: #F8F9FD; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--arka-plan); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* Şık Header */
-        header { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        header h1 { margin: 0; font-size: 1.4rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-        
-        /* Hikayeler Alanı */
-        .stories { display: flex; gap: 15px; padding: 15px; overflow-x: auto; background: white; border-bottom: 1px solid #eee; scrollbar-width: none; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 65px; }
-        .story-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--gradient); padding: 3px; }
-        .story-inner { width: 100%; height: 100%; border-radius: 50%; background: white; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--ana-renk); overflow: hidden; }
-        .story-item span { font-size: 0.75rem; color: #666; width: 65px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        :root {
+            --primary: #8E2DE2;
+            --secondary: #4A00E0;
+            --bg: #F0F2F5;
+            --glass: rgba(255, 255, 255, 0.8);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
 
-        /* Sohbet Alanı */
-        #chat-penceresi { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .mesaj { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .giden { align-self: flex-end; background: var(--gradient); color: white; border-bottom-right-radius: 4px; }
-        .gelen { align-self: flex-start; background: white; color: #2D3436; border-bottom-left-radius: 4px; }
-        .user-tag { font-size: 0.7rem; font-weight: bold; margin-bottom: 4px; display: block; opacity: 0.9; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: #1d1d1f;
+        }
 
-        /* Modern Input */
-        .input-area { background: white; padding: 15px; display: flex; gap: 12px; align-items: center; padding-bottom: calc(15px + env(safe-area-inset-bottom)); border-top: 1px solid #eee; }
-        input { flex: 1; border: none; background: #F1F2F6; padding: 12px 20px; border-radius: 30px; outline: none; font-size: 1rem; }
-        button { background: var(--ana-renk); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
-        button:active { transform: scale(0.9); }
+        /* Cam Efektli Header */
+        header {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 50px 20px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
+        }
 
-        /* Giriş Ekranı Güzelleştirme */
-        #giris-ekrani { position: fixed; inset: 0; background: var(--gradient); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; padding: 20px; text-align: center; }
-        .login-card { background: white; padding: 30px; border-radius: 30px; width: 85%; max-width: 320px; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .login-card input { width: 80%; margin-bottom: 20px; border: 1px solid #ddd; }
-        .login-card button { width: 100%; border-radius: 15px; height: 50px; margin-top: 10px; }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Instagram Tarzı Hikayeler */
+        .stories {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            overflow-x: auto;
+            background: white;
+            scrollbar-width: none;
+        }
+        .stories::-webkit-scrollbar { display: none; }
+
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+        }
+
+        .story-ring {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--secondary);
+        }
+
+        /* Modern Mesaj Balonları */
+        #chat-penceresi {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f8f9fa;
+        }
+
+        .mesaj-grup {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+        }
+
+        .giden-grup { align-self: flex-end; align-items: flex-end; }
+        .gelen-grup { align-self: flex-start; align-items: flex-start; }
+
+        .sender-name {
+            font-size: 0.75rem;
+            color: #8e8e93;
+            margin: 0 10px 4px;
+            font-weight: 500;
+        }
+
+        .mesaj {
+            padding: 12px 18px;
+            border-radius: 22px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .giden {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .gelen {
+            background: white;
+            color: #1d1d1f;
+            border-bottom-left-radius: 4px;
+            border: 0.5px solid rgba(0,0,0,0.05);
+        }
+
+        /* Alt Yazım Alanı */
+        .input-container {
+            padding: 10px 20px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 0.5px solid rgba(0,0,0,0.1);
+        }
+
+        .input-wrapper {
+            background: #efeff4;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            padding: 5px 5px 5px 15px;
+        }
+
+        input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 0;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .send-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        /* Şık Giriş Kartı */
+        #giris-ekrani {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 35px;
+            width: 80%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-box h2 { color: var(--secondary); margin-bottom: 10px; font-weight: 800; }
+        .login-box input {
+            background: #f4f4f4;
+            width: 100%;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-sizing: border-box;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 <div id="giris-ekrani">
-    <div class="login-card">
-        <h2 style="color: var(--ana-renk); margin-top: 0;">Aura Social</h2>
-        <p style="color: #666; font-size: 0.9rem;">Dünyana hoş geldin!</p>
-        <input type="text" id="username" placeholder="İsminizi yazın...">
-        <button onclick="baglan()">Hadi Başlayalım</button>
+    <div class="login-box">
+        <h2>Aura Social</h2>
+        <p style="color: #666;">Modern dünyaya hoş geldin.</p>
+        <input type="text" id="username" placeholder="Harika isminiz nedir?">
+        <button onclick="baglan()" style="width:100%; height:50px; background:var(--secondary); color:white; border:none; border-radius:15px; font-weight:bold; font-size:1rem;">Giriş Yap</button>
     </div>
 </div>
 
 <header>
     <h1>Aura Social</h1>
-    <div style="font-size: 1.5rem;">🔔</div>
+    <div style="font-size: 1.4rem;">✨</div>
 </header>
 
 <div class="stories" id="stories">
     <div class="story-item">
-        <div class="story-circle"><div class="story-inner">Siz</div></div>
-        <span>Hikayen</span>
+        <div class="story-ring"><div class="story-avatar" style="font-size: 2rem;">+</div></div>
+        <span style="font-size: 0.7rem; color: #8e8e93;">Sen</span>
     </div>
 </div>
 
 <div id="chat-penceresi"></div>
 
-<div class="input-area">
-    <input type="text" id="mesajInput" placeholder="Mesajınızı buraya bırakın...">
-    <button onclick="mesajGonder()">➤</button>
+<div class="input-container">
+    <div class="input-wrapper">
+        <input type="text" id="mesajInput" placeholder="Bir şeyler yaz...">
+        <button class="send-btn" onclick="mesajGonder()">↑</button>
+    </div>
 </div>
 
 <script>
@@ -101,22 +275,26 @@
 
     function mesajEkle(user, text, isMine) {
         const pencere = document.getElementById('chat-penceresi');
-        const div = document.createElement('div');
-        div.className = `mesaj ${isMine ? 'giden' : 'gelen'}`;
-        div.innerHTML = `<span class="user-tag">${user}</span>${text}`;
-        pencere.appendChild(div);
+        const grup = document.createElement('div');
+        grup.className = `mesaj-grup ${isMine ? 'giden-grup' : 'gelen-grup'}`;
+        
+        grup.innerHTML = `
+            ${!isMine ? `<span class="sender-name">${user}</span>` : ''}
+            <div class="mesaj ${isMine ? 'giden' : 'gelen'}">${text}</div>
+        `;
+        
+        pencere.appendChild(grup);
         pencere.scrollTo({ top: pencere.scrollHeight, behavior: 'smooth' });
     }
 
     function hikayeEkle(user) {
         const container = document.getElementById('stories');
         if ([...container.querySelectorAll('span')].some(s => s.innerText === user)) return;
-        
         const item = document.createElement('div');
         item.className = 'story-item';
         item.innerHTML = `
-            <div class="story-circle"><div class="story-inner">${user[0].toUpperCase()}</div></div>
-            <span>${user}</span>
+            <div class="story-ring"><div class="story-avatar">${user[0].toUpperCase()}</div></div>
+            <span style="font-size: 0.7rem; color: #8e8e93;">${user}</span>
         `;
         container.appendChild(item);
     }
