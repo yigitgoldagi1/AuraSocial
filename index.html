@@ -3,301 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Secret</title>
+    <title>Aura V3</title>
     <style>
         :root {
-            --bg: #09090b;
-            --card: #18181b;
-            --accent: #8b5cf6; /* Canlı Mor */
-            --text-main: #fafafa;
-            --text-dim: #a1a1aa;
-            --glass: rgba(24, 24, 27, 0.8);
+            --bg: #000000;
+            --surface: #121212;
+            --accent: #ffffff;
+            --text-dim: #8e8e8e;
+            --border: #262626;
+            --bubble-me: #373737;
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg); color: white; margin: 0; height: 100vh; display: flex; flex-direction: column;
         }
 
-        /* Üst Bar - C2me Stili Profil */
-        header {
-            padding: 55px 20px 15px;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid #27272a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        /* --- KAYIT & GİRİŞ EKRANI --- */
+        #auth-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;
+        }
+        .auth-card { width: 100%; max-width: 350px; text-align: center; }
+        .auth-input {
+            width: 100%; background: #262626; border: 1px solid #363636; padding: 14px;
+            border-radius: 12px; color: white; margin-bottom: 12px; box-sizing: border-box;
+        }
+        .auth-btn {
+            width: 100%; background: white; color: black; border: none; padding: 14px;
+            border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
 
-        .header-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        /* --- ALT MENÜ (NAVIGASYON) --- */
+        nav {
+            height: 65px; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+            align-items: center; padding-bottom: env(safe-area-inset-bottom);
         }
+        .nav-item { color: var(--text-dim); text-decoration: none; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: white; }
+        .nav-icon { font-size: 1.4rem; }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #8b5cf6, #d946ef);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
+        /* --- SAYFA YAPISI --- */
+        .page { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+        .page.active { display: flex; }
+        
+        header { padding: 40px 20px 15px; border-bottom: 1px solid var(--border); font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
 
-        /* Keşfet Tarzı Yatay Liste */
-        .discover-bar {
-            padding: 15px 0;
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-left: 20px;
-            scrollbar-width: none;
-            border-bottom: 1px solid #27272a;
-        }
+        /* --- KEŞFET SAYFASI --- */
+        .discover-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; overflow-y: auto; }
+        .discover-item { aspect-ratio: 1/1; background: var(--surface); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; color: #444; }
 
-        .user-card {
-            min-width: 70px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
+        /* --- SOHBET SAYFASI --- */
+        #chat-penceresi { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 10px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.4; }
+        .msg.me { align-self: flex-end; background: var(--bubble-me); color: white; }
+        .msg.others { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); }
 
-        .user-card .ring {
-            width: 58px;
-            height: 58px;
-            border-radius: 20px;
-            padding: 2px;
-            border: 2px solid var(--accent);
-        }
-
-        .user-card img, .user-card .placeholder {
-            width: 100%;
-            height: 100%;
-            border-radius: 18px;
-            background: #27272a;
-            object-fit: cover;
-        }
-
-        /* Sohbet Alanı - WhatsApp Akışı */
-        #chat-penceresi {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background-image: radial-gradient(#1e1b4b 0.5px, transparent 0.5px);
-            background-size: 20px 20px; /* Zarif bir doku */
-        }
-
-        .msg-row { display: flex; width: 100%; margin-bottom: 4px; }
-        .msg-row.mine { justify-content: flex-end; }
-
-        .bubble {
-            max-width: 75%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 0.95rem;
-            position: relative;
-            line-height: 1.4;
-        }
-
-        .mine .bubble {
-            background: var(--accent);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .others .bubble {
-            background: var(--card);
-            color: var(--text-main);
-            border-bottom-left-radius: 4px;
-            border: 1px solid #27272a;
-        }
-
-        .msg-info {
-            font-size: 0.7rem;
-            margin-bottom: 4px;
-            color: var(--text-dim);
-            display: block;
-        }
-
-        /* Mesaj Yazma Alanı - Modern Cam Efekti */
-        .input-container {
-            padding: 15px 20px 35px;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .input-box {
-            flex: 1;
-            background: #27272a;
-            border: 1px solid #3f3f46;
-            padding: 12px 18px;
-            border-radius: 24px;
-            color: white;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .input-box:focus { border-color: var(--accent); }
-
-        .send-btn {
-            width: 48px;
-            height: 48px;
-            background: var(--accent);
-            border: none;
-            border-radius: 16px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        /* İlk Giriş Ekranı */
-        #login-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-        }
-
-        .login-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 16px;
-            font-weight: bold;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 250px;
-        }
+        .input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .message-input { flex: 1; background: #262626; border: none; padding: 12px 18px; border-radius: 25px; color: white; outline: none; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 20px;">A</div>
-    <h2 style="margin: 0;">Aura Secret</h2>
-    <p style="color: var(--text-dim);">Kimliğini oluştur, anonim kal.</p>
-    <input type="text" id="usernameInput" placeholder="Takma adın..." class="input-box" style="width: 80%; max-width: 250px; margin-top: 20px;">
-    <button class="login-btn" onclick="initApp()">Keşfetmeye Başla</button>
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Aura</h1>
+        <p style="color: var(--text-dim); margin-bottom: 30px;">Anonim kal, derinleş.</p>
+        <input type="text" id="reg-name" placeholder="Kullanıcı Adı" class="auth-input">
+        <input type="email" id="reg-email" placeholder="E-posta (Gizli kalır)" class="auth-input">
+        <button class="auth-btn" onclick="register()">Hesap Oluştur</button>
+    </div>
 </div>
 
-<header>
-    <div class="header-profile">
-        <div class="avatar" id="my-avatar">?</div>
-        <div>
-            <div style="font-weight: bold; font-size: 0.9rem;" id="display-name">Anonim</div>
-            <div style="font-size: 0.75rem; color: #22c55e;">● Online</div>
+<div id="page-discover" class="page active">
+    <header>Keşfet</header>
+    <div class="discover-grid" id="discover-content">
         </div>
-    </div>
-    <div style="color: var(--text-dim); font-size: 1.2rem;">⋮</div>
-</header>
-
-<div class="discover-bar" id="user-list">
-    </div>
-
-<div id="chat-penceresi"></div>
-
-<div class="input-container">
-    <button style="background:none; border:none; color:var(--text-dim); font-size: 1.5rem;">+</button>
-    <input type="text" id="messageInput" class="input-box" placeholder="Mesaj gönder...">
-    <button class="send-btn" onclick="sendMessage()">🚀</button>
 </div>
+
+<div id="page-chat" class="page">
+    <header>Genel Sohbet</header>
+    <div id="chat-penceresi"></div>
+    <div class="input-area">
+        <input type="text" id="msg-input" class="message-input" placeholder="Mesaj gönder...">
+        <button onclick="sendMsg()" style="background:none; border:none; color:white; font-weight:bold;">Gönder</button>
+    </div>
+</div>
+
+<div id="page-profile" class="page">
+    <header>Profil</header>
+    <div style="padding: 40px; text-align: center;">
+        <div style="width: 100px; height: 100px; background: var(--surface); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 1px solid var(--border);" id="prof-avatar">?</div>
+        <h2 id="prof-name">Kullanıcı</h2>
+        <p id="prof-email" style="color: var(--text-dim);"></p>
+        <button class="auth-btn" style="background: #ff3b30; color: white; margin-top: 40px;" onclick="logout()">Çıkış Yap</button>
+    </div>
+</div>
+
+<nav>
+    <a href="#" class="nav-item active" onclick="showPage('discover', this)">
+        <span class="nav-icon">🔍</span><span>Keşfet</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('chat', this)">
+        <span class="nav-icon">💬</span><span>Sohbet</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('profile', this)">
+        <span class="nav-icon">👤</span><span>Profil</span>
+    </a>
+</nav>
 
 <script>
     let socket;
-    let myName = localStorage.getItem('aura_name');
+    let user = JSON.parse(localStorage.getItem('aura_user'));
 
-    function initApp() {
-        const input = document.getElementById('usernameInput');
-        if (input.value) {
-            localStorage.setItem('aura_name', input.value);
-            myName = input.value;
+    function register() {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        if(name && email) {
+            const userData = { name, email };
+            localStorage.setItem('aura_user', JSON.stringify(userData));
             location.reload();
         }
     }
 
-    if (myName) {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('display-name').innerText = myName;
-        document.getElementById('my-avatar').innerText = myName[0].toUpperCase();
+    if(user) {
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('prof-name').innerText = user.name;
+        document.getElementById('prof-email').innerText = user.email;
+        document.getElementById('prof-avatar').innerText = user.name[0].toUpperCase();
         connect();
     }
 
     function connect() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + myName);
-
+        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
         socket.onmessage = (e) => {
             const data = JSON.parse(e.data);
-            addMessage(data.user, data.text, data.user === myName);
-            addUserToDiscover(data.user);
+            if(data.text) appendMsg(data.user, data.text, data.user === user.name);
+            updateDiscover(data.user);
         };
     }
 
-    function sendMessage() {
-        const input = document.getElementById('messageInput');
-        if (input.value && socket) {
+    function showPage(pageId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+        el.classList.add('active');
+    }
+
+    function sendMsg() {
+        const input = document.getElementById('msg-input');
+        if(input.value && socket) {
             socket.send(JSON.stringify({ text: input.value }));
             input.value = '';
         }
     }
 
-    function addMessage(user, text, isMine) {
+    function appendMsg(u, t, mine) {
         const chat = document.getElementById('chat-penceresi');
-        const row = document.createElement('div');
-        row.className = `msg-row ${isMine ? 'mine' : 'others'}`;
-        
-        row.innerHTML = `
-            <div class="bubble">
-                ${!isMine ? `<span class="msg-info">${user}</span>` : ''}
-                ${text}
-            </div>
-        `;
-        chat.appendChild(row);
+        const div = document.createElement('div');
+        div.className = `msg ${mine ? 'me' : 'others'}`;
+        div.innerHTML = `${!mine ? `<small style="display:block;color:var(--text-dim);font-size:0.7rem;">${u}</small>` : ''}${t}`;
+        chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
     }
 
-    function addUserToDiscover(user) {
-        const list = document.getElementById('user-list');
-        if ([...list.querySelectorAll('span')].some(s => s.innerText === user)) return;
-
-        const card = document.createElement('div');
-        card.className = 'user-card';
-        card.innerHTML = `
-            <div class="ring"><div class="placeholder" style="display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">${user[0].toUpperCase()}</div></div>
-            <span style="font-size:0.7rem; color:var(--text-dim);">${user}</span>
-        `;
-        list.appendChild(card);
+    function updateDiscover(u) {
+        const grid = document.getElementById('discover-content');
+        if([...grid.querySelectorAll('div')].some(d => d.innerText === u[0].toUpperCase())) return;
+        const item = document.createElement('div');
+        item.className = 'discover-item';
+        item.innerText = u[0].toUpperCase();
+        grid.appendChild(item);
     }
 
-    document.getElementById('messageInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+    function logout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
