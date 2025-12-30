@@ -7,12 +7,9 @@
     <style>
         :root {
             --bg: #000;
-            --surface: #121212;
+            --card: #121214;
             --accent: #8e2de2;
-            --glass: rgba(15, 15, 15, 0.85);
-            --border: rgba(255, 255, 255, 0.1);
-            /* Alt bar yüksekliği + güvenli alan */
-            --nav-height: 85px; 
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body, html {
@@ -22,186 +19,181 @@
             overflow: hidden;
         }
 
-        /* --- SAYFA SİSTEMİ --- */
-        .wrapper {
-            display: flex; width: 300%; height: 100vh;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* --- SAYFA YÖNETİMİ --- */
+        .page {
+            position: fixed; inset: 0; display: none;
+            flex-direction: column; background: var(--bg);
+            z-index: 10; padding-bottom: 90px;
         }
-
-        #tab1:checked ~ .wrapper { transform: translateX(0); }
-        #tab2:checked ~ .wrapper { transform: translateX(-33.33%); }
-        #tab3:checked ~ .wrapper { transform: translateX(-66.66%); }
-
-        section {
-            width: 33.33%; height: 100%; display: flex; flex-direction: column;
-            padding-top: 60px; /* Header boşluğu */
-            box-sizing: border-box;
-            position: relative;
-        }
+        .page.active { display: flex !important; }
 
         header {
-            position: fixed; top: 0; width: 100%; height: 60px;
-            background: var(--glass); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 20px; z-index: 1000;
+            padding: 60px 25px 15px; font-size: 24px; font-weight: 800;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* --- SOHBET AKIŞI --- */
-        #chat-content {
-            flex: 1; overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; gap: 10px;
-            /* Alt bar ve input alanı için padding */
-            padding-bottom: 160px; 
+        /* --- RADAR EKRANI (LOBİ) --- */
+        .radar-container {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: relative;
+        }
+        .radar-circle {
+            width: 200px; height: 200px; border: 1px solid var(--accent);
+            border-radius: 50%; position: absolute; opacity: 0;
+            animation: pulse 4s infinite linear;
+        }
+        .radar-circle:nth-child(2) { animation-delay: 2s; }
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .radar-status { z-index: 5; text-align: center; }
+        .radar-status h3 { margin: 0; font-size: 18px; letter-spacing: 1px; }
+        .radar-status p { color: #555; font-size: 13px; margin-top: 10px; }
+
+        /* --- SOHBET LİSTESİ --- */
+        #chat-list { padding: 10px 20px; flex: 1; overflow-y: auto; }
+        .chat-card {
+            background: var(--card); padding: 15px; border-radius: 20px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
+            border: 1px solid var(--border);
         }
 
-        .bubble {
-            max-width: 80%; padding: 12px 16px; border-radius: 20px;
-            background: var(--surface); border: 1px solid var(--border); font-size: 15px;
+        /* --- WIDGET AYARLAR --- */
+        .widget-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px;
         }
-        .me { align-self: flex-end; background: var(--accent); border-color: transparent; }
-
-        /* --- MESAJ YAZMA ALANI (DÜZELTİLDİ) --- */
-        .input-container {
-            position: absolute; 
-            bottom: var(--nav-height); /* Alt barın tam üstüne koyduk */
-            left: 0; right: 0;
-            padding: 12px 15px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            display: flex; gap: 10px; align-items: center;
-            z-index: 500;
+        .widget {
+            background: var(--card); padding: 20px; border-radius: 25px;
+            border: 1px solid var(--border); display: flex;
+            flex-direction: column; gap: 10px; transition: 0.3s;
         }
+        .widget:active { transform: scale(0.95); background: #1a1a1c; }
+        .widget-icon { font-size: 24px; }
+        .widget-title { font-size: 14px; font-weight: 600; }
 
-        .input-elite {
-            flex: 1; padding: 12px 18px; border-radius: 25px;
-            border: 1px solid #333; background: #1a1a1a; color: white;
-            font-size: 16px; outline: none;
+        /* --- NAVİGASYON --- */
+        nav {
+            position: fixed; bottom: 0; width: 100%; height: 90px;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); display: flex;
+            justify-content: space-around; align-items: center;
+            padding-bottom: 20px; z-index: 1000;
         }
-
-        /* --- ALT NAVİGASYON --- */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
-            background: var(--glass); backdrop-filter: blur(30px);
-            border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 2000;
-        }
-
-        .nav-label {
-            display: flex; flex-direction: column; align-items: center;
-            color: #555; cursor: pointer; flex: 1;
-        }
-
-        input[type="radio"] { display: none; }
-        #tab1:checked ~ .nav-bar label[for="tab1"],
-        #tab2:checked ~ .nav-bar label[for="tab2"],
-        #tab3:checked ~ .nav-bar label[for="tab3"] { color: white; }
+        .nav-btn { color: #444; text-align: center; transition: 0.3s; cursor: pointer; flex: 1; }
+        .nav-btn.active { color: white; transform: translateY(-3px); }
 
         /* --- GİRİŞ --- */
-        #login-gate {
+        #gate {
             position: fixed; inset: 0; background: #000; z-index: 5000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .btn-elite {
+            background: white; color: black; border: none; padding: 18px 40px;
+            border-radius: 20px; font-weight: bold; font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-<input type="radio" name="tabs" id="tab1" checked>
-<input type="radio" name="tabs" id="tab2">
-<input type="radio" name="tabs" id="tab3">
-
-<div id="login-gate">
-    <h1 style="font-size: 3rem; letter-spacing: -3px;">Aura</h1>
-    <input type="text" id="my-name-input" style="width:250px; padding:15px; border-radius:15px; background:#111; color:white; border:1px solid #333; margin-bottom:15px; text-align:center;" placeholder="Takma Adın">
-    <button onclick="saveUser()" style="width:250px; padding:15px; border-radius:15px; background:white; font-weight:bold; border:none;">BAŞLA</button>
+<div id="gate">
+    <h1 style="font-size: 3rem; letter-spacing: -3px; margin-bottom: 30px;">Aura</h1>
+    <input type="text" id="name-in" placeholder="Takma Adın" style="width:250px; padding:18px; border-radius:20px; background:#111; color:white; border:1px solid #333; margin-bottom:20px; text-align:center;">
+    <button onclick="saveAndStart()" class="btn-elite">GİRİŞ YAP</button>
 </div>
 
-<header>Aura</header>
-
-<div class="wrapper">
-    <section id="chats">
-        <div id="chat-content">
-            <div style="padding: 20px; text-align: center; color: #444;">Sohbet etmek için birini seçin...</div>
+<div id="p-chats" class="page active">
+    <header>Sohbetler <span>💬</span></header>
+    <div id="chat-list">
+        <div style="padding: 100px 40px; text-align: center; color: #444;">
+            <p>Henüz bir sohbetin yok.</p>
+            <small>Radara giderek bir sinyal yakala!</small>
         </div>
-        
-        <div class="input-container">
-            <input type="text" id="m-input" class="input-elite" placeholder="Mesaj yazın...">
-            <button onclick="send()" style="background:white; border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">↑</button>
-        </div>
-    </section>
-
-    <section id="discover">
-        <div style="padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="discover-grid">
-            </div>
-    </section>
-
-    <section id="profile">
-        <div style="padding: 40px; text-align: center;">
-            <div id="big-avatar" style="width:90px; height:90px; border-radius:30px; background:var(--accent); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:bold;">?</div>
-            <h2 id="display-name">İsim</h2>
-            <button onclick="localStorage.clear(); location.reload();" style="margin-top: 50px; color: #ff3b30; background: none; border: none; font-weight: bold;">Oturumu Kapat</button>
-        </div>
-    </section>
+    </div>
 </div>
 
-<div class="nav-bar">
-    <label for="tab1" class="nav-label"><span style="font-size: 24px;">💬</span><small>Sohbet</small></label>
-    <label for="tab2" class="nav-label"><span style="font-size: 24px;">🔍</span><small>Keşfet</small></label>
-    <label for="tab3" class="nav-label"><span style="font-size: 24px;">👤</span><small>Profil</small></label>
+<div id="p-radar" class="page">
+    <header>Radar <span>📡</span></header>
+    <div class="radar-container">
+        <div class="radar-circle"></div>
+        <div class="radar-circle"></div>
+        <div class="radar-status">
+            <h3>Sinyal Aranıyor</h3>
+            <p>Yakınlardaki enerjiler taranıyor...</p>
+        </div>
+    </div>
+    <div style="padding: 20px; text-align: center;">
+        <button onclick="copyMyLink()" style="background:transparent; color:var(--accent); border:1px solid var(--accent); padding:12px 25px; border-radius:15px; font-weight:bold;">Aura Kodunu Paylaş</button>
+    </div>
 </div>
+
+<div id="p-profile" class="page">
+    <header>Profil <span>👤</span></header>
+    <div style="text-align: center; padding: 20px;">
+        <div id="av" style="width:80px; height:80px; border-radius:28px; background:var(--accent); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:bold;">?</div>
+        <h2 id="disp-name" style="margin:0;">Kullanıcı</h2>
+    </div>
+    <div class="widget-grid">
+        <div class="widget" onclick="alert('Profil düzenleme yakında!')">
+            <span class="widget-icon">👤</span>
+            <span class="widget-title">Profili Düzenle</span>
+        </div>
+        <div class="widget" onclick="alert('Tema seçenekleri yakında!')">
+            <span class="widget-icon">🎨</span>
+            <span class="widget-title">Tema & Renk</span>
+        </div>
+        <div class="widget" onclick="alert('Gizlilik ayarları!')">
+            <span class="widget-icon">🔒</span>
+            <span class="widget-title">Gizlilik</span>
+        </div>
+        <div class="widget" onclick="logout()" style="border-color: rgba(255,59,48,0.3);">
+            <span class="widget-icon">🚪</span>
+            <span class="widget-title" style="color:#ff3b30;">Çıkış Yap</span>
+        </div>
+    </div>
+</div>
+
+<nav>
+    <div class="nav-btn active" onclick="nav('chats', this)">💬</div>
+    <div class="nav-btn" onclick="nav('radar', this)">📡</div>
+    <div class="nav-btn" onclick="nav('profile', this)">👤</div>
+</nav>
 
 <script>
-    let ws;
-    let user = JSON.parse(localStorage.getItem('aura_hybrid_v2'));
+    let me = JSON.parse(localStorage.getItem('aura_sig_v1'));
 
-    if(user) {
-        document.getElementById('login-gate').style.display = 'none';
-        document.getElementById('display-name').innerText = user.name;
-        document.getElementById('big-avatar').innerText = user.name[0].toUpperCase();
-        initSocket();
-    }
+    window.onload = () => {
+        if(me) {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('disp-name').innerText = me.name;
+            document.getElementById('av').innerText = me.name[0].toUpperCase();
+        }
+    };
 
-    function saveUser() {
-        const n = document.getElementById('my-name-input').value;
+    function saveAndStart() {
+        const n = document.getElementById('name-in').value;
         if(n) {
-            localStorage.setItem('aura_hybrid_v2', JSON.stringify({name: n}));
+            localStorage.setItem('aura_sig_v1', JSON.stringify({name: n}));
             location.reload();
         }
     }
 
-    function initSocket() {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        ws = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
-        ws.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            if(data.text) {
-                const chat = document.getElementById('chat-content');
-                const div = document.createElement('div');
-                div.className = `bubble ${data.user === user.name ? 'me' : ''}`;
-                div.innerHTML = `<small style="display:block; font-size:10px; opacity:0.5;">${data.user}</small>${data.text}`;
-                chat.appendChild(div);
-                chat.scrollTop = chat.scrollHeight;
-            }
-            if(data.user !== user.name) updateDiscover(data.user);
-        };
+    function nav(pId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('p-' + pId).classList.add('active');
+        el.classList.add('active');
     }
 
-    function send() {
-        const i = document.getElementById('m-input');
-        if(i.value && ws) {
-            ws.send(JSON.stringify({text: i.value}));
-            i.value = '';
+    function copyMyLink() {
+        alert("Aura Davet Kodun: " + me.name + "#1234 kopyalandı!");
+    }
+
+    function logout() {
+        if(confirm("Çıkış yapılsın mı?")) {
+            localStorage.clear();
+            location.reload();
         }
-    }
-
-    function updateDiscover(u) {
-        const grid = document.getElementById('discover-grid');
-        if([...grid.querySelectorAll('h4')].some(h => h.innerText === u)) return;
-        const card = document.createElement('div');
-        card.style = "background:var(--surface); border-radius:20px; padding:20px; text-align:center; border:1px solid var(--border);";
-        card.innerHTML = `<div style="font-size:24px; margin-bottom:8px;">${u[0].toUpperCase()}</div><h4>${u}</h4>`;
-        grid.appendChild(card);
     }
 </script>
 </body>
