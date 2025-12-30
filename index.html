@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        :root { --bg: #000; --surface: #121212; --accent: #fff; --border: rgba(255,255,255,0.12); --text-dim: #8e8e8e; --ease: cubic-bezier(0.4, 0, 0.2, 1); }
+        :root { --bg: #000; --surface: #121212; --accent: #fff; --border: rgba(255,255,255,0.12); --text-dim: #8e8e8e; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: white; margin: 0; height: 100vh; overflow: hidden; }
 
         /* Sayfa Düzeni */
-        .page { position: absolute; inset: 0; opacity: 0; transform: scale(0.98); transition: all 0.4s var(--ease); pointer-events: none; display: flex; flex-direction: column; padding-bottom: 90px; }
+        .page { position: absolute; inset: 0; opacity: 0; transform: scale(0.98); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; display: flex; flex-direction: column; padding-bottom: 90px; }
         .page.active { opacity: 1; transform: scale(1); pointer-events: auto; }
         header { padding: 60px 25px 15px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 100; font-size: 24px; font-weight: 800; }
 
@@ -27,19 +27,19 @@
         .others .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
         .meta { font-size: 10px; margin-top: 4px; color: var(--text-dim); text-align: right; }
 
-        /* Keşfet Kartları */
+        /* Keşfet */
         .discover-list { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; overflow-y: auto; }
         .user-card { background: var(--surface); border-radius: 22px; padding: 20px; text-align: center; border: 1px solid var(--border); }
         .avatar-circle { width: 60px; height: 60px; border-radius: 20px; background: #222; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; }
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Giriş ve Navigasyon */
-        #auth-overlay { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* Giriş ve Nav */
+        #auth-overlay { position: fixed; inset: 0; background: black; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .input-bar { padding: 15px 20px 35px; display: flex; gap: 10px; border-top: 1px solid var(--border); background: var(--bg); }
         input { flex: 1; background: #1c1c1e; border: none; padding: 12px 20px; border-radius: 25px; color: white; outline: none; font-size: 16px; }
         
         nav { position: fixed; bottom: 25px; left: 25px; right: 25px; height: 65px; background: rgba(30,30,30,0.8); backdrop-filter: blur(20px); border-radius: 30px; border: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { color: #555; font-size: 22px; cursor: pointer; padding: 10px; }
+        .nav-item { color: #555; font-size: 22px; cursor: pointer; padding: 10px; transition: 0.3s; }
         .nav-item.active { color: white; }
     </style>
 </head>
@@ -48,7 +48,7 @@
 <div id="auth-overlay">
     <h1 style="font-size: 3rem; margin-bottom: 20px;">Aura</h1>
     <input type="text" id="reg-name" placeholder="Adınız" style="width: 250px; margin-bottom: 10px; padding: 15px; border-radius: 12px; border: none; background: #1c1c1e; color: white;">
-    <button onclick="register()" style="width: 250px; padding: 15px; border-radius: 12px; border: none; background: white; font-weight: bold; cursor: pointer;">GİRİŞ</button>
+    <button onclick="register()" style="width: 250px; padding: 15px; border-radius: 12px; border: none; background: white; font-weight: bold;">GİRİŞ</button>
 </div>
 
 <div id="page-discover" class="page active"><header>Keşfet</header><div class="discover-list" id="user-grid"></div></div>
@@ -58,7 +58,7 @@
     <div id="chat-penceresi"></div>
     <div class="input-bar">
         <input type="text" id="msg-input" placeholder="Mesaj yazın...">
-        <button onclick="sendMsg()" style="background:white; border:none; width:45px; height:45px; border-radius:50%; font-weight:bold; cursor: pointer;">↑</button>
+        <button onclick="sendMsg()" style="background:white; border:none; width:45px; height:45px; border-radius:50%; font-weight:bold;">↑</button>
     </div>
 </div>
 
@@ -68,7 +68,7 @@
         <div class="avatar-circle" style="width: 100px; height: 100px; font-size: 40px; border: 1px solid var(--border);" id="p-avatar-box" onclick="document.getElementById('file-input').click()">?</div>
         <input type="file" id="file-input" hidden accept="image/*" onchange="previewImage(this)">
         <h2 id="p-name-label">Kullanıcı</h2>
-        <button onclick="logout()" style="margin-top: 50px; color: #ff3b30; background: none; border: none; font-weight: bold; cursor: pointer;">ÇIKIŞ YAP</button>
+        <button onclick="logout()" style="margin-top: 50px; color: #ff3b30; background: none; border: none; font-weight: bold;">ÇIKIŞ YAP</button>
     </div>
 </div>
 
@@ -83,43 +83,54 @@
     let selectedUser = null;
     let user = JSON.parse(localStorage.getItem('aura_user'));
 
+    // Sayfa yüklendiğinde çalışacak ana kontrol
+    window.onload = function() {
+        if (!user || !user.name) {
+            document.getElementById('auth-overlay').style.display = 'flex';
+        } else {
+            document.getElementById('p-name-label').innerText = user.name;
+            updateUI();
+            connect();
+        }
+    };
+
     function register() {
-        const name = document.getElementById('reg-name').value;
-        if(name) {
-            localStorage.setItem('aura_user', JSON.stringify({ name: name, photo: null }));
+        const nameInput = document.getElementById('reg-name').value;
+        if(nameInput.trim()) {
+            user = { name: nameInput.trim(), photo: null };
+            localStorage.setItem('aura_user', JSON.stringify(user));
             location.reload();
         }
     }
 
-    if(user) {
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('p-name-label').innerText = user.name;
-        updateUI();
-        connect();
-    }
-
     function connect() {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
-        socket.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            if(data.text && (!data.hedef || data.hedef === user.name || data.user === user.name)) {
-                appendMsg(data.user, data.text, data.user === user.name);
-            }
-            updateGrid(data.user);
-        };
+        try {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
+            
+            socket.onmessage = (e) => {
+                const data = JSON.parse(e.data);
+                if(data.text && (!data.hedef || data.hedef === user.name || data.user === user.name)) {
+                    appendMsg(data.user, data.text, data.user === user.name);
+                }
+                updateGrid(data.user);
+            };
+            
+            socket.onclose = () => { console.log("Bağlantı koptu, yeniden deneniyor..."); setTimeout(connect, 3000); };
+        } catch (err) { console.error("Bağlantı hatası:", err); }
     }
 
     function showPage(pId, index) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('page-' + pId).classList.add('active');
+        const targetPage = document.getElementById('page-' + pId);
+        if(targetPage) targetPage.classList.add('active');
         document.querySelectorAll('.nav-item')[index].classList.add('active');
     }
 
     function sendMsg() {
         const i = document.getElementById('msg-input');
-        if(i.value && socket) {
+        if(i.value && socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ text: i.value, hedef: selectedUser }));
             i.value = '';
         }
@@ -128,8 +139,9 @@
     function appendMsg(u, t, m) {
         const chat = document.getElementById('chat-penceresi');
         const d = document.createElement('div');
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         d.className = `bubble-container ${m ? 'me' : 'others'}`;
-        d.innerHTML = `<div class="bubble">${!m ? `<small style="display:block;color:#888;font-size:10px;">${u}</small>` : ''}${t}<div class="meta">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div></div>`;
+        d.innerHTML = `<div class="bubble">${!m ? `<small style="display:block;color:#888;font-size:10px;">${u}</small>` : ''}${t}<div class="meta">${time}</div></div>`;
         chat.appendChild(d);
         chat.scrollTop = chat.scrollHeight;
     }
@@ -149,3 +161,9 @@
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = (e) => { user.photo = e.target.result; localStorage.setItem('aura_user', JSON.stringify(user)); updateUI(); };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function updateUI() {
+        const box = document.getElementById('
