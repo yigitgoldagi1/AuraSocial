@@ -3,153 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Premium</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <title>Aura: Secret</title>
     <style>
-        :root { 
-            --premium-siyah: #0F0C29;
-            --premium-mor: #302B63;
-            --premium-altin: #D4AF37;
-            --text-color: #E0E0E0;
-        }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
-            background: linear-gradient(to bottom, #0F0C29, #302B63, #24243E); 
-            margin: 0; color: var(--text-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        :root {
+            --bg: #09090b;
+            --card: #18181b;
+            --accent: #8b5cf6; /* Canlı Mor */
+            --text-main: #fafafa;
+            --text-dim: #a1a1aa;
+            --glass: rgba(24, 24, 27, 0.8);
         }
 
-        /* Premium Header */
-        header { 
-            padding: 50px 20px 20px; text-align: center; 
-            background: rgba(15, 12, 41, 0.8); backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        header h1 { 
-            margin: 0; font-size: 1.5rem; letter-spacing: 3px; font-weight: 200;
-            color: var(--premium-altin); text-transform: uppercase;
-        }
-
-        /* Hikaye Alanı (Gizli Profil Havası) */
-        .stories { display: flex; gap: 15px; padding: 15px; overflow-x: auto; scrollbar-width: none; }
-        .story-circle { 
-            min-width: 55px; height: 55px; border-radius: 50%; 
-            border: 1.5px solid var(--premium-altin); display: flex; 
-            align-items: center; justify-content: center; background: rgba(255,255,255,0.05);
-            font-size: 0.8rem; color: var(--premium-altin);
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Mesaj Alanı */
-        #chat-penceresi { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .mesaj { 
-            max-width: 70%; padding: 12px 18px; border-radius: 20px; font-size: 0.9rem;
-            line-height: 1.4; position: relative; backdrop-filter: blur(5px);
-        }
-        .giden { 
-            align-self: flex-end; background: rgba(212, 175, 55, 0.2); 
-            border: 1px solid var(--premium-altin); color: white; border-bottom-right-radius: 2px;
-        }
-        .gelen { 
-            align-self: flex-start; background: rgba(255, 255, 255, 0.1); 
-            border: 1px solid rgba(255,255,255,0.2); border-bottom-left-radius: 2px;
-        }
-        .user-tag { font-size: 0.65rem; color: var(--premium-altin); margin-bottom: 4px; display: block; font-weight: bold; }
-
-        /* Input Alanı */
-        .input-area { 
-            padding: 20px; background: rgba(15, 12, 41, 0.9); 
-            display: flex; gap: 10px; padding-bottom: 40px; border-top: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        input { 
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 12px 20px; border-radius: 30px; color: white; outline: none;
-        }
-        button { 
-            background: var(--premium-altin); color: var(--premium-siyah); 
-            border: none; padding: 0 20px; border-radius: 30px; font-weight: bold; font-size: 0.8rem;
+        /* Üst Bar - C2me Stili Profil */
+        header {
+            padding: 55px 20px 15px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #27272a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* Giriş Ekranı (Sadece İlk Sefer) */
-        #giris-ekrani { 
-            position: fixed; inset: 0; background: var(--premium-siyah); 
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000;
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #d946ef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Keşfet Tarzı Yatay Liste */
+        .discover-bar {
+            padding: 15px 0;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-left: 20px;
+            scrollbar-width: none;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .user-card {
+            min-width: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-card .ring {
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            padding: 2px;
+            border: 2px solid var(--accent);
+        }
+
+        .user-card img, .user-card .placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+            background: #27272a;
+            object-fit: cover;
+        }
+
+        /* Sohbet Alanı - WhatsApp Akışı */
+        #chat-penceresi {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-image: radial-gradient(#1e1b4b 0.5px, transparent 0.5px);
+            background-size: 20px 20px; /* Zarif bir doku */
+        }
+
+        .msg-row { display: flex; width: 100%; margin-bottom: 4px; }
+        .msg-row.mine { justify-content: flex-end; }
+
+        .bubble {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .mine .bubble {
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .others .bubble {
+            background: var(--card);
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+            border: 1px solid #27272a;
+        }
+
+        .msg-info {
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            color: var(--text-dim);
+            display: block;
+        }
+
+        /* Mesaj Yazma Alanı - Modern Cam Efekti */
+        .input-container {
+            padding: 15px 20px 35px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-box {
+            flex: 1;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            padding: 12px 18px;
+            border-radius: 24px;
+            color: white;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-box:focus { border-color: var(--accent); }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        /* İlk Giriş Ekranı */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .login-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 250px;
         }
     </style>
 </head>
 <body>
 
-<div id="giris-ekrani">
-    <h1 style="color: var(--premium-altin); letter-spacing: 5px;">AURA</h1>
-    <p style="color: #888; margin-bottom: 30px;">Anonim Premium Kulübü</p>
-    <input type="text" id="username" placeholder="Kod Adınız..." style="max-width: 200px; text-align: center;">
-    <button onclick="kaydetVeBaglan()" style="margin-top: 20px; height: 45px; width: 200px;">ÜYELİĞİ BAŞLAT</button>
+<div id="login-overlay">
+    <div class="avatar" style="width: 80px; height: 80px; font-size: 2rem; margin-bottom: 20px;">A</div>
+    <h2 style="margin: 0;">Aura Secret</h2>
+    <p style="color: var(--text-dim);">Kimliğini oluştur, anonim kal.</p>
+    <input type="text" id="usernameInput" placeholder="Takma adın..." class="input-box" style="width: 80%; max-width: 250px; margin-top: 20px;">
+    <button class="login-btn" onclick="initApp()">Keşfetmeye Başla</button>
 </div>
 
-<header><h1>AURA PREMIUM</h1></header>
+<header>
+    <div class="header-profile">
+        <div class="avatar" id="my-avatar">?</div>
+        <div>
+            <div style="font-weight: bold; font-size: 0.9rem;" id="display-name">Anonim</div>
+            <div style="font-size: 0.75rem; color: #22c55e;">● Online</div>
+        </div>
+    </div>
+    <div style="color: var(--text-dim); font-size: 1.2rem;">⋮</div>
+</header>
 
-<div class="stories" id="stories"></div>
+<div class="discover-bar" id="user-list">
+    </div>
 
 <div id="chat-penceresi"></div>
 
-<div class="input-area">
-    <input type="text" id="mesajInput" placeholder="Mesajınızı fısıldayın...">
-    <button onclick="mesajGonder()">GÖNDER</button>
+<div class="input-container">
+    <button style="background:none; border:none; color:var(--text-dim); font-size: 1.5rem;">+</button>
+    <input type="text" id="messageInput" class="input-box" placeholder="Mesaj gönder...">
+    <button class="send-btn" onclick="sendMessage()">🚀</button>
 </div>
 
 <script>
     let socket;
-    let username = localStorage.getItem('aura_username');
+    let myName = localStorage.getItem('aura_name');
 
-    // Sayfa açıldığında kontrol et
-    window.onload = function() {
-        if (!username) {
-            document.getElementById('giris-ekrani').style.display = 'flex';
-        } else {
-            baglan(username);
-        }
-    };
-
-    function kaydetVeBaglan() {
-        const inputName = document.getElementById('username').value;
-        if (inputName) {
-            localStorage.setItem('aura_username', inputName);
-            username = inputName;
-            document.getElementById('giris-ekrani').style.display = 'none';
-            baglan(username);
+    function initApp() {
+        const input = document.getElementById('usernameInput');
+        if (input.value) {
+            localStorage.setItem('aura_name', input.value);
+            myName = input.value;
+            location.reload();
         }
     }
 
-    function baglan(user) {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user);
+    if (myName) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('display-name').innerText = myName;
+        document.getElementById('my-avatar').innerText = myName[0].toUpperCase();
+        connect();
+    }
 
-        socket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            mesajEkle(data.user, data.text, data.user === user);
+    function connect() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + myName);
+
+        socket.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            addMessage(data.user, data.text, data.user === myName);
+            addUserToDiscover(data.user);
         };
     }
 
-    function mesajGonder() {
-        const input = document.getElementById('mesajInput');
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
         if (input.value && socket) {
             socket.send(JSON.stringify({ text: input.value }));
             input.value = '';
         }
     }
 
-    function mesajEkle(user, text, isMine) {
-        const pencere = document.getElementById('chat-penceresi');
-        const div = document.createElement('div');
-        div.className = `mesaj ${isMine ? 'giden' : 'gelen'}`;
-        div.innerHTML = `<span class="user-tag">${user}</span>${text}`;
-        pencere.appendChild(div);
-        pencere.scrollTo({ top: pencere.scrollHeight, behavior: 'smooth' });
+    function addMessage(user, text, isMine) {
+        const chat = document.getElementById('chat-penceresi');
+        const row = document.createElement('div');
+        row.className = `msg-row ${isMine ? 'mine' : 'others'}`;
+        
+        row.innerHTML = `
+            <div class="bubble">
+                ${!isMine ? `<span class="msg-info">${user}</span>` : ''}
+                ${text}
+            </div>
+        `;
+        chat.appendChild(row);
+        chat.scrollTop = chat.scrollHeight;
     }
 
-    document.getElementById('mesajInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') mesajGonder(); });
-</script>
+    function addUserToDiscover(user) {
+        const list = document.getElementById('user-list');
+        if ([...list.querySelectorAll('span')].some(s => s.innerText === user)) return;
 
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+            <div class="ring"><div class="placeholder" style="display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">${user[0].toUpperCase()}</div></div>
+            <span style="font-size:0.7rem; color:var(--text-dim);">${user}</span>
+        `;
+        list.appendChild(card);
+    }
+
+    document.getElementById('messageInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+</script>
 </body>
 </html>
