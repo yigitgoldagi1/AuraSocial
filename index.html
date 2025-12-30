@@ -6,184 +6,202 @@
     <title>Aura Social</title>
     <style>
         :root {
-            --bg: #000000;
-            --card: #16161a;
-            --accent: #8e2de2;
-            --border: #27272a;
+            --bg: #000;
+            --surface: #121212;
+            --accent: #8e2de2; /* Premium Mor */
+            --glass: rgba(20, 20, 20, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background: var(--bg); color: white; margin: 0;
-            height: 100vh; overflow: hidden;
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--bg); color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            overflow: hidden;
         }
 
-        /* --- SAYFA YÖNETİMİ --- */
-        .page {
-            position: fixed; inset: 0;
-            background: var(--bg);
-            display: none; /* Varsayılan gizli */
-            flex-direction: column;
-            z-index: 10;
-            padding-bottom: 90px;
+        /* --- SAYFA SİSTEMİ (HATASIZ ÇAPA SİSTEMİ) --- */
+        .wrapper {
+            display: flex; width: 300%; height: 100vh;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .page.active { display: flex !important; }
 
+        /* Navigasyon Tetikleyicileri */
+        #tab1:checked ~ .wrapper { transform: translateX(0); }
+        #tab2:checked ~ .wrapper { transform: translateX(-33.33%); }
+        #tab3:checked ~ .wrapper { transform: translateX(-66.66%); }
+
+        section {
+            width: 33.33%; height: 100%; display: flex; flex-direction: column;
+            overflow-y: auto; padding-top: 60px; padding-bottom: 100px;
+            box-sizing: border-box;
+        }
+
+        /* --- ÜST BAR (GLASSMORPHISM) --- */
         header {
-            padding: 55px 20px 15px;
-            font-size: 22px; font-weight: 800;
+            position: fixed; top: 0; width: 100%; height: 60px;
+            background: var(--glass); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 20px; z-index: 100;
         }
 
-        /* --- MENÜ VE LİSTE --- */
-        .menu-list { margin: 20px 15px; background: var(--card); border-radius: 20px; overflow: hidden; }
-        .menu-item {
-            padding: 18px 20px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border); cursor: pointer;
+        /* --- KEŞFET BALONLARI (WHATSAPP/INSTAGRAM HİBRİT) --- */
+        .discover-rail {
+            padding: 15px; display: flex; gap: 15px; overflow-x: auto;
+            border-bottom: 1px solid var(--border); background: #080808;
+            scrollbar-width: none;
         }
-        .menu-item:active { background: #222; }
+        .vibe-circle {
+            min-width: 65px; height: 65px; border-radius: 25px;
+            background: linear-gradient(135deg, var(--accent), #4a00e0);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; border: 2px solid var(--bg);
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+        }
 
-        /* --- ALT NAVIGASYON --- */
-        nav {
+        /* --- SOHBET LİSTESİ (WHATSAPP RAHATLIĞI) --- */
+        .chat-item {
+            display: flex; align-items: center; padding: 15px 20px;
+            border-bottom: 0.5px solid var(--border); transition: 0.2s;
+        }
+        .chat-item:active { background: #1a1a1a; }
+        .chat-avatar {
+            width: 50px; height: 50px; border-radius: 18px;
+            background: #222; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .chat-info { flex: 1; }
+        .chat-info h4 { margin: 0; font-size: 16px; }
+        .chat-info p { margin: 5px 0 0; font-size: 13px; color: #888; }
+
+        /* --- ALT NAVİGASYON (SABİT) --- */
+        .nav-bar {
             position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(10,10,10,0.95); backdrop-filter: blur(20px);
+            background: var(--glass); backdrop-filter: blur(30px);
+            border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid var(--border); z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom); z-index: 200;
         }
-        .nav-btn {
-            background: none; border: none; color: #555;
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            cursor: pointer; padding: 10px; flex: 1;
+        .nav-label {
+            display: flex; flex-direction: column; align-items: center;
+            color: #555; cursor: pointer; transition: 0.3s;
         }
-        .nav-btn.active { color: white; }
+        input[type="radio"] { display: none; }
+        #tab1:checked ~ .nav-bar label[for="tab1"],
+        #tab2:checked ~ .nav-bar label[for="tab2"],
+        #tab3:checked ~ .nav-bar label[for="tab3"] { color: white; transform: translateY(-5px); }
 
-        /* --- SOHBET --- */
-        #chat-scroller { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; }
-        .me { align-self: flex-end; background: var(--accent); }
-        .others { align-self: flex-start; background: #27272a; }
-
-        .input-area { padding: 15px; display: flex; gap: 10px; background: var(--bg); border-top: 1px solid var(--border); }
-        input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; background: #1c1c1e; color: white; outline: none; }
+        /* --- GİRİŞ EKRANI (İLK SEFER) --- */
+        #login-gate {
+            position: fixed; inset: 0; background: #000; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .input-elite {
+            width: 80%; padding: 18px; border-radius: 20px; border: 1px solid var(--border);
+            background: #111; color: white; font-size: 16px; margin-bottom: 15px; text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<div id="p-discover" class="page active"><header>Keşfet</header><div style="padding:40px; text-align:center; color:#555;">Kullanıcılar aranıyor...</div></div>
+<input type="radio" name="tabs" id="tab1" checked>
+<input type="radio" name="tabs" id="tab2">
+<input type="radio" name="tabs" id="tab3">
 
-<div id="p-chat" class="page">
-    <header id="chat-title">Mesajlar</header>
-    <div id="chat-scroller"></div>
-    <div class="input-area">
-        <input type="text" id="msg-input" placeholder="Mesaj yazın...">
-        <button onclick="sendMsg()" style="background:white; border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">↑</button>
-    </div>
+<div id="login-gate">
+    <h1 style="font-size: 3rem; letter-spacing: -3px; margin-bottom: 5px;">Aura</h1>
+    <p style="color:#555; margin-bottom: 30px; font-size: 12px; letter-spacing: 2px;">HYBRID SOCIAL</p>
+    <input type="text" id="my-name-input" class="input-elite" placeholder="Takma Adın">
+    <button onclick="saveUser()" style="width: 80%; padding: 18px; border-radius: 20px; border:none; background:white; font-weight:bold;">BAŞLA</button>
 </div>
 
-<div id="p-profile" class="page">
-    <header>Ayarlar</header>
-    <div style="padding:30px; text-align:center;">
-        <div id="avatar" style="width:85px; height:85px; border-radius:30px; background:var(--accent); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:bold; border:2px solid var(--border);">A</div>
-        <h2 id="user-name-display" style="margin:0;">Kullanıcı</h2>
-    </div>
+<header id="dynamic-header">Aura</header>
 
-    <div class="menu-list">
-        <div class="menu-item" onclick="editName()"><span>👤 İsmi Düzenle</span><span>❯</span></div>
-        <div class="menu-item" onclick="changeThemeColor()"><span>🎨 Renk Teması</span><span>❯</span></div>
-    </div>
-    <div class="menu-list">
-        <div class="menu-item" onclick="logout()" style="color:#ff3b30;"><span>🚪 Çıkış Yap</span></div>
-    </div>
+<div class="wrapper">
+    <section id="chats">
+        <div class="discover-rail" id="discover-circles">
+            <div class="vibe-circle">🔍</div>
+        </div>
+        <div id="active-chats-list">
+            <div style="padding: 40px; text-align: center; color: #444;">
+                Henüz sohbetin yok.<br>Üstteki balonlardan yeni birilerini keşfet!
+            </div>
+        </div>
+    </section>
+
+    <section id="discover">
+        <div style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="discover-grid">
+            </div>
+    </section>
+
+    <section id="profile">
+        <div style="padding: 30px; text-align: center;">
+            <div id="big-avatar" style="width:100px; height:100px; border-radius:35px; background:var(--accent); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:800;">?</div>
+            <h2 id="display-name" style="margin:0;">İsim</h2>
+            <p style="color: #555;">Elite Aura Üyesi</p>
+        </div>
+        <div style="margin: 20px; background: var(--surface); border-radius: 20px; overflow: hidden; border: 1px solid var(--border);">
+            <div onclick="location.reload()" style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><span>Uygulamayı Yenile</span> <span>🔄</span></div>
+            <div onclick="localStorage.clear(); location.reload();" style="padding: 20px; color: #ff3b30;"><span>Oturumu Kapat</span> <span>➔</span></div>
+        </div>
+    </section>
 </div>
 
-<nav id="footer-nav">
-    <div class="nav-btn active" onclick="navigate('discover')"><span>🔍</span><small>Keşfet</small></div>
-    <div class="nav-btn" onclick="navigate('chat')"><span>💬</span><small>Sohbet</small></div>
-    <div class="nav-btn" onclick="navigate('profile')"><span>👤</span><small>Profil</small></div>
-</nav>
+<div class="nav-bar">
+    <label for="tab1" class="nav-label"><span style="font-size: 24px;">💬</span><small>Sohbet</small></label>
+    <label for="tab2" class="nav-label"><span style="font-size: 24px;">🔍</span><small>Keşfet</small></label>
+    <label for="tab3" class="nav-label"><span style="font-size: 24px;">👤</span><small>Profil</small></label>
+</div>
 
 <script>
-    let userData = JSON.parse(localStorage.getItem('aura_v7')) || { name: 'Kullanıcı', color: '#8e2de2' };
+    let ws;
+    let user = JSON.parse(localStorage.getItem('aura_hybrid_user'));
 
-    window.onload = () => {
-        applyUserData();
-    };
-
-    function applyUserData() {
-        document.getElementById('user-name-display').innerText = userData.name;
-        document.getElementById('avatar').innerText = userData.name[0].toUpperCase();
-        document.getElementById('avatar').style.background = userData.color;
-        document.documentElement.style.setProperty('--accent', userData.color);
+    if(user) {
+        document.getElementById('login-gate').style.display = 'none';
+        document.getElementById('display-name').innerText = user.name;
+        document.getElementById('big-avatar').innerText = user.name[0].toUpperCase();
+        initSocket();
     }
 
-    // GÜVENLİ NAVİGASYON (Siyah ekranı engelleyen yapı)
-    function navigate(pageId) {
-        try {
-            // 1. Tüm sayfaları bul ve gizle
-            const allPages = document.querySelectorAll('.page');
-            allPages.forEach(p => p.classList.remove('active'));
-
-            // 2. Hedef sayfayı bul ve göster
-            const targetPage = document.getElementById('p-' + pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            } else {
-                // Eğer sayfa bulunamazsa varsayılan olarak keşfeti aç
-                document.getElementById('p-discover').classList.add('active');
-            }
-
-            // 3. Navigasyon buton renklerini güncelle
-            const allBtns = document.querySelectorAll('.nav-btn');
-            allBtns.forEach(b => b.classList.remove('active'));
-            
-            // Tıklanan butonu aktif yap (sıralamaya göre)
-            const btnIdx = pageId === 'discover' ? 0 : (pageId === 'chat' ? 1 : 2);
-            allBtns[btnIdx].classList.add('active');
-
-        } catch (e) {
-            console.error("Navigasyon hatası:", e);
-            document.getElementById('p-discover').classList.add('active'); // Hata anında kurtarma
-        }
-    }
-
-    function editName() {
-        const n = prompt("Yeni isminiz:", userData.name);
-        if (n && n.trim() !== "") {
-            userData.name = n.trim();
-            saveAndRefresh();
-        }
-    }
-
-    function changeThemeColor() {
-        const colors = ['#8e2de2', '#007aff', '#ff2d55', '#4cd964', '#ff9500'];
-        const currentIdx = colors.indexOf(userData.color);
-        userData.color = colors[(currentIdx + 1) % colors.length];
-        saveAndRefresh();
-    }
-
-    function saveAndRefresh() {
-        localStorage.setItem('aura_v7', JSON.stringify(userData));
-        applyUserData();
-    }
-
-    function sendMsg() {
-        const i = document.getElementById('msg-input');
-        if (!i.value) return;
-        const scroller = document.getElementById('chat-scroller');
-        const div = document.createElement('div');
-        div.className = 'bubble me';
-        div.innerText = i.value;
-        scroller.appendChild(div);
-        i.value = '';
-        scroller.scrollTop = scroller.scrollHeight;
-    }
-
-    function logout() {
-        if(confirm("Çıkış yapılsın mı?")) {
-            localStorage.clear();
+    function saveUser() {
+        const n = document.getElementById('my-name-input').value;
+        if(n) {
+            localStorage.setItem('aura_hybrid_user', JSON.stringify({name: n}));
             location.reload();
+        }
+    }
+
+    function initSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        ws = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
+
+        ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            if(data.user !== user.name) {
+                addDiscoverEffect(data.user);
+            }
+        };
+    }
+
+    function addDiscoverEffect(u) {
+        const rail = document.getElementById('discover-circles');
+        const grid = document.getElementById('discover-grid');
+
+        // Balon ekle (WhatsApp Stili)
+        if(![...rail.querySelectorAll('span')].some(s => s.innerText === u)) {
+            const div = document.createElement('div');
+            div.className = 'vibe-circle';
+            div.style.minWidth = '65px';
+            div.innerText = u[0].toUpperCase();
+            rail.appendChild(div);
+
+            // Grid ekle (C2me Stili)
+            const card = document.createElement('div');
+            card.style = "background:var(--surface); border-radius:25px; padding:30px; text-align:center; border:1px solid var(--border);";
+            card.innerHTML = `<div style="font-size:30px; margin-bottom:10px;">${u[0].toUpperCase()}</div><div style="font-weight:bold;">${u}</div>`;
+            grid.appendChild(card);
         }
     }
 </script>
