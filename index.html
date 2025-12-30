@@ -6,72 +6,106 @@
     <title>Aura Social</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="data:application/manifest+json,{'display':'standalone','name':'Aura Social'}">
-    
     <style>
-        :root { --ana-renk: #6C5CE7; --arka-plan: #F0F2F5; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--arka-plan); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        /* Header */
-        header { background: var(--ana-renk); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        /* Chat Alanı */
-        #chat-penceresi { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .mesaj { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
+        :root { --ana-renk: #6C5CE7; --arka-plan: #F0F2F5; --beyaz: #ffffff; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--arka-plan); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Üst Header */
+        header { background: var(--beyaz); padding: 15px; text-align: center; border-bottom: 1px solid #ddd; font-weight: 800; color: var(--ana-renk); font-size: 1.4rem; }
+
+        /* Hikayeler Alanı */
+        .stories { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: var(--beyaz); border-bottom: 1px solid #ddd; }
+        .story { min-width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--ana-renk); background: #eee; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+
+        /* Sohbet ve İçerik Alanı */
+        #main-content { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .mesaj { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; line-height: 1.4; position: relative; }
         .giden { align-self: flex-end; background: var(--ana-renk); color: white; border-bottom-right-radius: 4px; }
-        .gelen { align-self: flex-start; background: white; color: #333; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .user-tag { font-size: 0.7rem; font-weight: bold; margin-bottom: 3px; display: block; opacity: 0.8; }
+        .gelen { align-self: flex-start; background: white; color: #333; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* Input Alanı */
-        .input-area { background: white; padding: 10px; display: flex; gap: 10px; border-top: 1px solid #ddd; padding-bottom: 25px; }
-        input { flex: 1; border: 1px solid #ddd; padding: 12px; border-radius: 25px; outline: none; font-size: 1rem; }
-        button { background: var(--ana-renk); color: white; border: none; padding: 0 20px; border-radius: 25px; font-weight: bold; }
+        /* Alt Menü */
+        nav { background: var(--beyaz); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; padding-bottom: 25px; }
+        .nav-item { font-size: 1.2rem; color: #666; cursor: pointer; }
+        .nav-item.active { color: var(--ana-renk); }
 
-        /* Giriş Ekranı */
-        #giris-ekrani { position: fixed; inset: 0; background: var(--ana-renk); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: white; }
+        /* Giriş Paneli */
+        #giris-ekrani { position: fixed; inset: 0; background: var(--ana-renk); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; color: white; }
+        .giris-input { padding: 12px; border-radius: 25px; border: none; width: 80%; max-width: 300px; text-align: center; font-size: 1rem; }
+
+        /* Yazma Alanı (Sadece Sohbet Sekmesinde Görünür) */
+        .input-bar { display: none; background: white; padding: 10px; gap: 10px; border-top: 1px solid #ddd; padding-bottom: 25px; }
     </style>
 </head>
 <body>
 
 <div id="giris-ekrani">
-    <h1>Aura Social</h1>
-    <p>Samimi bir merhaba ile başla</p>
-    <input type="text" id="username" placeholder="İsminiz..." style="max-width: 250px; color: black;">
-    <button onclick="baglan()" style="margin-top: 15px; background: white; color: var(--ana-renk); height: 45px;">Giriş Yap</button>
+    <h1 style="font-size: 2.5rem; margin-bottom: 5px;">Aura</h1>
+    <p style="opacity: 0.9; margin-bottom: 20px;">Yeni nesil sosyal ağ</p>
+    <input type="text" id="username" class="giris-input" placeholder="Kullanıcı adınız...">
+    <button onclick="baglan()" style="margin-top: 20px; padding: 12px 40px; border-radius: 25px; border: none; background: white; color: var(--ana-renk); font-weight: bold; font-size: 1rem;">Başla</button>
 </div>
 
 <header>Aura Social</header>
-<div id="chat-penceresi"></div>
 
-<div class="input-area">
-    <input type="text" id="mesajInput" placeholder="Mesaj yazın...">
-    <button onclick="mesajGonder()">Gönder</button>
+<div class="stories" id="story-area">
+    <div class="story">Sen</div>
+    <div class="story">Yiğit</div>
+    <div class="story">Merve</div>
 </div>
+
+<div id="main-content">
+    </div>
+
+<div class="input-bar" id="mesaj-bar">
+    <input type="text" id="mesajInput" placeholder="Mesaj gönder..." style="flex:1; padding: 10px; border-radius: 20px; border: 1px solid #ddd;">
+    <button onclick="mesajGonder()" style="background: none; border: none; color: var(--ana-renk); font-weight: bold;">Gönder</button>
+</div>
+
+<nav>
+    <div class="nav-item active" onclick="sekmeDegistir('sohbet')">🏠</div>
+    <div class="nav-item" onclick="sekmeDegistir('kesfet')">🔍</div>
+    <div class="nav-item" onclick="sekmeDegistir('profil')">👤</div>
+</nav>
 
 <script>
     let socket;
     let username;
+    let currentSekme = 'sohbet';
 
     function baglan() {
         username = document.getElementById('username').value;
-        if (!username) return alert("Lütfen isim girin!");
-        
+        if (!username) return alert("İsim yazmalısın!");
         document.getElementById('giris-ekrani').style.display = 'none';
+        document.getElementById('mesaj-bar').style.display = 'flex';
 
-        // BEYAZ EKRAN ÇÖZÜMÜ: Protokolü (ws/wss) otomatik seçen akıllı bağlantı
+        // Akıllı Bağlantı (Beyaz ekranı çözen kısım)
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = protocol + '//' + window.location.host + '/ws/' + username;
-        
-        socket = new WebSocket(wsUrl);
+        socket = new WebSocket(protocol + '//' + window.location.host + '/ws/' + username);
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            mesajEkle(data.user, data.text, data.user === username);
+            if(currentSekme === 'sohbet') mesajEkle(data.user, data.text, data.user === username);
         };
+    }
 
-        socket.onclose = function() {
-            alert("Bağlantı kesildi. Sayfayı yenileyin.");
-        };
+    function sekmeDegistir(sekme) {
+        currentSekme = sekme;
+        const icerik = document.getElementById('main-content');
+        const bar = document.getElementById('mesaj-bar');
+        
+        // Aktif menü ikonunu değiştir
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        if (sekme === 'sohbet') {
+            icerik.innerHTML = '';
+            bar.style.display = 'flex';
+        } else if (sekme === 'kesfet') {
+            icerik.innerHTML = '<h3>Keşfet</h3><p>Yakındaki kişileri gör...</p>';
+            bar.style.display = 'none';
+        } else if (sekme === 'profil') {
+            icerik.innerHTML = `<h3>Profilin</h3><p>Kullanıcı: <b>${username}</b></p>`;
+            bar.style.display = 'none';
+        }
     }
 
     function mesajGonder() {
@@ -83,18 +117,13 @@
     }
 
     function mesajEkle(user, text, isMine) {
-        const pencere = document.getElementById('chat-penceresi');
+        const icerik = document.getElementById('main-content');
         const div = document.createElement('div');
         div.className = `mesaj ${isMine ? 'giden' : 'gelen'}`;
-        div.innerHTML = `<span class="user-tag">${user}</span>${text}`;
-        pencere.appendChild(div);
-        pencere.scrollTop = pencere.scrollHeight;
+        div.innerHTML = `<small style="display:block; font-size:0.7rem; margin-bottom:3px; opacity:0.8;">${user}</small>${text}`;
+        icerik.appendChild(div);
+        icerik.scrollTop = icerik.scrollHeight;
     }
-
-    // Enter tuşu ile gönderim
-    document.getElementById('mesajInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') mesajGonder();
-    });
 </script>
 
 </body>
