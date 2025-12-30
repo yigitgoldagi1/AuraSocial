@@ -98,4 +98,140 @@
         <h1 style="font-size: 4rem; letter-spacing: -4px;">Aura</h1>
         <p style="opacity: 0.5; margin-bottom: 30px;">Enerjini dünyaya yansıt.</p>
         <input type="text" id="name-in" placeholder="Takma Adın" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:white; text-align:center; width:220px;">
-        <button class="gate-btn" onclick="
+        <button class="gate-btn" onclick="initApp()">BAŞLA</button>
+    </div>
+
+    <div class="main-container">
+        <section id="v-chats" class="view active">
+            <header><h1>Fısıltılar</h1></header>
+            <div class="glass-card" style="text-align: center; border-style: dashed; opacity: 0.6;">
+                <p>Henüz kimse fısıldamadı...</p>
+                <small>İlk mesajı sen başlatabilirsin.</small>
+            </div>
+        </section>
+
+        <section id="v-radar" class="view">
+            <header><h1>Radar</h1></header>
+            <p style="color: #888;">Yakınındaki enerjileri keşfet.</p>
+            <div class="pulse-center">
+                ✨
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring" style="animation-delay: 1s;"></div>
+            </div>
+            <p style="text-align: center; opacity: 0.5;">Sinyal aranıyor...</p>
+        </section>
+
+        <section id="v-profile" class="view">
+            <header><h1>Benlik</h1></header>
+            
+            <div class="glass-card" onclick="openProfileEdit()">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div id="p-av" style="width:70px; height:70px; border-radius:22px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold;">?</div>
+                    <div>
+                        <h2 id="p-name" style="margin:0; font-size:22px;">İsim</h2>
+                        <p id="p-motto" style="margin:5px 0 0; color:#888; font-size:14px;">Modunu ayarla...</p>
+                    </div>
+                </div>
+                <div style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05); font-size:12px; color:var(--accent);">
+                    Profili Düzenlemek İçin Dokun
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="glass-card" style="margin:0; padding:15px;" onclick="cycleTheme()">
+                    <span style="font-size:20px;">🎨</span><br>
+                    <small style="color:#888;">Tema</small><br>
+                    <b id="theme-label">Modern</b>
+                </div>
+                <div class="glass-card" style="margin:0; padding:15px;">
+                    <span style="font-size:20px;">🔒</span><br>
+                    <small style="color:#888;">Güvenlik</small><br>
+                    <b>Gizli</b>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="edit-overlay" class="profile-edit-overlay">
+        <header style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 style="margin:0;">Düzenle</h1>
+            <span onclick="closeProfileEdit()" style="font-size:30px;">✕</span>
+        </header>
+        <div class="input-group">
+            <label style="color:var(--accent); font-weight:bold; font-size:12px;">TAKMA AD</label>
+            <input type="text" id="edit-name" placeholder="İsmin">
+            
+            <label style="color:var(--accent); font-weight:bold; font-size:12px;">GÜNLÜK MOTTO</label>
+            <input type="text" id="edit-motto" placeholder="Bugün nasıl hissediyorsun?">
+        </div>
+        <button class="gate-btn" style="width:100%;" onclick="saveProfile()">KAYDET</button>
+    </div>
+
+    <nav>
+        <div class="nav-item active" onclick="showView('chats', this)">💬</div>
+        <div class="nav-item" onclick="showView('radar', this)">📡</div>
+        <div class="nav-item" onclick="showView('profile', this)">👤</div>
+    </nav>
+
+    <script>
+        let auraUser = JSON.parse(localStorage.getItem('aura_living_v1')) || {name: '', motto: 'Enerjini yansıt...', theme: 'modern'};
+        const themes = ['modern', 'dogal', 'geleneksel', 'teknolojik'];
+
+        window.onload = () => {
+            if(auraUser.name) {
+                document.getElementById('gate').style.display = 'none';
+                updateUI();
+            }
+        };
+
+        function initApp() {
+            const n = document.getElementById('name-in').value;
+            if(n) {
+                auraUser.name = n;
+                save();
+                location.reload();
+            }
+        }
+
+        function showView(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function openProfileEdit() {
+            document.getElementById('edit-name').value = auraUser.name;
+            document.getElementById('edit-motto').value = auraUser.motto;
+            document.getElementById('edit-overlay').style.display = 'flex';
+        }
+
+        function closeProfileEdit() { document.getElementById('edit-overlay').style.display = 'none'; }
+
+        function saveProfile() {
+            auraUser.name = document.getElementById('edit-name').value;
+            auraUser.motto = document.getElementById('edit-motto').value;
+            save();
+            updateUI();
+            closeProfileEdit();
+        }
+
+        function cycleTheme() {
+            let idx = themes.indexOf(auraUser.theme);
+            auraUser.theme = themes[(idx + 1) % themes.length];
+            save();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('p-name').innerText = auraUser.name;
+            document.getElementById('p-motto').innerText = auraUser.motto;
+            document.getElementById('p-av').innerText = auraUser.name[0].toUpperCase();
+            document.body.setAttribute('data-theme', auraUser.theme);
+            document.getElementById('theme-label').innerText = auraUser.theme.charAt(0).toUpperCase() + auraUser.theme.slice(1);
+        }
+
+        function save() { localStorage.setItem('aura_living_v1', JSON.stringify(auraUser)); }
+    </script>
+</body>
+</html>
