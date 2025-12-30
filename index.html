@@ -2,216 +2,194 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aura Social Pro</title>
     <style>
         :root {
-            --bg: #000000;
-            --surface: #121212;
+            --bg: #000;
+            --card: #121212;
             --accent: #8e2de2;
-            --text: #ffffff;
-            --border: rgba(255,255,255,0.1);
+            --text: #fff;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-            background-color: var(--bg); color: var(--text); margin: 0; height: 100vh; overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg); color: var(--text); margin: 0;
+            height: 100vh; overflow: hidden;
         }
 
-        /* --- SAYFA YAPISI --- */
+        /* Sayfa Yönetimi - Basit ve Etkili */
         .page {
-            position: absolute; inset: 0; opacity: 0; transform: translateY(10px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
-            display: flex; flex-direction: column; padding-bottom: 90px;
+            position: fixed; inset: 0; 
+            display: none; flex-direction: column;
+            background: var(--bg); z-index: 10;
+            padding-bottom: 90px; /* Nav bar için boşluk */
         }
-        .page.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .page.active { display: flex; }
 
-        header { padding: 60px 20px 15px; font-size: 22px; font-weight: 800; border-bottom: 1px solid var(--border); }
-
-        /* --- PROFİL HEADER --- */
-        .profile-header { padding: 30px 20px; text-align: center; }
-        .profile-pic {
-            width: 90px; height: 90px; border-radius: 32px; background: var(--accent);
-            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
-            font-size: 32px; font-weight: bold; border: 3px solid #1a1a1a;
+        /* Üst Menü */
+        header {
+            padding: 50px 20px 15px;
+            font-size: 20px; font-weight: bold;
+            border-bottom: 1px solid #222;
         }
 
-        /* --- AYARLAR LİSTESİ --- */
-        .settings-group { margin: 0 15px 20px; background: var(--surface); border-radius: 20px; overflow: hidden; }
-        .setting-row {
-            padding: 16px 20px; display: flex; align-items: center; gap: 15px;
-            border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;
+        /* Menü Listesi (WhatsApp/Instagram Stili) */
+        .menu-list { margin: 20px 15px; background: var(--card); border-radius: 20px; overflow: hidden; }
+        .menu-item {
+            padding: 18px 20px; display: flex; align-items: center; gap: 15px;
+            border-bottom: 1px solid #222; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* Mobil tıklama gölgesini siler */
         }
-        .setting-row:active { background: #222; }
-        .icon-box { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .menu-item:active { background: #1c1c1e; }
+        .menu-item:last-child { border-bottom: none; }
 
-        /* --- MODAL (BOTTOM SHEET) --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            z-index: 2000; display: none; align-items: flex-end;
-        }
-        .modal-content {
-            width: 100%; background: #1c1c1e; border-top-left-radius: 30px; border-top-right-radius: 30px;
-            padding: 30px 20px 50px; transform: translateY(100%); transition: 0.3s ease-out;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-
-        /* --- INPUTS --- */
-        .edit-input {
-            width: 100%; padding: 15px; background: #2c2c2e; border: 1px solid #3a3a3c;
-            border-radius: 15px; color: white; font-size: 16px; margin-bottom: 20px; box-sizing: border-box;
+        /* İkon Kutuları */
+        .icon {
+            width: 32px; height: 32px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- NAV --- */
-        nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: rgba(0,0,0,0.8); backdrop-filter: blur(25px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { color: #555; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-        .nav-item.active { color: white; }
+        /* Alt Navigasyon Bar - Her Zaman En Üstte */
+        nav {
+            position: fixed; bottom: 0; width: 100%; height: 80px;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #222; z-index: 1000; /* En üst katman */
+        }
+        .nav-btn {
+            background: none; border: none; color: #666;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            flex: 1; height: 100%; justify-content: center; cursor: pointer;
+        }
+        .nav-btn.active { color: #fff; }
+
+        /* Mesajlaşma Alanı */
+        #chat-scroller { flex: 1; overflow-y: auto; padding: 20px; }
+        .msg { max-width: 80%; padding: 12px; border-radius: 18px; margin-bottom: 8px; }
+        .me { align-self: flex-end; background: var(--accent); }
+        .others { align-self: flex-start; background: #222; }
+
+        /* Input */
+        .input-area { padding: 10px; display: flex; gap: 10px; background: #000; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #333; background: #111; color: #fff; }
     </style>
 </head>
 <body>
 
-<div id="p-discover" class="page active"><header>Keşfet</header><div id="user-list" style="padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div></div>
+<div id="page-discover" class="page active">
+    <header>Keşfet</header>
+    <div style="padding: 20px; color: #666; text-align: center;">Henüz kimse yok...</div>
+</div>
 
-<div id="p-chat" class="page">
-    <header id="chat-title">Sohbet</header>
-    <div id="chat-box" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px;"></div>
-    <div style="padding:15px; display:flex; gap:10px; background:#000; border-top:1px solid var(--border);">
-        <input type="text" id="m-input" style="flex:1; padding:12px; background:#1a1a1a; color:white; border-radius:20px; border:none;" placeholder="Mesaj fısılda...">
-        <button onclick="send()" style="background:white; width:45px; height:45px; border-radius:50%; border:none; font-weight:bold;">↑</button>
+<div id="page-chat" class="page">
+    <header id="chat-title">Mesajlar</header>
+    <div id="chat-scroller" style="display: flex; flex-direction: column;"></div>
+    <div class="input-area">
+        <input type="text" id="m-input" placeholder="Mesaj yazın...">
+        <button onclick="send()" style="background:var(--accent); color:white; border:none; border-radius:50%; width:40px; height:40px;">↑</button>
     </div>
 </div>
 
-<div id="p-profile" class="page" style="overflow-y: auto;">
-    <header>Profil</header>
-    <div class="profile-header">
-        <div class="profile-pic" id="p-avatar">?</div>
-        <h2 id="p-name" style="margin:0;">İsim</h2>
-        <p id="p-bio" style="color:#888; font-size:14px; margin-top:5px;">Aura Premium Üyesi</p>
+<div id="page-profile" class="page">
+    <header>Ayarlar</header>
+    
+    <div style="text-align: center; padding: 30px;">
+        <div id="avatar" style="width:80px; height:80px; border-radius:25px; background:var(--accent); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:bold;">A</div>
+        <h2 id="display-name" style="margin:0;">Kullanıcı</h2>
     </div>
 
-    <div class="settings-group">
-        <div class="setting-row" onclick="openModal('editModal')">
-            <div class="icon-box" style="background:#007aff;">👤</div>
-            <div style="flex:1;">Profil Düzenle</div>
+    <div class="menu-list">
+        <div class="menu-item" onclick="changeName()">
+            <div class="icon" style="background:#007aff;">👤</div>
+            <div style="flex:1;">İsmi Değiştir</div>
             <div style="color:#444;">❯</div>
         </div>
-        <div class="setting-row" onclick="openModal('themeModal')">
-            <div class="icon-box" style="background:#af52de;">🎨</div>
-            <div style="flex:1;">Tema Değiştir</div>
+        <div class="menu-item" onclick="changeTheme()">
+            <div class="icon" style="background:#ff2d55;">🎨</div>
+            <div style="flex:1;">Renk Değiştir</div>
             <div style="color:#444;">❯</div>
         </div>
     </div>
 
-    <div class="settings-group">
-        <div class="setting-row" onclick="logout()" style="color:#ff3b30;">
-            <div class="icon-box" style="background:rgba(255,59,48,0.1);">🚪</div>
+    <div class="menu-list">
+        <div class="menu-item" onclick="logout()" style="color:#ff3b30;">
+            <div class="icon" style="background:rgba(255,59,48,0.1);">🚪</div>
             <div style="flex:1;">Çıkış Yap</div>
         </div>
     </div>
 </div>
 
-<div id="editModal" class="modal-overlay" onclick="closeModal('editModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 style="margin-top:0;">Profil Düzenle</h3>
-        <input type="text" id="new-name" class="edit-input" placeholder="Yeni İsim">
-        <button onclick="updateProfile()" style="width:100%; padding:15px; border-radius:15px; background:white; color:black; font-weight:bold; border:none;">Kaydet</button>
-    </div>
-</div>
-
-<div id="themeModal" class="modal-overlay" onclick="closeModal('themeModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3>Tema Seçimi</h3>
-        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
-            <div onclick="changeColor('#8e2de2')" style="width:50px; height:50px; border-radius:15px; background:#8e2de2;"></div>
-            <div onclick="changeColor('#ff2d55')" style="width:50px; height:50px; border-radius:15px; background:#ff2d55;"></div>
-            <div onclick="changeColor('#4cd964')" style="width:50px; height:50px; border-radius:15px; background:#4cd964;"></div>
-            <div onclick="changeColor('#007aff')" style="width:50px; height:50px; border-radius:15px; background:#007aff;"></div>
-        </div>
-    </div>
-</div>
-
 <nav>
-    <div class="nav-item active" onclick="tab('discover', 0)"><span>🔍</span><small>Keşfet</small></div>
-    <div class="nav-item" onclick="tab('chat', 1)"><span>💬</span><small>Sohbet</small></div>
-    <div class="nav-item" onclick="tab('profile', 2)"><span>👤</span><small>Profil</small></div>
+    <button class="nav-btn active" onclick="showPage('discover', this)"><span>🔍</span><small>Keşfet</small></button>
+    <button class="nav-btn" onclick="showPage('chat', this)"><span>💬</span><small>Sohbet</small></button>
+    <button class="nav-btn" onclick="showPage('profile', this)"><span>👤</span><small>Profil</small></button>
 </nav>
 
 <script>
-    let ws;
-    let target = null;
-    let user = JSON.parse(localStorage.getItem('aura_pro')) || {name: "Anonim"};
+    let currentTheme = localStorage.getItem('aura_color') || '#8e2de2';
+    let myName = localStorage.getItem('aura_name') || 'Kullanıcı';
 
+    // Uygulama Başlatma
     window.onload = () => {
-        if(!localStorage.getItem('aura_pro')) {
-            let n = prompt("Takma adın nedir?");
-            if(n) { user.name = n; localStorage.setItem('aura_pro', JSON.stringify(user)); }
-        }
-        document.getElementById('p-name').innerText = user.name;
-        document.getElementById('p-avatar').innerText = user.name[0].toUpperCase();
-        document.getElementById('p-avatar').style.background = localStorage.getItem('aura_theme') || '#8e2de2';
-        startWS();
+        document.getElementById('display-name').innerText = myName;
+        document.getElementById('avatar').innerText = myName[0];
+        document.documentElement.style.setProperty('--accent', currentTheme);
+        document.getElementById('avatar').style.background = currentTheme;
     };
 
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    // SAYFA GEÇİŞİ (BU KISIM ARTIK %100 ÇALIŞIR)
+    function showPage(pageId, btn) {
+        // Tüm sayfaları kapat
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // Hedef sayfayı aç
+        document.getElementById('page-' + pageId).classList.add('active');
+        
+        // Navigasyon butonlarını güncelle
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
-    function updateProfile() {
-        let n = document.getElementById('new-name').value;
+    // AYARLAR FONKSİYONLARI
+    function changeName() {
+        let n = prompt("Yeni kullanıcı adın ne olsun?");
         if(n) {
-            user.name = n;
-            localStorage.setItem('aura_pro', JSON.stringify(user));
+            myName = n;
+            localStorage.setItem('aura_name', n);
+            document.getElementById('display-name').innerText = n;
+            document.getElementById('avatar').innerText = n[0];
+        }
+    }
+
+    function changeTheme() {
+        let colors = ['#8e2de2', '#ff2d55', '#4cd964', '#007aff', '#ff9500'];
+        let randomColor = colors[Math.floor(Math.random() * colors.length)];
+        currentTheme = randomColor;
+        localStorage.setItem('aura_color', randomColor);
+        document.documentElement.style.setProperty('--accent', randomColor);
+        document.getElementById('avatar').style.background = randomColor;
+        alert("Renk güncellendi!");
+    }
+
+    function logout() {
+        if(confirm("Çıkış yapmak istediğine emin misin?")) {
+            localStorage.clear();
             location.reload();
         }
     }
 
-    function changeColor(hex) {
-        localStorage.setItem('aura_theme', hex);
-        document.getElementById('p-avatar').style.background = hex;
-        closeModal('themeModal');
-    }
-
-    function startWS() {
-        let p = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        ws = new WebSocket(p + '//' + window.location.host + '/ws/' + user.name);
-        ws.onmessage = (e) => {
-            let d = JSON.parse(e.data);
-            if(d.text && (!d.hedef || d.hedef === user.name || d.user === user.name)) {
-                let b = document.getElementById('chat-box');
-                let div = document.createElement('div');
-                div.style = `align-self:${d.user === user.name ? 'flex-end':'flex-start'}; background:${d.user === user.name ? (localStorage.getItem('aura_theme') || '#8e2de2'):'#222'}; padding:12px 16px; border-radius:20px; max-width:75%;`;
-                div.innerHTML = `<small style="display:block; opacity:0.6; font-size:10px;">${d.user}</small>${d.text}`;
-                b.appendChild(div);
-                b.scrollTop = b.scrollHeight;
-            }
-            updateList(d.user);
-        };
-    }
-
-    function tab(id, idx) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('page-' + id).classList.add('active');
-        document.querySelectorAll('.nav-item')[idx].classList.add('active');
-    }
-
+    // Basit Mesaj Gönderimi
     function send() {
         let i = document.getElementById('m-input');
-        if(i.value && ws) { ws.send(JSON.stringify({text: i.value, hedef: target})); i.value = ''; }
+        if(!i.value) return;
+        let box = document.getElementById('chat-scroller');
+        let d = document.createElement('div');
+        d.className = 'msg me';
+        d.innerText = i.value;
+        box.appendChild(d);
+        i.value = '';
+        box.scrollTop = box.scrollHeight;
     }
-
-    function updateList(u) {
-        if(u === user.name) return;
-        let l = document.getElementById('user-list');
-        if([...l.querySelectorAll('h4')].some(h => h.innerText === u)) return;
-        let c = document.createElement('div');
-        c.style = "background:#121212; border-radius:20px; padding:20px; text-align:center; border:1px solid #222;";
-        c.onclick = () => { target = u; document.getElementById('chat-title').innerText = u; tab('chat', 1); };
-        c.innerHTML = `<div style="width:50px; height:50px; background:#333; border-radius:15px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;">${u[0]}</div><h4>${u}</h4>`;
-        l.appendChild(c);
-    }
-
-    function logout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
