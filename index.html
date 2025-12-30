@@ -8,98 +8,100 @@
         :root {
             --bg: #000;
             --surface: #121212;
-            --accent: #8e2de2; /* Premium Mor */
-            --glass: rgba(20, 20, 20, 0.7);
+            --accent: #8e2de2;
+            --glass: rgba(15, 15, 15, 0.85);
             --border: rgba(255, 255, 255, 0.1);
+            /* Alt bar yüksekliği + güvenli alan */
+            --nav-height: 85px; 
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
             background-color: var(--bg); color: white;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             overflow: hidden;
         }
 
-        /* --- SAYFA SİSTEMİ (HATASIZ ÇAPA SİSTEMİ) --- */
+        /* --- SAYFA SİSTEMİ --- */
         .wrapper {
             display: flex; width: 300%; height: 100vh;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Navigasyon Tetikleyicileri */
         #tab1:checked ~ .wrapper { transform: translateX(0); }
         #tab2:checked ~ .wrapper { transform: translateX(-33.33%); }
         #tab3:checked ~ .wrapper { transform: translateX(-66.66%); }
 
         section {
             width: 33.33%; height: 100%; display: flex; flex-direction: column;
-            overflow-y: auto; padding-top: 60px; padding-bottom: 100px;
+            padding-top: 60px; /* Header boşluğu */
             box-sizing: border-box;
+            position: relative;
         }
 
-        /* --- ÜST BAR (GLASSMORPHISM) --- */
         header {
             position: fixed; top: 0; width: 100%; height: 60px;
             background: var(--glass); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 20px; z-index: 100;
+            font-weight: 800; font-size: 20px; z-index: 1000;
         }
 
-        /* --- KEŞFET BALONLARI (WHATSAPP/INSTAGRAM HİBRİT) --- */
-        .discover-rail {
-            padding: 15px; display: flex; gap: 15px; overflow-x: auto;
-            border-bottom: 1px solid var(--border); background: #080808;
-            scrollbar-width: none;
-        }
-        .vibe-circle {
-            min-width: 65px; height: 65px; border-radius: 25px;
-            background: linear-gradient(135deg, var(--accent), #4a00e0);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; border: 2px solid var(--bg);
-            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+        /* --- SOHBET AKIŞI --- */
+        #chat-content {
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 10px;
+            /* Alt bar ve input alanı için padding */
+            padding-bottom: 160px; 
         }
 
-        /* --- SOHBET LİSTESİ (WHATSAPP RAHATLIĞI) --- */
-        .chat-item {
-            display: flex; align-items: center; padding: 15px 20px;
-            border-bottom: 0.5px solid var(--border); transition: 0.2s;
+        .bubble {
+            max-width: 80%; padding: 12px 16px; border-radius: 20px;
+            background: var(--surface); border: 1px solid var(--border); font-size: 15px;
         }
-        .chat-item:active { background: #1a1a1a; }
-        .chat-avatar {
-            width: 50px; height: 50px; border-radius: 18px;
-            background: #222; margin-right: 15px;
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
-        }
-        .chat-info { flex: 1; }
-        .chat-info h4 { margin: 0; font-size: 16px; }
-        .chat-info p { margin: 5px 0 0; font-size: 13px; color: #888; }
+        .me { align-self: flex-end; background: var(--accent); border-color: transparent; }
 
-        /* --- ALT NAVİGASYON (SABİT) --- */
+        /* --- MESAJ YAZMA ALANI (DÜZELTİLDİ) --- */
+        .input-container {
+            position: absolute; 
+            bottom: var(--nav-height); /* Alt barın tam üstüne koyduk */
+            left: 0; right: 0;
+            padding: 12px 15px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            display: flex; gap: 10px; align-items: center;
+            z-index: 500;
+        }
+
+        .input-elite {
+            flex: 1; padding: 12px 18px; border-radius: 25px;
+            border: 1px solid #333; background: #1a1a1a; color: white;
+            font-size: 16px; outline: none;
+        }
+
+        /* --- ALT NAVİGASYON --- */
         .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
+            position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
             background: var(--glass); backdrop-filter: blur(30px);
             border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom); z-index: 2000;
         }
+
         .nav-label {
             display: flex; flex-direction: column; align-items: center;
-            color: #555; cursor: pointer; transition: 0.3s;
+            color: #555; cursor: pointer; flex: 1;
         }
+
         input[type="radio"] { display: none; }
         #tab1:checked ~ .nav-bar label[for="tab1"],
         #tab2:checked ~ .nav-bar label[for="tab2"],
-        #tab3:checked ~ .nav-bar label[for="tab3"] { color: white; transform: translateY(-5px); }
+        #tab3:checked ~ .nav-bar label[for="tab3"] { color: white; }
 
-        /* --- GİRİŞ EKRANI (İLK SEFER) --- */
+        /* --- GİRİŞ --- */
         #login-gate {
-            position: fixed; inset: 0; background: #000; z-index: 1000;
+            position: fixed; inset: 0; background: #000; z-index: 5000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .input-elite {
-            width: 80%; padding: 18px; border-radius: 20px; border: 1px solid var(--border);
-            background: #111; color: white; font-size: 16px; margin-bottom: 15px; text-align: center;
         }
     </style>
 </head>
@@ -110,40 +112,35 @@
 <input type="radio" name="tabs" id="tab3">
 
 <div id="login-gate">
-    <h1 style="font-size: 3rem; letter-spacing: -3px; margin-bottom: 5px;">Aura</h1>
-    <p style="color:#555; margin-bottom: 30px; font-size: 12px; letter-spacing: 2px;">HYBRID SOCIAL</p>
-    <input type="text" id="my-name-input" class="input-elite" placeholder="Takma Adın">
-    <button onclick="saveUser()" style="width: 80%; padding: 18px; border-radius: 20px; border:none; background:white; font-weight:bold;">BAŞLA</button>
+    <h1 style="font-size: 3rem; letter-spacing: -3px;">Aura</h1>
+    <input type="text" id="my-name-input" style="width:250px; padding:15px; border-radius:15px; background:#111; color:white; border:1px solid #333; margin-bottom:15px; text-align:center;" placeholder="Takma Adın">
+    <button onclick="saveUser()" style="width:250px; padding:15px; border-radius:15px; background:white; font-weight:bold; border:none;">BAŞLA</button>
 </div>
 
-<header id="dynamic-header">Aura</header>
+<header>Aura</header>
 
 <div class="wrapper">
     <section id="chats">
-        <div class="discover-rail" id="discover-circles">
-            <div class="vibe-circle">🔍</div>
+        <div id="chat-content">
+            <div style="padding: 20px; text-align: center; color: #444;">Sohbet etmek için birini seçin...</div>
         </div>
-        <div id="active-chats-list">
-            <div style="padding: 40px; text-align: center; color: #444;">
-                Henüz sohbetin yok.<br>Üstteki balonlardan yeni birilerini keşfet!
-            </div>
+        
+        <div class="input-container">
+            <input type="text" id="m-input" class="input-elite" placeholder="Mesaj yazın...">
+            <button onclick="send()" style="background:white; border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">↑</button>
         </div>
     </section>
 
     <section id="discover">
-        <div style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="discover-grid">
+        <div style="padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="discover-grid">
             </div>
     </section>
 
     <section id="profile">
-        <div style="padding: 30px; text-align: center;">
-            <div id="big-avatar" style="width:100px; height:100px; border-radius:35px; background:var(--accent); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:800;">?</div>
-            <h2 id="display-name" style="margin:0;">İsim</h2>
-            <p style="color: #555;">Elite Aura Üyesi</p>
-        </div>
-        <div style="margin: 20px; background: var(--surface); border-radius: 20px; overflow: hidden; border: 1px solid var(--border);">
-            <div onclick="location.reload()" style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><span>Uygulamayı Yenile</span> <span>🔄</span></div>
-            <div onclick="localStorage.clear(); location.reload();" style="padding: 20px; color: #ff3b30;"><span>Oturumu Kapat</span> <span>➔</span></div>
+        <div style="padding: 40px; text-align: center;">
+            <div id="big-avatar" style="width:90px; height:90px; border-radius:30px; background:var(--accent); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:bold;">?</div>
+            <h2 id="display-name">İsim</h2>
+            <button onclick="localStorage.clear(); location.reload();" style="margin-top: 50px; color: #ff3b30; background: none; border: none; font-weight: bold;">Oturumu Kapat</button>
         </div>
     </section>
 </div>
@@ -156,7 +153,7 @@
 
 <script>
     let ws;
-    let user = JSON.parse(localStorage.getItem('aura_hybrid_user'));
+    let user = JSON.parse(localStorage.getItem('aura_hybrid_v2'));
 
     if(user) {
         document.getElementById('login-gate').style.display = 'none';
@@ -168,7 +165,7 @@
     function saveUser() {
         const n = document.getElementById('my-name-input').value;
         if(n) {
-            localStorage.setItem('aura_hybrid_user', JSON.stringify({name: n}));
+            localStorage.setItem('aura_hybrid_v2', JSON.stringify({name: n}));
             location.reload();
         }
     }
@@ -176,33 +173,35 @@
     function initSocket() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         ws = new WebSocket(protocol + '//' + window.location.host + '/ws/' + user.name);
-
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data);
-            if(data.user !== user.name) {
-                addDiscoverEffect(data.user);
+            if(data.text) {
+                const chat = document.getElementById('chat-content');
+                const div = document.createElement('div');
+                div.className = `bubble ${data.user === user.name ? 'me' : ''}`;
+                div.innerHTML = `<small style="display:block; font-size:10px; opacity:0.5;">${data.user}</small>${data.text}`;
+                chat.appendChild(div);
+                chat.scrollTop = chat.scrollHeight;
             }
+            if(data.user !== user.name) updateDiscover(data.user);
         };
     }
 
-    function addDiscoverEffect(u) {
-        const rail = document.getElementById('discover-circles');
-        const grid = document.getElementById('discover-grid');
-
-        // Balon ekle (WhatsApp Stili)
-        if(![...rail.querySelectorAll('span')].some(s => s.innerText === u)) {
-            const div = document.createElement('div');
-            div.className = 'vibe-circle';
-            div.style.minWidth = '65px';
-            div.innerText = u[0].toUpperCase();
-            rail.appendChild(div);
-
-            // Grid ekle (C2me Stili)
-            const card = document.createElement('div');
-            card.style = "background:var(--surface); border-radius:25px; padding:30px; text-align:center; border:1px solid var(--border);";
-            card.innerHTML = `<div style="font-size:30px; margin-bottom:10px;">${u[0].toUpperCase()}</div><div style="font-weight:bold;">${u}</div>`;
-            grid.appendChild(card);
+    function send() {
+        const i = document.getElementById('m-input');
+        if(i.value && ws) {
+            ws.send(JSON.stringify({text: i.value}));
+            i.value = '';
         }
+    }
+
+    function updateDiscover(u) {
+        const grid = document.getElementById('discover-grid');
+        if([...grid.querySelectorAll('h4')].some(h => h.innerText === u)) return;
+        const card = document.createElement('div');
+        card.style = "background:var(--surface); border-radius:20px; padding:20px; text-align:center; border:1px solid var(--border);";
+        card.innerHTML = `<div style="font-size:24px; margin-bottom:8px;">${u[0].toUpperCase()}</div><h4>${u}</h4>`;
+        grid.appendChild(card);
     }
 </script>
 </body>
