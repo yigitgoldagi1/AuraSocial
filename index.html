@@ -4,141 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Social</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #000;
-            --surface: rgba(255, 255, 255, 0.06);
-            --accent: #8e2de2;
-            --text: #ffffff;
-            --blur: blur(25px);
+            --bg: #000000;
+            --gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --gold-static: #d4af37;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --nav-h: 85px;
         }
-
-        [data-theme="dogal"] { --accent: #4cd964; --aura-color: rgba(76, 217, 100, 0.2); }
-        [data-theme="geleneksel"] { --accent: #d4af37; --aura-color: rgba(212, 175, 55, 0.2); }
-        [data-theme="teknolojik"] { --accent: #007aff; --aura-color: rgba(0, 122, 255, 0.2); }
-        [data-theme="modern"] { --accent: #8e2de2; --aura-color: rgba(142, 45, 226, 0.2); }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-color: var(--bg); color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
-            overflow: hidden;
+            background-color: var(--bg); color: white;
+            font-family: 'Inter', sans-serif; overflow: hidden;
         }
 
-        /* CANLI ARKA PLAN */
-        .aura-bg {
-            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at center, var(--aura-color, rgba(142, 45, 226, 0.15)) 0%, transparent 40%);
-            animation: auraRotate 25s infinite linear;
-            z-index: -1;
-        }
-        @keyframes auraRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* SAYFA YÖNETİMİ */
-        .view { position: fixed; inset: 0; display: none; padding: 70px 25px 120px; overflow-y: auto; }
-        .view.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* KARTLAR */
-        .glass-card {
-            background: var(--surface); backdrop-filter: var(--blur);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 32px;
-            padding: 25px; margin-bottom: 20px; transition: transform 0.2s;
-        }
-        .glass-card:active { transform: scale(0.97); }
-
-        /* NAVİGASYON BAR */
-        nav {
-            position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px;
-            background: rgba(255,255,255,0.08); backdrop-filter: blur(30px);
-            border-radius: 40px; display: flex; align-items: center; justify-content: space-around;
-            border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
-        }
-        .nav-item { font-size: 26px; opacity: 0.3; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { opacity: 1; transform: translateY(-8px); color: var(--accent); }
-
-        /* GİRİŞ EKRANI */
-        #gate { 
-            position: fixed; inset: 0; background: #000; z-index: 9999; 
+        /* --- LOGO VE GİRİŞ EKRANI (O GÖRSELDEKİ TASARIM) --- */
+        #gate {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .input-gate {
-            background: #111; border: 1px solid #333; padding: 18px; 
-            border-radius: 20px; color: white; text-align: center; width: 260px; font-size: 16px;
-        }
-        .btn-gate {
-            background: white; color: black; border: none; padding: 18px 60px; 
-            border-radius: 20px; font-weight: 800; margin-top: 25px; cursor: pointer;
+
+        .aura-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 80px; font-weight: 800; letter-spacing: -2px;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(191, 149, 63, 0.5));
+            margin: 0; animation: logoEntrance 1.5s ease-out;
         }
 
-        /* PROFİL EDİT MODAL */
-        .edit-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
-            backdrop-filter: blur(40px); z-index: 2000; display: none;
-            flex-direction: column; padding: 70px 30px;
+        @keyframes logoEntrance {
+            from { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
         }
-        .edit-modal.active { display: flex; }
+
+        .sub-text {
+            color: var(--gold-static); font-size: 11px; letter-spacing: 4px;
+            opacity: 0.6; margin-top: -10px; margin-bottom: 50px; text-transform: uppercase;
+        }
+
+        .input-box {
+            background: #111; border: 1px solid #333; padding: 18px;
+            border-radius: 20px; color: white; text-align: center;
+            width: 280px; font-size: 16px; outline: none; margin-bottom: 20px;
+        }
+
+        .login-btn {
+            background: white; color: black; border: none; padding: 18px 80px;
+            border-radius: 25px; font-weight: 800; font-size: 15px; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
+        }
+
+        /* --- ANA UYGULAMA YAPISI --- */
+        .view { position: fixed; inset: 0; display: none; padding: 70px 25px 120px; overflow-y: auto; }
+        .view.active { display: flex; flex-direction: column; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        header h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 25px; }
+
+        /* --- KARTLAR --- */
+        .glass-card {
+            background: var(--surface); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 28px;
+            padding: 25px; margin-bottom: 15px;
+        }
+
+        /* --- NAVİGASYON --- */
+        nav {
+            position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(30px);
+            border-radius: 40px; display: flex; align-items: center; justify-content: space-around;
+            border: 1px solid var(--border); z-index: 1000;
+        }
+        .nav-item { font-size: 24px; opacity: 0.3; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--gold-static); transform: translateY(-5px); }
+
+        /* --- RADAR --- */
+        .radar-pulse {
+            width: 100px; height: 100px; background: var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 40px;
+            position: relative; margin: 80px auto; box-shadow: 0 0 40px rgba(179, 135, 40, 0.4);
+        }
+        .ring {
+            position: absolute; inset: 0; border: 2px solid var(--gold-static);
+            border-radius: 50%; animation: pulseRing 3s infinite;
+        }
+        @keyframes pulseRing { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3.5); opacity: 0; } }
+
+        /* PROFİL MODAL */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(40px); z-index: 2000; display: none;
+            flex-direction: column; padding: 80px 30px;
+        }
+        .modal.active { display: flex; }
     </style>
 </head>
-<body data-theme="modern">
-
-    <div class="aura-bg"></div>
+<body>
 
     <div id="gate">
-        <h1 style="font-size: 4.5rem; letter-spacing: -5px; margin: 0;">Aura</h1>
-        <p style="opacity: 0.4; margin-bottom: 40px; letter-spacing: 1px;">SESSİZCE BAĞLAN</p>
-        <input type="text" id="name-in" class="input-gate" placeholder="Takma Adın">
-        <button class="btn-gate" onclick="initApp()">GİRİŞ YAP</button>
+        <h1 class="aura-logo">Aura</h1>
+        <p class="sub-text">Sessizce Bağlan</p>
+        <input type="text" id="name-in" class="input-box" placeholder="Takma Adın">
+        <button class="login-btn" onclick="login()">GİRİŞ YAP</button>
     </div>
 
     <div id="v-chats" class="view active">
-        <h1 style="font-weight: 900; letter-spacing: -1.5px;">Fısıltılar</h1>
+        <header><h2>Fısıltılar</h2></header>
         <div class="glass-card" style="opacity: 0.5; border-style: dashed; text-align: center;">
-            <p>Sohbet kutun şimdilik sessiz.</p>
+            <p>Sohbet kutun sessiz...</p>
         </div>
     </div>
 
     <section id="v-radar" class="view">
-        <h1 style="font-weight: 900; letter-spacing: -1.5px;">Radar</h1>
-        <div style="height: 300px; display: flex; align-items: center; justify-content: center; position: relative;">
-            <div style="width: 100px; height: 100px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; z-index: 2; box-shadow: 0 0 50px var(--accent);">✨</div>
-            <div class="pulse-ring"></div>
+        <header><h2>Radar</h2></header>
+        <div class="radar-pulse">
+            ✨
+            <div class="ring"></div>
+            <div class="ring" style="animation-delay: 1s;"></div>
         </div>
-        <p style="text-align: center; opacity: 0.4;">Etrafındaki enerjiler taranıyor...</p>
+        <p style="text-align: center; color: var(--gold-static); opacity: 0.6; font-size: 14px;">Yakınlardaki enerjiler taranıyor</p>
     </section>
 
     <section id="v-profile" class="view">
-        <h1 style="font-weight: 900; letter-spacing: -1.5px;">Benlik</h1>
+        <header><h2>Benlik</h2></header>
         <div class="glass-card" onclick="openEdit()">
             <div style="display: flex; align-items: center; gap: 20px;">
-                <div id="p-av" style="width: 75px; height: 75px; background: var(--accent); border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold;">?</div>
-                <div>
-                    <h2 id="p-name" style="margin: 0; font-size: 24px;">İsim</h2>
-                    <p id="p-motto" style="margin: 5px 0 0; color: #888; font-size: 14px;">Modunu ayarla...</p>
-                </div>
-            </div>
-            <p style="margin-top: 20px; font-size: 11px; color: var(--accent); font-weight: 700;">DÜZENLEMEK İÇİN DOKUN</p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div class="glass-card" onclick="cycleTheme()" style="margin: 0;">
-                <small style="opacity: 0.5;">TEMA</small><br>
-                <b id="theme-label">Modern</b>
-            </div>
-            <div class="glass-card" onclick="location.reload()" style="margin: 0;">
-                <small style="opacity: 0.5;">SİSTEM</small><br>
-                <b>Yenile</b>
-            </div>
-        </div>
-    </section>
-
-    <div id="edit-modal" class="edit-modal">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="font-size: 32px; margin: 0;">Düzenle</h2>
-            <span onclick="closeEdit()" style="font-size: 30px; opacity: 0.5;">✕</span>
-        </div>
-        <div style="margin-top: 40px;">
-            <label style="font-size: 12px; font-weight: 800; color: var(--accent);">TAKMA ADIN</label>
-            <input type="text" id="edit-name" style="width: 100%; background: none; border: none; border-bottom: 2px solid #333; color: white; font-size: 24px; padding: 15px 0; outline: none; margin-bottom: 30px;">
-            
-            <label style="font
+                <div id="p-av" style="width: 70px;
