@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura</title>
+    <title>Aura Social</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,116 +15,134 @@
 
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* PARILTI EFEKTİ - Tıklamayı engellememesi için 'pointer-events: none' eklendi */
-        .sparkle {
-            position: absolute; width: 12px; height: 12px;
-            background: var(--gold); border-radius: 50%;
-            pointer-events: none; /* KRİTİK: Butonlara basmayı engellemez */
-            transform: translate(-50%, -50%);
-            animation: fly 0.6s ease-out forwards; z-index: 100000;
-        }
-        @keyframes fly { 
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -120%) scale(0); opacity: 0; }
-        }
-
-        /* GİRİŞ EKRANI */
-        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
-        .aura-logo { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        /* GİRİŞ */
+        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
         
-        .input-group { display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 100001; }
-        #name-input { background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 18px; color: white; text-align: center; width: 240px; border-radius: 20px; outline: none; font-size: 16px; }
-        .login-btn { background: white; color: black; border: none; padding: 18px 60px; border-radius: 30px; font-weight: 800; cursor: pointer; font-size: 16px; -webkit-appearance: none; }
-
         /* SAYFALAR */
         .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; }
-        .page.active { display: block; animation: softIn 0.4s ease; }
-        @keyframes softIn { from { opacity: 0; filter: blur(5px); } to { opacity: 1; filter: blur(0); } }
+        .page.active { display: block; }
 
-        .card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+        /* POSTLAR */
+        .post-card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
-        .nav-item { font-size: 24px; opacity: 0.4; transition: 0.3s; color: white; cursor: pointer; }
-        .nav-item.active { opacity: 1; transform: scale(1.2); color: var(--soft-gold); }
+        .spotify-card { display: flex; align-items: center; gap: 15px; background: rgba(30, 215, 96, 0.1); border-radius: 15px; padding: 12px; margin-top: 10px; border: 1px solid rgba(30, 215, 96, 0.2); }
 
-        .premium-name { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* PAYLAŞIM ALANI */
+        .share-container { background: var(--glass); border-radius: 25px; padding: 15px; margin-bottom: 25px; border: 1px solid rgba(191,149,63,0.2); }
+        textarea { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; resize: none; height: 50px; }
+        
+        .btn-gold { background: var(--gold); border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; color: black; cursor: pointer; }
+
+        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-item { font-size: 24px; opacity: 0.3; color: white; transition: 0.3s; }
+        .nav-item.active { opacity: 1; color: var(--soft-gold); }
+
+        .premium-text { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body onmousedown="createSparkle(event)">
+<body>
 
     <div id="gate">
-        <h1 class="aura-logo">Aura</h1>
-        <div class="input-group">
-            <input type="text" id="name-input" placeholder="İsminiz?" autocomplete="off">
-            <button class="login-btn" onclick="enterApp()">BAŞLAYALIM</button>
-        </div>
+        <h1 style="font-family:'Playfair Display'; font-size:60px;" class="premium-text">Aura</h1>
+        <input type="text" id="name-input" style="background:rgba(255,255,255,0.05); border:1px solid #333; padding:15px; color:white; border-radius:15px; text-align:center;" placeholder="İsminiz?">
+        <button class="btn-gold" style="margin-top:20px;" onclick="saveUser()">Giriş Yap</button>
     </div>
 
     <div id="app-content" style="display:none;">
         <div id="v-feed" class="page active">
-            <h2 style="font-family:'Playfair Display'; font-size:32px;">Akış</h2>
-            <div class="card">
-                <p style="font-size:14px; opacity:0.8;">Hoş geldin! Sihirli dokunuşlar aktif. Ekranda herhangi bir yere dokunmayı dene.</p>
+            <h2 class="premium-text" style="font-size:32px;">Akış</h2>
+            
+            <div class="share-container">
+                <textarea id="post-text" placeholder="Ne dinliyorsun veya ne düşünüyorsun?"></textarea>
+                <div style="display:flex; justify-content:flex-end;">
+                    <button class="btn-gold" onclick="createPost()">Paylaş</button>
+                </div>
             </div>
-        </div>
 
-        <div id="v-radar" class="page">
-            <h2 style="font-family:'Playfair Display'; font-size:32px;">Esinti</h2>
-            <div style="height:300px; display:flex; align-items:center; justify-content:center;">
-                <div style="width:100px; height:100px; background:var(--gold); border-radius:50%; filter:blur(40px); opacity:0.3; animation: pulse 3s infinite;"></div>
-            </div>
+            <div id="feed-list">
+                </div>
         </div>
 
         <div id="v-profile" class="page">
-            <h2 style="font-family:'Playfair Display'; font-size:32px;">Benlik</h2>
-            <div class="card">
-                <div style="display:flex; align-items:center; gap:20px;">
-                    <div id="user-av" style="width:65px; height:65px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:24px;">?</div>
-                    <div>
-                        <h3 id="user-name" class="premium-name" style="font-size:26px; margin:0;"></h3>
-                        <p style="font-size:11px; opacity:0.5; margin-top:5px;">Aura Seviyesi: %100</p>
-                    </div>
-                </div>
+            <h2 class="premium-text" style="font-size:32px;">Benlik</h2>
+            <div class="post-card">
+                <h3 id="display-name" class="premium-text" style="font-size:28px; margin:0;"></h3>
+                <p style="opacity:0.5; font-size:12px;">Elite Aura Member</p>
+                <button onclick="logout()" style="background:transparent; border:1px solid #444; color:#666; padding:5px 10px; border-radius:10px; margin-top:15px; font-size:10px;">Çıkış Yap</button>
             </div>
-            <p onclick="location.reload()" style="text-align:center; color:#555; font-size:12px; margin-top:20px;">Oturumu Kapat</p>
         </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('feed', this)">📜</div>
-            <div class="nav-item" onclick="tab('radar', this)">✨</div>
+            <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
             <div class="nav-item" onclick="tab('profile', this)">👤</div>
         </nav>
     </div>
 
     <script>
-        // Parıltı oluşturma fonksiyonu (Düzeltildi)
-        function createSparkle(e) {
-            const s = document.createElement('div');
-            s.className = 'sparkle';
-            // Mobil uyumluluk için dokunma noktasını belirle
-            const x = e.pageX || (e.touches ? e.touches[0].pageX : 0);
-            const y = e.pageY || (e.touches ? e.touches[0].pageY : 0);
-            s.style.left = x + 'px';
-            s.style.top = y + 'px';
-            document.body.appendChild(s);
-            setTimeout(() => s.remove(), 600);
+        let currentUser = localStorage.getItem('aura_user');
+        let posts = JSON.parse(localStorage.getItem('aura_posts')) || [
+            { name: "Selina", text: "Bu atmosfer çok başka... ✨", type: "text" }
+        ];
+
+        window.onload = () => {
+            if(currentUser) {
+                showApp();
+            }
+            renderPosts();
+        };
+
+        function saveUser() {
+            const name = document.getElementById('name-input').value;
+            if(!name) return;
+            localStorage.setItem('aura_user', name);
+            currentUser = name;
+            showApp();
         }
 
-        // Giriş fonksiyonu (Düzeltildi)
-        function enterApp() {
-            const n = document.getElementById('name-input').value.trim();
-            if(!n) {
-                alert("Lütfen isminizi girin.");
-                return;
-            }
-            document.getElementById('user-name').innerText = n;
-            document.getElementById('user-av').innerText = n[0].toUpperCase();
-            document.getElementById('gate').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('gate').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-            }, 600);
+        function showApp() {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('display-name').innerText = currentUser;
+        }
+
+        function createPost() {
+            const text = document.getElementById('post-text').value;
+            if(!text) return;
+            
+            const newPost = {
+                name: currentUser,
+                text: text,
+                isMusic: text.includes('spotify') || text.includes('open.spotify')
+            };
+
+            posts.unshift(newPost);
+            localStorage.setItem('aura_posts', JSON.stringify(posts));
+            document.getElementById('post-text').value = '';
+            renderPosts();
+        }
+
+        function renderPosts() {
+            const list = document.getElementById('feed-list');
+            list.innerHTML = '';
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'post-card';
+                card.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <div style="width:30px; height:30px; background:var(--gold); border-radius:50%;"></div>
+                        <span class="premium-text" style="font-weight:bold; font-size:14px;">${post.name}</span>
+                    </div>
+                    <p style="font-size:14px; margin:0; line-height:1.5;">${post.text}</p>
+                    ${post.isMusic ? `<div class="spotify-card"><span style="color:#1DB954; font-size:20px;">♫</span> <div><b style="font-size:12px;">Paylaşılan Şarkı</b><br><small style="opacity:0.6;">Spotify üzerinden dinle</small></div></div>` : ''}
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
         }
 
         function tab(id, el) {
