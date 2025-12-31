@@ -3,239 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Social: Self-Race</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Aura Social: Master Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
+            --soft-gold: #d4af37;
             --glass: rgba(255, 255, 255, 0.04);
             --border: rgba(255, 255, 255, 0.08);
-            --soft-gold: #d4af37;
         }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+
+        /* GİRİŞ SİSTEMİ */
+        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
+        .aura-logo-big { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+
+        /* SAYFA YAPISI */
         .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; background: var(--bg); overflow-y: auto; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: pageIn 0.4s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .container { padding: 0 20px; }
-        .card { background: var(--glass); border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+
+        /* KART TASARIMLARI */
+        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); backdrop-filter: blur(15px); }
         .premium-text { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
-        
+
+        /* PROFİL & AVATAR */
+        .aura-avatar { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 35px; color: #000; font-weight: 900; position: relative; overflow: hidden; box-shadow: 0 0 25px rgba(191, 149, 63, 0.3); }
+        .aura-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
         /* AURA PROGRESS BAR */
-        .aura-meter-box { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; border: 1px solid rgba(191, 149, 63, 0.2); margin-top: 15px; }
-        .bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--gold); width: 0%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        /* NAV & BUTTONS */
-        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); }
-        .nav-item { font-size: 22px; opacity: 0.3; cursor: pointer; color: white; }
-        .nav-item.active { opacity: 1; color: var(--soft-gold); }
-        .btn-gold { background: var(--gold); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        
-        /* CHAT STYLE */
-        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 14px; margin-bottom: 10px; }
-        .bubble.me { align-self: flex-end; background: var(--gold); color: #000; }
-        .bubble.them { align-self: flex-start; background: var(--glass); border: 1px solid var(--border); }
+        .progress-container { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 15px; border: 1px solid rgba(191,149,63,0.15); margin: 15px 0; }
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
+
+        /* CHAT SİSTEMİ */
+        #chat-view { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; }
+        .chat-header { padding: 50px 20px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
+        .chat-stream { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 75%; padding: 12px 18px; border-radius: 22px; font-size: 14px; line-height: 1.4; }
+        .bubble.me { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 4px; font-weight: 500; }
+        .bubble.them { align-self: flex-start; background: var(--glass); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+
+        /* NAVİGASYON */
+        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.03); backdrop-filter: blur(30px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 1000; }
+        .nav-icon { font-size: 24px; opacity: 0.3; transition: 0.3s; color: white; cursor: pointer; }
+        .nav-icon.active { opacity: 1; color: var(--soft-gold); transform: scale(1.1); }
+
+        /* GENEL BUTONLAR */
+        .btn-gold { background: var(--gold); border: none; padding: 12px 25px; border-radius: 25px; font-weight: 800; color: #000; cursor: pointer; }
+        input[type="text"], textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; padding: 15px; color: #fff; width: 100%; box-sizing: border-box; outline: none; }
     </style>
 </head>
 <body>
 
-    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 class="premium-text" style="font-size:50px;">Aura</h1>
-        <input type="text" id="user-in" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:#fff; text-align:center; width:220px;" placeholder="Kullanıcı Adınız?">
-        <button onclick="login()" class="btn-gold" style="margin-top:20px; width:150px;">BAŞLA</button>
+    <div id="gate">
+        <h1 class="aura-logo-big">Aura</h1>
+        <div style="width: 240px; display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" id="user-input" placeholder="İsminiz nedir?" maxlength="15">
+            <button onclick="initApp()" class="btn-gold">BAŞLAYALIM</button>
+        </div>
     </div>
 
-    <div id="main" style="display:none;">
-        <div id="p-feed" class="page active">
+    <div id="app" style="display:none;">
+        
+        <div id="view-feed" class="page active">
             <div class="container">
-                <h2 class="premium-text" style="font-size:30px;">Akış</h2>
+                <h2 class="premium-text" style="font-size:32px;">Akış</h2>
                 <div class="card">
-                    <textarea id="p-text" style="background:transparent; border:none; color:#fff; width:100%; outline:none; height:40px;" placeholder="Bir fısıltı bırak (+5 Aura)"></textarea>
+                    <textarea id="post-input" placeholder="Spotify şarkısı veya bir fısıltı..."></textarea>
                     <div style="display:flex; justify-content:flex-end; margin-top:10px;">
-                        <button onclick="post()" class="btn-gold" style="font-size:12px;">Paylaş</button>
+                        <button onclick="makePost()" class="btn-gold" style="padding:8px 20px; font-size:12px;">Paylaş</button>
                     </div>
                 </div>
-                <div id="feed-list"></div>
+                <div id="feed-render"></div>
             </div>
         </div>
 
-        <div id="p-dms" class="page">
-            <div class="container"><h2 class="premium-text" style="font-size:30px;">Fısıltılar</h2></div>
-            <div id="inbox-list"></div>
+        <div id="view-explore" class="page">
+            <div class="container">
+                <h2 class="premium-text" style="font-size:32px;">Keşfet</h2>
+                <div class="card" style="text-align:center; padding:50px 20px;">
+                    <div style="font-size:50px; margin-bottom:20px; animation: pulse 2s infinite;">✨</div>
+                    <p style="opacity:0.6; font-size:14px;">Yakınındaki Aura'ları ve yeni müzikleri keşfet.</p>
+                </div>
+                <div class="card" onclick="openChat('AuraBot')">
+                    <b class="premium-text">AuraBot</b>
+                    <p style="font-size:13px; margin:5px 0;">Sana özel bir şarkı fısıldadı. Dinlemek için tıkla.</p>
+                </div>
+            </div>
         </div>
 
-        <div id="p-profile" class="page">
+        <div id="view-msgs" class="page">
             <div class="container">
-                <div style="text-align:center; padding:20px 0;">
-                    <div id="prof-av" style="width:80px; height:80px; border-radius:50%; background:var(--gold); margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:35px; color:#000; font-weight:900;">A</div>
-                    <h2 id="prof-name" class="premium-text" style="margin:10px 0 5px;"></h2>
-                    <p id="prof-tier" style="font-size:12px; font-weight:bold; letter-spacing:2px; color:var(--soft-gold); margin:0;">SPARK</p>
+                <h2 class="premium-text" style="font-size:32px;">Fısıltılar</h2>
+                <div id="inbox-render"></div>
+            </div>
+        </div>
+
+        <div id="view-profile" class="page">
+            <div class="container">
+                <div style="text-align:center; position:relative;">
+                    <div class="aura-avatar" id="profile-img-container">
+                        <span id="name-initial">?</span>
+                        <input type="file" id="img-upload" hidden accept="image/*" onchange="uploadPhoto(event)">
+                    </div>
+                    <button onclick="document.getElementById('img-upload').click()" style="background:none; border:none; color:var(--soft-gold); font-size:11px; margin-top:-10px; margin-bottom:10px; display:block; width:100%;">Fotoğrafı Değiştir</button>
+                    
+                    <h2 id="display-name" class="premium-text" style="margin:0; font-size:28px;"></h2>
+                    <p id="display-tier" style="font-size:11px; letter-spacing:3px; color:var(--soft-gold); margin-top:5px; font-weight:900;">SPARK</p>
                 </div>
 
-                <div class="aura-meter-box">
+                <div class="progress-container">
                     <div style="display:flex; justify-content:space-between; font-size:11px;">
                         <span>GELİŞİM</span>
-                        <span><b id="aura-val">0</b> / <span id="next-goal">50</span> PUAN</span>
+                        <span><b id="aura-pts">0</b> / <span id="goal-pts">50</span></span>
                     </div>
-                    <div class="bar-bg"><div id="aura-bar" class="bar-fill"></div></div>
-                    <p style="font-size:10px; opacity:0.4; margin-top:10px; text-align:center;">Bir sonraki seviye için etkileşimde kal.</p>
+                    <div class="progress-bar"><div id="aura-fill" class="progress-fill"></div></div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-top:15px;">
-                    <div class="card" style="flex:1; text-align:center;"><div id="stat-posts" class="premium-text" style="font-size:20px;">0</div><div style="font-size:9px; opacity:0.5;">POST</div></div>
-                    <div class="card" style="flex:1; text-align:center;"><div id="stat-msgs" class="premium-text" style="font-size:20px;">0</div><div style="font-size:9px; opacity:0.5;">MESAJ</div></div>
+                <div class="card" onclick="editBio()" id="bio-card" style="font-size:13px; font-style:italic; opacity:0.8;">Biyografini eklemek için dokun...</div>
+
+                <div style="display:flex; gap:10px;">
+                    <div class="card" style="flex:1; text-align:center;"><div id="count-posts" class="premium-text" style="font-size:20px;">0</div><small style="opacity:0.4; font-size:9px;">POST</small></div>
+                    <div class="card" style="flex:1; text-align:center;"><div id="count-msgs" class="premium-text" style="font-size:20px;">0</div><small style="opacity:0.4; font-size:9px;">FISILTI</small></div>
                 </div>
 
-                <button onclick="editBio()" class="card" style="width:100%; text-align:left; font-size:13px; font-style:italic;" id="prof-bio">Biyografini ekle ve +15 puan kazan...</button>
-                
-                <button onclick="localStorage.clear(); location.reload();" style="width:100%; background:none; border:none; color:rgba(255,255,255,0.2); font-size:11px; margin-top:20px;">Hesabı Sıfırla</button>
+                <button onclick="resetAll()" style="width:100%; background:none; border:none; color:rgba(255,255,255,0.1); font-size:11px; margin-top:30px;">Verileri Sıfırla</button>
             </div>
         </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
-            <div class="nav-item" onclick="tab('dms', this)">💬</div>
-            <div class="nav-item" onclick="tab('profile', this)">👤</div>
+            <div class="nav-icon active" onclick="tab('feed', this)">🏠</div>
+            <div class="nav-icon" onclick="tab('explore', this)">✨</div>
+            <div class="nav-icon" onclick="tab('msgs', this)">💬</div>
+            <div class="nav-icon" onclick="tab('profile', this)">👤</div>
         </nav>
     </div>
 
-    <div id="chat-room" style="position:fixed; inset:0; background:var(--bg); z-index:5000; display:none; flex-direction:column;">
-        <div style="padding:50px 20px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:15px;">
-            <span onclick="closeChat()" style="font-size:24px; cursor:pointer;">←</span>
-            <b id="target-name" class="premium-text"></b>
+    <div id="chat-view">
+        <div class="chat-header">
+            <span onclick="closeChat()" style="font-size:28px; cursor:pointer;">←</span>
+            <div style="width:35px; height:35px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; color:#000; font-weight:900; font-size:14px;" id="chat-av">?</div>
+            <b id="chat-name" class="premium-text"></b>
         </div>
-        <div id="chat-flow" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column;"></div>
-        <div style="padding:20px; display:flex; gap:10px; background:var(--bg); padding-bottom:40px;">
-            <input type="text" id="chat-in" style="flex:1; background:#1a1a1a; border:1px solid var(--border); border-radius:25px; padding:12px 20px; color:#fff; outline:none;" placeholder="Mesaj yaz...">
-            <button onclick="sendMsg()" class="btn-gold">Gönder</button>
+        <div class="chat-stream" id="chat-flow"></div>
+        <div style="padding:20px 20px 40px; display:flex; gap:10px; background:var(--bg);">
+            <input type="text" id="msg-input" placeholder="Bir fısıltı gönder...">
+            <button onclick="send()" class="btn-gold">GÖNDER</button>
         </div>
     </div>
 
     <script>
-        let me = localStorage.getItem('aura_v5_me');
-        let posts = JSON.parse(localStorage.getItem('aura_v5_posts')) || [];
-        let msgs = JSON.parse(localStorage.getItem('aura_v5_msgs')) || [];
-        let bio = localStorage.getItem('aura_v5_bio') || "";
-        let activeChat = null;
+        let me = localStorage.getItem('AURA_USER');
+        let posts = JSON.parse(localStorage.getItem('AURA_POSTS')) || [];
+        let dms = JSON.parse(localStorage.getItem('AURA_DMS')) || [];
+        let bio = localStorage.getItem('AURA_BIO') || "";
+        let photo = localStorage.getItem('AURA_PHOTO') || "";
+        let activeTarget = null;
 
-        function login() {
-            const val = document.getElementById('user-in').value;
-            if(!val) return;
-            localStorage.setItem('aura_v5_me', val);
-            me = val;
+        function initApp() {
+            const n = document.getElementById('user-input').value.trim();
+            if(!n) return;
+            localStorage.setItem('AURA_USER', n);
             location.reload();
         }
 
         if(me) {
             document.getElementById('gate').style.display = 'none';
-            document.getElementById('main').style.display = 'block';
-            document.getElementById('prof-name').innerText = me;
-            document.getElementById('prof-av').innerText = me[0].toUpperCase();
-            updateAuraSystem();
+            document.getElementById('app').style.display = 'block';
+            setupProfile();
             renderFeed();
             renderInbox();
         }
 
-        function post() {
-            const t = document.getElementById('p-text').value;
-            if(!t) return;
-            posts.unshift({n: me, t: t});
-            localStorage.setItem('aura_v5_posts', JSON.stringify(posts));
-            document.getElementById('p-text').value = '';
-            renderFeed();
-            updateAuraSystem();
+        function setupProfile() {
+            document.getElementById('display-name').innerText = me;
+            document.getElementById('name-initial').innerText = me[0].toUpperCase();
+            if(bio) document.getElementById('bio-card').innerText = bio;
+            if(photo) document.getElementById('profile-img-container').innerHTML = `<img src="${photo}">`;
+            updateAuraProgress();
         }
 
-        function sendMsg() {
-            const txt = document.getElementById('chat-in').value;
-            if(!txt) return;
-            msgs.push({f: me, t: activeChat, m: txt});
-            localStorage.setItem('aura_v5_msgs', JSON.stringify(msgs));
-            document.getElementById('chat-in').value = '';
-            renderMessages();
-            updateAuraSystem();
-        }
-
-        function updateAuraSystem() {
-            const myPostsCount = posts.filter(p => p.n === me).length;
-            const myMsgsCount = msgs.filter(m => m.f === me).length;
-            const bioPoint = bio ? 15 : 0;
-            
-            // Puanlama: Post(5) + Mesaj(2) + Bio(15)
-            let total = (myPostsCount * 5) + (myMsgsCount * 2) + bioPoint;
-            
-            let tier = "SPARK";
-            let goal = 50;
-            
-            if(total >= 1000) { tier = "ETHEREAL"; goal = 2000; }
-            else if(total >= 500) { tier = "SOLAR"; goal = 1000; }
-            else if(total >= 200) { tier = "RADIANCE"; goal = 500; }
-            else if(total >= 50) { tier = "GLOW"; goal = 200; }
-
-            document.getElementById('aura-val').innerText = total;
-            document.getElementById('next-goal').innerText = goal;
-            document.getElementById('prof-tier').innerText = tier;
-            document.getElementById('aura-bar').style.width = Math.min((total/goal)*100, 100) + "%";
-            document.getElementById('stat-posts').innerText = myPostsCount;
-            document.getElementById('stat-msgs').innerText = myMsgsCount;
-            if(bio) document.getElementById('prof-bio').innerText = bio;
+        function uploadPhoto(e) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                photo = reader.result;
+                localStorage.setItem('AURA_PHOTO', photo);
+                document.getElementById('profile-img-container').innerHTML = `<img src="${photo}">`;
+            };
+            reader.readAsDataURL(e.target.files[0]);
         }
 
         function editBio() {
-            const n = prompt("Biyografini yaz (+15 Aura):", bio);
-            if(n) { bio = n; localStorage.setItem('aura_v5_bio', bio); updateAuraSystem(); }
+            const n = prompt("Kendini fısılda:", bio);
+            if(n) { bio = n; localStorage.setItem('AURA_BIO', bio); setupProfile(); }
         }
 
-        // --- DİĞER FONKSİYONLAR (FEED & CHAT) ---
+        function makePost() {
+            const t = document.getElementById('post-input').value.trim();
+            if(!t) return;
+            let spId = t.includes('track/') ? t.split('track/')[1].substring(0,22) : null;
+            posts.unshift({user: me, text: t, song: spId, date: new Date().getTime()});
+            localStorage.setItem('AURA_POSTS', JSON.stringify(posts));
+            document.getElementById('post-input').value = '';
+            renderFeed();
+            updateAuraProgress();
+        }
+
         function renderFeed() {
-            const list = document.getElementById('feed-list');
-            list.innerHTML = '';
+            const div = document.getElementById('feed-render');
+            div.innerHTML = '';
             posts.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openChat(p.user);
+                card.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <div style="width:25px; height:25px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; color:#000; font-size:10px; font-weight:900;">${p.user[0]}</div>
+                        <b class="premium-text" style="font-size:13px;">${p.user}</b>
+                    </div>
+                    <p style="font-size:14px; margin:0; line-height:1.5;">${p.text}</p>
+                    ${p.song ? `<iframe src="https://open.spotify.com/embed/track/${p.song}" width="100%" height="80" frameborder="0" style="margin-top:10px; border-radius:12px;"></iframe>` : ''}
+                `;
+                div.appendChild(card);
+            });
+        }
+
+        function updateAuraProgress() {
+            const pCount = posts.filter(x => x.user === me).length;
+            const mCount = dms.filter(x => x.from === me).length;
+            const pts = (pCount * 10) + (mCount * 5) + (bio ? 20 : 0);
+            
+            let tier = "SPARK", goal = 50;
+            if(pts >= 1000) { tier = "ETHEREAL"; goal = 2000; }
+            else if(pts >= 500) { tier = "SOLAR"; goal = 1000; }
+            else if(pts >= 200) { tier = "RADIANCE"; goal = 500; }
+            else if(pts >= 50) { tier = "GLOW"; goal = 200; }
+
+            document.getElementById('aura-pts').innerText = pts;
+            document.getElementById('goal-pts').innerText = goal;
+            document.getElementById('display-tier').innerText = tier;
+            document.getElementById('aura-fill').style.width = Math.min((pts/goal)*100, 100) + "%";
+            document.getElementById('count-posts').innerText = pCount;
+            document.getElementById('count-msgs').innerText = mCount;
+        }
+
+        function openChat(target) {
+            if(target === me) return;
+            activeTarget = target;
+            document.getElementById('chat-name').innerText = target;
+            document.getElementById('chat-av').innerText = target[0].toUpperCase();
+            document.getElementById('chat-view').style.display = 'flex';
+            renderChat();
+        }
+
+        function closeChat() { document.getElementById('chat-view').style.display = 'none'; renderInbox(); }
+
+        function send() {
+            const val = document.getElementById('msg-input').value.trim();
+            if(!val) return;
+            dms.push({from: me, to: activeTarget, msg: val});
+            localStorage.setItem('AURA_DMS', JSON.stringify(dms));
+            document.getElementById('msg-input').value = '';
+            renderChat();
+            updateAuraProgress();
+        }
+
+        function renderChat() {
+            const flow = document.getElementById('chat-flow');
+            flow.innerHTML = '';
+            dms.filter(d => (d.from === me && d.to === activeTarget) || (d.from === activeTarget && d.to === me))
+               .forEach(d => {
+                    const b = document.createElement('div');
+                    b.className = `bubble ${d.from === me ? 'me' : 'them'}`;
+                    b.innerText = d.msg;
+                    flow.appendChild(b);
+               });
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function renderInbox() {
+            const list = document.getElementById('inbox-render');
+            const talkers = [...new Set(dms.map(d => d.from === me ? d.to : d.from))];
+            list.innerHTML = talkers.length ? '' : '<p style="text-align:center; opacity:0.3; margin-top:50px;">Henüz bir fısıltın yok.</p>';
+            talkers.forEach(t => {
                 const c = document.createElement('div');
                 c.className = 'card';
-                c.onclick = () => openChat(p.n);
-                c.innerHTML = `<b class="premium-text" style="font-size:13px;">${p.n}</b><p style="margin:8px 0 0; font-size:14px;">${p.t}</p>`;
+                c.onclick = () => openChat(t);
+                c.innerHTML = `<div style="display:flex; align-items:center; gap:15px;"><div style="width:40px; height:40px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; color:#000; font-weight:900;">${t[0]}</div><b>${t}</b></div>`;
                 list.appendChild(c);
             });
         }
-        function renderInbox() {
-            const list = document.getElementById('inbox-list');
-            const users = [...new Set(msgs.map(m => m.f === me ? m.t : m.f))];
-            list.innerHTML = users.length ? '' : '<p style="text-align:center; opacity:0.3; margin-top:40px;">Mesaj kutun boş.</p>';
-            users.forEach(u => {
-                const item = document.createElement('div');
-                item.className = 'card';
-                item.onclick = () => openChat(u);
-                item.innerHTML = `<b>${u}</b><br><small style="opacity:0.4;">Sohbeti aç</small>`;
-                list.appendChild(item);
-            });
-        }
-        function openChat(target) {
-            if(target === me) return;
-            activeChat = target;
-            document.getElementById('target-name').innerText = target;
-            document.getElementById('chat-room').style.display = 'flex';
-            renderMessages();
-        }
-        function closeChat() { document.getElementById('chat-room').style.display = 'none'; renderInbox(); }
-        function renderMessages() {
-            const flow = document.getElementById('chat-flow');
-            flow.innerHTML = '';
-            msgs.filter(m => (m.f === me && m.t === activeChat) || (m.f === activeChat && m.t === me))
-                .forEach(m => {
-                    const b = document.createElement('div');
-                    b.className = `bubble ${m.f === me ? 'me' : 'them'}`;
-                    b.innerText = m.m;
-                    flow.appendChild(b);
-                });
-            flow.scrollTop = flow.scrollHeight;
-        }
-        function tab(id, el) {
+
+        function tab(v, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
+            document.querySelectorAll('.nav-icon').forEach(n => n.classList.remove('active'));
+            document.getElementById('view-' + v).classList.add('active');
             el.classList.add('active');
         }
+
+        function resetAll() { if(confirm("Tüm Aura geçmişin silinsin mi?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
