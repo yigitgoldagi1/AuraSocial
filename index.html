@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura v2</title>
+    <title>Aura: Echo</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,29 +20,30 @@
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
         }
 
-        /* CANLI ARKA PLAN */
+        /* CANLI ARKA PLAN KÜRESİ */
         .bg-glow {
-            position: fixed; top: -10%; right: -10%; width: 300px; height: 300px;
-            background: #6366f1; filter: blur(120px); opacity: 0.2; z-index: -1;
+            position: fixed; top: -10%; right: -10%; width: 400px; height: 400px;
+            background: #a855f7; filter: blur(150px); opacity: 0.15; z-index: -1;
+            transition: 1s ease;
         }
 
-        /* ÜST VIBE BAR (Yeni Menü 1) */
+        /* VIBE BAR */
         .vibe-bar {
             display: flex; gap: 15px; padding: 15px 20px;
-            overflow-x: auto; scrollbar-width: none; margin-top: 50px;
+            overflow-x: auto; scrollbar-width: none; margin-top: 40px;
         }
         .vibe-circle {
-            flex: 0 0 65px; height: 65px; border-radius: 50%;
+            flex: 0 0 60px; height: 60px; border-radius: 50%;
             padding: 3px; background: var(--vibrant);
         }
         .vibe-inner {
             width: 100%; height: 100%; border-radius: 50%;
             background: var(--bg); display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
+            font-size: 20px; cursor: pointer;
         }
 
         /* SAYFA YAPISI */
-        .page { position: fixed; inset: 0; padding: 120px 20px 100px; display: none; overflow-y: auto; }
+        .page { position: fixed; inset: 0; padding: 110px 20px 100px; display: none; overflow-y: auto; }
         .page.active { display: block; animation: slideUp 0.4s cubic-bezier(0, 0.55, 0.45, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -50,23 +51,28 @@
         .aura-card {
             background: var(--card); border: 1px solid var(--border);
             border-radius: 24px; padding: 20px; margin-bottom: 15px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px); transition: 0.3s;
         }
+        .aura-card:active { transform: scale(0.98); }
 
-        /* NAVİGASYON (Alt Menü) */
+        /* NAVİGASYON */
         nav { 
-            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 70px; 
-            background: rgba(15, 15, 20, 0.8); backdrop-filter: blur(20px);
-            border-radius: 25px; border: 1px solid var(--border);
+            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 75px; 
+            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(25px);
+            border-radius: 30px; border: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
         }
-        .nav-btn { font-size: 22px; opacity: 0.4; cursor: pointer; transition: 0.3s; }
-        .nav-btn.active { opacity: 1; transform: scale(1.2) translateY(-5px); color: #a855f7; }
+        .nav-btn { font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .nav-btn.active { opacity: 1; transform: scale(1.3) translateY(-8px); color: #ec4899; }
 
-        /* BUTONLAR */
+        /* BUTONLAR & INPUTLAR */
         .primary-btn {
             background: var(--vibrant); border: none; padding: 12px 24px;
-            border-radius: 16px; color: white; font-weight: 700; cursor: pointer;
+            border-radius: 18px; color: white; font-weight: 700; cursor: pointer;
+        }
+        .aura-input {
+            background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+            padding: 15px; border-radius: 15px; color: white; outline: none; width: 100%; box-sizing: border-box;
         }
 
         /* GİRİŞ */
@@ -78,102 +84,33 @@
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div class="bg-glow" id="main-glow"></div>
 
     <div id="gate">
-        <h1 style="font-size: 42px; font-weight: 800; letter-spacing: -2px;">Aura<span style="color:#ec4899">.</span></h1>
-        <input type="text" id="user-in" placeholder="Kimsin?" style="background:#1a1a1c; border:1px solid #333; padding:15px; border-radius:15px; color:white; text-align:center; width:220px; outline:none; margin-bottom:20px;">
-        <button class="primary-btn" onclick="enter()">Evrene Katıl</button>
+        <h1 style="font-size: 50px; font-weight: 800; letter-spacing: -3px; margin-bottom: 0;">Aura<span style="color:#ec4899">.</span></h1>
+        <p style="opacity:0.4; margin-bottom:40px; font-size:14px;">Herkes burada, sen neredesin?</p>
+        <input type="text" id="user-in" placeholder="İsmin nedir?" class="aura-input" style="width:260px; text-align:center; margin-bottom:20px;">
+        <button class="primary-btn" onclick="enter()" style="width:260px;">Giriş Yap</button>
     </div>
 
     <div id="app" style="display:none;">
         
         <div class="vibe-bar">
-            <div class="vibe-circle"><div class="vibe-inner" onclick="alert('Senin Vibe\'ın')">✨</div></div>
-            <div class="vibe-circle" style="background: #4ECDC4;"><div class="vibe-inner">🎧</div></div>
-            <div class="vibe-circle" style="background: #FFE66D;"><div class="vibe-inner">🔥</div></div>
-            <div class="vibe-circle" style="background: #6366f1;"><div class="vibe-inner">🌙</div></div>
+            <div class="vibe-circle"><div class="vibe-inner" onclick="setMyVibe()">✨</div></div>
+            <div id="vibe-list" style="display:flex; gap:15px;"></div>
         </div>
 
         <div id="p-home" class="page active">
             <div class="aura-card">
-                <textarea id="post-in" placeholder="Bir şeyler fısılda..." style="width:100%; background:transparent; border:none; color:white; outline:none; height:40px; font-family:inherit;"></textarea>
-                <button class="primary-btn" style="float:right; font-size:12px; padding:8px 16px;" onclick="post()">Paylaş</button>
-                <div style="clear:both;"></div>
+                <textarea id="post-in" placeholder="Evrene bir şeyler fısılda..." style="width:100%; background:transparent; border:none; color:white; outline:none; height:50px; font-family:inherit; font-size:16px;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <span style="opacity:0.3; font-size:12px;">Yaz ve paylaş.</span>
+                    <button class="primary-btn" style="font-size:13px; padding:8px 20px;" onclick="post()">Fısılda</button>
+                </div>
             </div>
             <div id="feed"></div>
         </div>
 
         <div id="p-echo" class="page">
-            <h2 style="font-weight: 800;">Günün Yankısı</h2>
-            <div class="aura-card" style="border-left: 4px solid #ec4899;">
-                <p style="font-style: italic; opacity:0.8;">"Geceyi en iyi hangi şarkı tanımlar?"</p>
-                <input type="text" placeholder="Yankını bırak..." style="background:transparent; border:none; color:white; outline:none; width:100%;">
-            </div>
-            <div class="aura-card">📌 Anonim: "İnsan bazen sadece susmak ister."</div>
-        </div>
-
-        <div id="p-discovery" class="page">
-            <h2 style="font-weight: 800;">Frekans Yakala</h2>
-            <div class="aura-card" style="text-align:center; padding:40px 20px;">
-                <div style="font-size:50px; margin-bottom:20px;">✨</div>
-                <h3 style="margin:0;">Canlı Oda: Meditasyon</h3>
-                <p style="opacity:0.6; font-size:14px;">3 kişi frekansta.</p>
-                <button class="primary-btn" style="margin-top:20px;">Odaya Ak</button>
-            </div>
-        </div>
-
-        <div id="p-profile" class="page">
-            <h2 id="prof-name" style="font-weight: 800; margin-bottom:5px;"></h2>
-            <p style="color:#a855f7; font-weight:600; margin-top:0;">Level 1 Spark</p>
-            <div class="aura-card" onclick="location.reload()" style="color:#ef4444; text-align:center; font-weight:bold; border-color:#ef4444;">Çıkış Yap</div>
-        </div>
-
-        <nav>
-            <div class="nav-btn active" onclick="tab('home', this)">🏠</div>
-            <div class="nav-btn" onclick="tab('echo', this)">💬</div>
-            <div class="nav-btn" onclick="tab('discovery', this)">✨</div>
-            <div class="nav-btn" onclick="tab('profile', this)">👤</div>
-        </nav>
-    </div>
-
-    <script>
-        let me = "";
-        let posts = JSON.parse(localStorage.getItem('posts_v2')) || [];
-
-        function enter() {
-            me = document.getElementById('user-in').value;
-            if(!me) return;
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('prof-name').innerText = me;
-            render();
-        }
-
-        function post() {
-            const t = document.getElementById('post-in').value;
-            if(!t) return;
-            posts.unshift({n: me, t: t});
-            localStorage.setItem('posts_v2', JSON.stringify(posts));
-            document.getElementById('post-in').value = '';
-            render();
-        }
-
-        function render() {
-            document.getElementById('feed').innerHTML = posts.map(p => `
-                <div class="aura-card">
-                    <b style="color:#a855f7;">${p.n}</b>
-                    <p style="margin:10px 0 0; font-size:15px; line-height:1.5;">${p.t}</p>
-                </div>
-            `).join('');
-        }
-
-        function tab(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
-            el.classList.add('active');
-        }
-    </script>
-</body>
-</html>
+            <h2 style="font-weight: 800; margin-bottom:5px;">Günün Yankısı</h2>
+            <p style="opacity:0.5; font
