@@ -3,303 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: The Living Sphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Aura: Essence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --aura-primary: #FF8E53; /* Başlangıç rengi */
-            --aura-secondary: #FE6B8B;
-            --aura-gradient: linear-gradient(135deg, var(--aura-primary) 0%, var(--aura-secondary) 100%);
-            --bg-dark: #07070a;
-            --text-light: #ececec;
-            --glass-soft: rgba(255, 255, 255, 0.05);
-            --border-subtle: rgba(255, 255, 255, 0.1);
+            --p: #FF8E53; --s: #FE6B8B; /* Varsayılan Aura */
+            --bg: #07070a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
+
+        /* TEMA MODLARI */
+        body.theme-nature { --p: #4ade80; --s: #22c55e; --bg: #050a05; }
+        body.theme-ocean { --p: #38bdf8; --s: #1d4ed8; --bg: #020617; }
+        body.theme-night { --p: #a78bfa; --s: #4c1d95; --bg: #020205; }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            background: var(--bg-dark); color: var(--text-light); 
-            font-family: 'Inter', sans-serif; overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: none; /* Dokunmatik kaydırmayı kontrol altında tutar */
+            background: var(--bg); color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
+            transition: background 0.8s ease;
         }
 
-        /* DİNAMİK ARKA PLAN KÜRESİ - Canlılığın Kaynağı */
-        .dynamic-glow {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 800px; height: 800px; border-radius: 50%;
-            background: radial-gradient(circle, var(--aura-primary) 0%, transparent 60%);
-            filter: blur(150px); opacity: 0.15; z-index: -1;
-            transition: background 1s ease-out, opacity 0.5s ease-out;
-            pointer-events: none;
+        /* ARKA PLAN RUHU */
+        .aura-spirit {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at 50% 120%, var(--p) 0%, transparent 60%);
+            opacity: 0.15; z-index: 1; pointer-events: none; transition: 1s;
         }
 
-        /* ORTADAKİ KÜRE (NAVG.) */
-        #aura-sphere {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 140px; height: 140px; border-radius: 50%;
-            background: var(--aura-gradient);
-            box-shadow: 0 0 40px rgba(255, 142, 83, 0.4), inset 0 0 20px rgba(255,255,255,0.2);
-            z-index: 1000; cursor: grab;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Syncopate', sans-serif; font-size: 18px; font-weight: 700;
-            color: var(--bg-dark); letter-spacing: 1px;
-            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-            user-select: none;
+        /* SAYFALAR */
+        .view { position: fixed; inset: 0; padding: 80px 20px 140px; display: none; overflow-y: auto; z-index: 10; }
+        .view.active { display: block; animation: viewIn 0.5s ease; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* KARTLAR */
+        .essence-card { background: var(--glass); border: 1px solid var(--border); border-radius: 28px; padding: 22px; margin-bottom: 15px; backdrop-filter: blur(25px); }
+
+        /* ALT ENERJİ HAVUZU (NAVİGASYON) */
+        .energy-pool {
+            position: fixed; bottom: -30px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 120px; background: linear-gradient(to top, var(--p), var(--s));
+            border-radius: 100px 100px 0 0; filter: blur(30px); opacity: 0.4; z-index: 500;
         }
-        #aura-sphere.active { cursor: grabbing; }
-
-        /* ODALAR */
-        .aura-room {
-            position: fixed; inset: 0; display: none; padding-top: 80px;
-            text-align: center; opacity: 0; transition: opacity 0.5s ease;
-            overflow-y: auto; z-index: 500;
+        .nav-orb-area {
+            position: fixed; bottom: 30px; left: 0; right: 0;
+            display: flex; justify-content: center; gap: 40px; z-index: 1000;
         }
-        .aura-room.active { display: block; opacity: 1; }
-
-        /* KARTLAR/Fısıltılar */
-        .whisper-card {
-            background: var(--glass-soft); border: 1px solid var(--border-subtle);
-            border-radius: 20px; padding: 18px; margin: 0 auto 15px; max-width: 300px;
-            backdrop-filter: blur(15px); font-size: 14px; line-height: 1.5;
-            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+        .nav-orb {
+            width: 14px; height: 14px; border-radius: 50%; background: #fff;
+            opacity: 0.2; cursor: pointer; transition: 0.4s;
         }
-        .whisper-card:active { transform: scale(0.98); }
+        .nav-orb.active { opacity: 1; transform: scale(1.8); box-shadow: 0 0 20px #fff; }
 
-        /* GİRİŞ EKRANI */
-        #entry-plane { 
-            position: fixed; inset: 0; background: var(--bg-dark); z-index: 20000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* AYARLAR PANELİ */
+        #settings-panel {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 20000; display: none; padding: 60px 30px;
         }
-        .entry-title { font-family: 'Syncopate', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: 2px; background: var(--aura-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        .entry-input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; padding: 15px; color: var(--text-light); width: 250px; text-align: center; outline: none; margin-bottom: 20px; }
-        .entry-btn { background: var(--aura-gradient); border: none; padding: 14px 30px; border-radius: 20px; color: var(--bg-dark); font-weight: 700; font-size: 16px; cursor: pointer; transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
-        .entry-btn:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(255, 142, 83, 0.3); }
+        .theme-btn {
+            width: 100%; padding: 20px; border-radius: 20px; border: 1px solid var(--border);
+            margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 15px;
+            background: rgba(255,255,255,0.05); color: white; font-weight: 600;
+        }
 
-        /* ROOM-SPECIFIC STYLES */
-        #room-hearth .whisper-card { text-align: left; }
-        #room-sanctuary .whisper-card { font-style: italic; opacity: 0.8; }
-        #room-echo .whisper-card { background: rgba(255,255,255,0.02); }
-
+        /* GİRİŞ */
+        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-aura { background: linear-gradient(135deg, var(--p), var(--s)); border: none; padding: 15px 40px; border-radius: 30px; color: #000; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="dynamic-glow" id="dynamic-bg-glow"></div>
+    <div class="aura-spirit" id="bg-spirit"></div>
+    <div class="energy-pool" id="pool"></div>
 
-    <div id="entry-plane">
-        <h1 class="entry-title">AURA</h1>
-        <input type="text" id="user-name-input" class="entry-input" placeholder="İsmin?">
-        <button class="entry-btn" onclick="enterAura()">IŞIKLARI YAK</button>
+    <div id="gate">
+        <h1 style="font-weight: 800; font-size: 50px; margin-bottom: 30px;">Aura<span id="gate-dot">.</span></h1>
+        <input type="text" id="name-in" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="Sen kimsin?">
+        <button class="btn-aura" onclick="enter()">IŞIKLARI YAK</button>
     </div>
 
     <div id="app" style="display:none;">
+        
+        <div style="position:fixed; top:40px; right:25px; z-index:1000; cursor:pointer; font-size:20px;" onclick="openSettings()">⚙️</div>
 
-        <div id="aura-sphere">KALP</div>
-
-        <div id="room-hearth" class="aura-room active">
-            <h2 style="font-family:'Syncopate',sans-serif; font-weight:700; font-size:28px; margin-bottom:30px;">EVİN KALBİ</h2>
-            <div class="whisper-card" style="max-width:320px; margin-bottom:30px;">
-                <textarea id="hearth-input" style="width:100%; background:none; border:none; outline:none; color:var(--text-light); font-family:inherit; height:60px; font-size:15px; resize:none;" placeholder="Kalbinden geçenleri fısılda..."></textarea>
-                <button class="entry-btn" style="float:right; padding:8px 18px; font-size:13px;" onclick="postToHearth()">Fısılda</button>
+        <div id="v-salon" class="view active">
+            <h1 style="font-weight: 800; font-size: 35px;">Salon</h1>
+            <div class="essence-card">
+                <textarea id="post-in" style="width:100%; background:none; border:none; color:#fff; outline:none; height:40px; font-family:inherit;" placeholder="Neler fısıldayacaksın?"></textarea>
+                <button class="btn-aura" style="padding:8px 20px; font-size:12px; float:right;" onclick="addPost()">Fısılda</button>
                 <div style="clear:both;"></div>
             </div>
-            <div id="hearth-feed"></div>
+            <div id="feed"></div>
         </div>
 
-        <div id="room-sanctuary" class="aura-room">
-            <h2 style="font-family:'Syncopate',sans-serif; font-weight:700; font-size:28px; margin-bottom:30px;">SIĞINAK</h2>
-            <div class="whisper-card" style="border-left: 3px solid #FE6B8B; max-width:320px; margin-bottom:30px;">
-                <input type="text" id="sanctuary-input" class="entry-input" style="width:calc(100% - 30px); margin-bottom:15px;" placeholder="Anonim bir düşünce bırak...">
-                <button class="entry-btn" style="width:calc(100% - 30px); font-size:13px;" onclick="postToSanctuary()">Bırak</button>
-            </div>
-            <div id="sanctuary-feed"></div>
+        <div id="v-mutfak" class="view">
+            <h1 style="font-weight: 800; font-size: 35px;">Mutfak</h1>
+            <p style="opacity:0.4; margin-bottom:30px;">Fısıltılar burada isimsizleşir...</p>
+            <div id="kitchen-feed"></div>
         </div>
 
-        <div id="room-echo" class="aura-room">
-            <h2 style="font-family:'Syncopate',sans-serif; font-weight:700; font-size:28px; margin-bottom:30px;">YANKI ODASI</h2>
-            <div class="whisper-card" style="max-width:320px; margin-bottom:30px;">
-                <h3 style="margin-top:0;">Günün Şarkısı:</h3>
-                <p style="opacity:0.8; font-size:14px;">"Lo-fi beats to chill/study to"</p>
-                <iframe style="border-radius:12px; margin-top:15px;" src="https://open.spotify.com/embed/track/$0lO2tXQWf4FjV6GgX2r6c?utm_source=generator" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-                <button class="entry-btn" style="width:100%; font-size:13px; margin-top:15px;" onclick="alert('Şarkı değiştirme özelliği eklenecek!')">Şarkıyı Değiştir</button>
+        <div id="v-benlik" class="view">
+            <h1 style="font-weight: 800; font-size: 35px;">Benlik</h1>
+            <div class="essence-card" style="text-align:center;">
+                <div id="u-av" style="width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg, var(--p), var(--s)); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:30px; color:#000;">?</div>
+                <h2 id="u-name">İsim</h2>
+                <p id="u-theme-name" style="color:var(--p); font-size:12px; font-weight:800;">AURA KLASİK</p>
             </div>
         </div>
 
-        <div id="room-self" class="aura-room">
-            <h2 style="font-family:'Syncopate',sans-serif; font-weight:700; font-size:28px; margin-bottom:30px;">BENLİK TAPINAĞI</h2>
-            <div class="whisper-card" style="max-width:320px;">
-                <div style="width:80px; height:80px; border-radius:50%; background:var(--aura-gradient); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; color:var(--bg-dark); box-shadow: 0 0 20px rgba(255,142,83,0.3);" id="profile-avatar">?</div>
-                <h3 id="profile-name" style="margin-bottom:10px;"></h3>
-                <input type="text" id="mood-input" class="entry-input" style="width:calc(100% - 30px); margin-bottom:15px;" placeholder="Ruh Halin? (Mutlu, Hüzünlü...)">
-                <button class="entry-btn" style="width:calc(100% - 30px); font-size:13px;" onclick="setMood()">Ruh Halimi Güncelle</button>
-                <button class="entry-btn" style="width:calc(100% - 30px); font-size:13px; background:none; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.7); margin-top:10px;" onclick="clearData()">IŞIKLARI KAPAT</button>
-            </div>
+        <div class="nav-orb-area">
+            <div class="nav-orb active" onclick="tab('salon', this)"></div>
+            <div class="nav-orb" onclick="tab('mutfak', this)"></div>
+            <div class="nav-orb" onclick="tab('benlik', this)"></div>
         </div>
+    </div>
 
+    <div id="settings-panel">
+        <div style="display:flex; justify-content:space-between; margin-bottom:40px;">
+            <h2 style="font-weight:800;">Atmosfer</h2>
+            <span onclick="closeSettings()" style="font-size:30px;">✕</span>
+        </div>
+        
+        <div class="theme-btn" onclick="setTheme('aura')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #FF8E53, #FE6B8B);"></div> Aura Klasik</div>
+        <div class="theme-btn" onclick="setTheme('nature')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #4ade80, #22c55e);"></div> Doğa (Amazon)</div>
+        <div class="theme-btn" onclick="setTheme('ocean')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #38bdf8, #1d4ed8);"></div> Okyanus Derinliği</div>
+        <div class="theme-btn" onclick="setTheme('night')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #a78bfa, #4c1d95);"></div> Gece Yarısı</div>
+
+        <button class="btn-aura" style="width:100%; margin-top:40px; background:none; border:1px solid red; color:red;" onclick="localStorage.clear(); location.reload();">Sıfırla ve Çık</button>
     </div>
 
     <script>
-        let userName = localStorage.getItem('aura_v3_user') || '';
-        let userMood = localStorage.getItem('aura_v3_mood') || 'Default';
-        let currentRoom = 'hearth';
-        const rooms = ['hearth', 'sanctuary', 'echo', 'self'];
-        let hearthPosts = JSON.parse(localStorage.getItem('aura_v3_hearth_posts')) || [];
-        let sanctuaryPosts = JSON.parse(localStorage.getItem('aura_v3_sanctuary_posts')) || [];
+        let me = localStorage.getItem('essence_user') || "";
+        let posts = JSON.parse(localStorage.getItem('essence_posts')) || [];
 
-        let isDragging = false;
-        let startX, startY;
-        let sphere = document.getElementById('aura-sphere');
-        let dynamicGlow = document.getElementById('dynamic-bg-glow');
-
-        const moodColors = {
-            'Mutlu': { primary: '#6EE7B7', secondary: '#3B82F6' }, // Yeşil-Mavi
-            'Hüzünlü': { primary: '#A78BFA', secondary: '#F472B6' }, // Mor-Pembe
-            'Enerjik': { primary: '#FACC15', secondary: '#EF4444' }, // Sarı-Kırmızı
-            'Sakin': { primary: '#94A3B8', secondary: '#475569' }, // Gri Tonları
-            'Default': { primary: '#FF8E53', secondary: '#FE6B8B' } // Varsayılan Turuncu-Pembe
-        };
-
-        function applyMoodColors(mood) {
-            const colors = moodColors[mood] || moodColors['Default'];
-            document.documentElement.style.setProperty('--aura-primary', colors.primary);
-            document.documentElement.style.setProperty('--aura-secondary', colors.secondary);
-            dynamicGlow.style.background = `radial-gradient(circle, ${colors.primary} 0%, transparent 60%)`;
-            sphere.style.background = `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`;
-            
-            // Re-render to apply new colors to cards
-            renderHearth();
-            renderSanctuary();
-        }
-
-        function enterAura() {
-            userName = document.getElementById('user-name-input').value.trim();
-            if (!userName) return;
-            localStorage.setItem('aura_v3_user', userName);
-            localStorage.setItem('aura_v3_mood', userMood); // Save default mood if not set
-            document.getElementById('entry-plane').style.display = 'none';
+        function enter() {
+            const n = document.getElementById('name-in').value.trim();
+            if(!n) return;
+            localStorage.setItem('essence_user', n);
+            me = n;
+            document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            setupAura();
+            document.getElementById('u-name').innerText = me;
+            document.getElementById('u-av').innerText = me[0].toUpperCase();
+            render();
         }
 
-        if (userName) {
-            document.getElementById('user-name-input').value = userName;
-            enterAura();
+        if(me) { document.getElementById('name-in').value = me; enter(); }
+
+        function tab(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            el.classList.add('active');
         }
 
-        function setupAura() {
-            document.getElementById('profile-name').innerText = userName;
-            document.getElementById('profile-avatar').innerText = userName[0].toUpperCase();
-            document.getElementById('mood-input').value = userMood;
-            applyMoodColors(userMood);
-            renderHearth();
-            renderSanctuary();
-            switchRoom(currentRoom); // Ensure the initial room is active
+        function addPost() {
+            const t = document.getElementById('post-in').value.trim();
+            if(!t) return;
+            posts.unshift({n: me, t: t});
+            localStorage.setItem('essence_posts', JSON.stringify(posts));
+            document.getElementById('post-in').value = '';
+            render();
         }
 
-        function setMood() {
-            userMood = document.getElementById('mood-input').value.trim();
-            if (!userMood) userMood = 'Default';
-            localStorage.setItem('aura_v3_mood', userMood);
-            applyMoodColors(userMood);
-            alert(`Ruh halin '${userMood}' olarak güncellendi!`);
+        function render() {
+            const feed = document.getElementById('feed');
+            const kitchen = document.getElementById('kitchen-feed');
+            feed.innerHTML = posts.map(p => `<div class="essence-card"><b>${p.n}</b><p style="margin:10px 0 0; opacity:0.8;">${p.t}</p></div>`).join('');
+            kitchen.innerHTML = posts.map(p => `<div class="essence-card" style="font-size:14px; opacity:0.6;">☕️ Birisi fısıldadı: "${p.t}"</div>`).join('');
         }
 
-        function postToHearth() {
-            const content = document.getElementById('hearth-input').value.trim();
-            if (!content) return;
-            hearthPosts.unshift({ user: userName, content: content });
-            localStorage.setItem('aura_v3_hearth_posts', JSON.stringify(hearthPosts));
-            document.getElementById('hearth-input').value = '';
-            renderHearth();
+        function setTheme(t) {
+            document.body.className = 'theme-' + t;
+            const names = {aura: 'AURA KLASİK', nature: 'DOĞA (AMAZON)', ocean: 'OKYANUS DERİNLİĞİ', night: 'GECE YARISI'};
+            document.getElementById('u-theme-name').innerText = names[t];
+            localStorage.setItem('essence_theme', t);
+            closeSettings();
         }
 
-        function renderHearth() {
-            document.getElementById('hearth-feed').innerHTML = hearthPosts.map(p => `
-                <div class="whisper-card">
-                    <b style="color:var(--aura-secondary);">${p.user}</b>
-                    <p style="margin:8px 0 0;">${p.content}</p>
-                </div>
-            `).join('');
-        }
-
-        function postToSanctuary() {
-            const content = document.getElementById('sanctuary-input').value.trim();
-            if (!content) return;
-            sanctuaryPosts.unshift({ content: content });
-            localStorage.setItem('aura_v3_sanctuary_posts', JSON.stringify(sanctuaryPosts));
-            document.getElementById('sanctuary-input').value = '';
-            renderSanctuary();
-        }
-
-        function renderSanctuary() {
-            document.getElementById('sanctuary-feed').innerHTML = sanctuaryPosts.map(p => `
-                <div class="whisper-card">
-                    <p style="margin:0; opacity:0.7;">Anonim: "${p.content}"</p>
-                </div>
-            `).join('');
-        }
-
-        function switchRoom(roomId) {
-            document.querySelectorAll('.aura-room').forEach(room => room.classList.remove('active'));
-            document.getElementById(`room-${roomId}`).classList.add('active');
-            currentRoom = roomId;
-            sphere.innerText = (roomId === 'hearth' ? 'KALP' : roomId === 'sanctuary' ? 'SIĞINAK' : roomId === 'echo' ? 'YANKI' : 'BENLİK');
-            // Kürenin rengini odaya göre ayarlayabiliriz (isteğe bağlı)
-        }
-
-        function clearData() {
-            if (confirm("Işıkları kapatıp tüm anılarını silmek istediğine emin misin?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        // KÜRE SÜRÜKLEME MANTIĞI
-        sphere.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            sphere.classList.add('active');
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            sphere.style.transition = 'none'; // Sürüklerken animasyonu kapat
-        });
-
-        sphere.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const dx = e.touches[0].clientX - startX;
-            const dy = e.touches[0].clientY - startY;
-
-            // Küreyi parmağınla takip ettir
-            sphere.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-        });
-
-        sphere.addEventListener('touchend', (e) => {
-            isDragging = false;
-            sphere.classList.remove('active');
-            sphere.style.transition = 'transform 0.3s ease-out, box-shadow 0.3s ease-out'; // Animasyonu geri aç
-
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-            const threshold = 50; // Oda geçiş eşiği
-
-            let newRoom = currentRoom;
-
-            if (endX - startX > threshold) { // Sağa kaydırma
-                const currentIndex = rooms.indexOf(currentRoom);
-                newRoom = rooms[(currentIndex + 1) % rooms.length];
-            } else if (startX - endX > threshold) { // Sola kaydırma
-                const currentIndex = rooms.indexOf(currentRoom);
-                newRoom = rooms[(currentIndex - 1 + rooms.length) % rooms.length];
-            } else if (startY - endY > threshold) { // Yukarı kaydırma (Özel oda için)
-                // newRoom = 'specialRoom'; // Gelecekte eklenecek
-            }
-
-            switchRoom(newRoom);
-            
-            // Küreyi ortaya geri getir
-            sphere.style.transform = 'translate(-50%, -50%)';
-        });
-
+        function openSettings() { document.getElementById('settings-panel').style.display = 'block'; }
+        function closeSettings() { document.getElementById('settings-panel').style.display = 'none'; }
+        
+        // Kaydedilmiş temayı yükle
+        const savedTheme = localStorage.getItem('essence_theme');
+        if(savedTheme) setTheme(savedTheme);
     </script>
 </body>
 </html>
