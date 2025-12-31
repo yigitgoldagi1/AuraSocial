@@ -3,176 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Living Space</title>
+    <title>Aura: Soul Hybrid</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --p: #FF8E53; --s: #FE6B8B; --bg: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.05);
+            --aura: #FF8E53; --bg: #07070a; --glass: rgba(255, 255, 255, 0.05);
         }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 
-        /* CANLI ARKA PLAN */
-        .ambient { position: fixed; inset: 0; background: radial-gradient(circle at 50% 100%, var(--p) 0%, transparent 50%); opacity: 0.15; z-index: -1; }
+        /* ARKA PLAN CANLILIĞI */
+        .ambient { position: fixed; inset: 0; background: radial-gradient(circle at 50% 100%, var(--aura) 0%, transparent 60%); opacity: 0.12; z-index: -1; transition: 1s; }
 
-        /* BALONCUKLAR (KEŞFET) */
-        .aura-bubble {
-            position: absolute; width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--p), var(--s));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: #000; font-size: 20px;
-            box-shadow: 0 0 20px var(--p); cursor: pointer;
-            animation: float 6s infinite ease-in-out;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        /* ÜST VIBE-STORIES (Instagram Samimiyeti) */
+        .vibe-stories { display: flex; gap: 15px; padding: 20px; overflow-x: auto; scrollbar-width: none; margin-top: 40px; }
+        .vibe-circle { flex: 0 0 65px; height: 65px; border-radius: 50%; padding: 3px; background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(135deg, #FF8E53, #FE6B8B) border-box; border: 3px solid transparent; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .vibe-circle:active { transform: scale(0.9); }
 
-        /* SAYFALAR */
-        .view { position: fixed; inset: 0; padding: 60px 20px 120px; display: none; overflow-y: auto; z-index: 100; }
-        .view.active { display: block; }
+        /* ANA AKIŞ (TikTok Akışkanlığı) */
+        .feed-container { height: 70vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; padding: 0 15px; }
+        .feed-card { height: 65vh; scroll-snap-align: center; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; }
+        .glass-card { background: var(--glass); border-radius: 35px; padding: 30px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); position: relative; }
 
-        /* KARTLAR */
-        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
+        /* ALT NAVİGASYON */
+        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.04); backdrop-filter: blur(30px); border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { font-size: 22px; opacity: 0.3; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--aura); transform: scale(1.2); }
 
-        /* ALT NAVİGASYON (Görsel ve Dolu) */
-        nav {
-            position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px;
-            background: rgba(20,20,25,0.9); border-radius: 35px;
-            display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
-        }
-        .nav-item { text-align: center; opacity: 0.3; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--p); transform: scale(1.1); }
-        .nav-item span { display: block; font-size: 10px; font-weight: 800; margin-top: 4px; }
+        /* MODALLAR (DM & ODALAR) */
+        .overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; padding: 60px 20px; animation: slideUp 0.4s cubic-bezier(0, 0.55, 0.45, 1); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* BUTON */
-        .btn { background: linear-gradient(135deg, var(--p), var(--s)); border: none; padding: 12px 25px; border-radius: 20px; font-weight: 800; color: #000; }
-        
-        /* ODA MODALI */
-        #room-ui { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; padding: 60px 20px; }
+        .btn-main { background: linear-gradient(135deg, #FF8E53, #FE6B8B); border: none; padding: 12px 25px; border-radius: 20px; font-weight: 800; color: #000; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="ambient" id="glow"></div>
+    <div class="ambient" id="aura-glow"></div>
 
-    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 style="font-size: 50px; font-weight: 800;">Aura<span style="color:var(--p)">.</span></h1>
-        <input type="text" id="u-name" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="İsmin?">
-        <button class="btn" onclick="start()">EVE GİR</button>
+    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 style="font-size: 50px; font-weight: 800; letter-spacing: -2px;">Aura.</h1>
+        <input type="text" id="username" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="Sen kimsin?">
+        <button class="btn-main" onclick="startApp()">IŞIKLARI YAK</button>
     </div>
 
     <div id="app" style="display:none;">
         
-        <div id="v-explore" class="view active">
-            <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 5px;">Keşfet</h2>
-            <p style="opacity:0.4; font-size:12px; margin-bottom:40px;">Ruhlar arasında süzül...</p>
-            <div id="bubble-container" style="position:relative; height:400px;">
-                </div>
+        <div class="vibe-stories" id="story-bar">
+            <div class="vibe-circle" onclick="openDM('Aura Bot')">✨</div>
+            <div class="vibe-circle" style="border-color: #4ade80">🎧</div>
+            <div class="vibe-circle" style="border-color: #38bdf8">🌙</div>
         </div>
 
-        <div id="v-rooms" class="view">
-            <h2 style="font-size: 32px; font-weight: 800;">Odalar</h2>
-            <div class="card" onclick="openRoom('Late Night lo-fi', '7sz730BvD0O3qvpq9S9Ape')">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>Late Night lo-fi</b><br><small style="opacity:0.5;">4 Kişi Dinliyor</small></div>
-                    <div style="color:var(--p); font-size:24px;">🎵</div>
-                </div>
+        <div class="feed-container" id="main-feed">
             </div>
-            <div class="card" onclick="openRoom('Zen Garden', '1Xp6t07eE9xSndT7C0vB8N')">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>Zen Garden</b><br><small style="opacity:0.5;">2 Kişi Frekansta</small></div>
-                    <div style="color:#4ade80; font-size:24px;">🍃</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="v-self" class="view">
-            <h2 style="font-size: 32px; font-weight: 800;">Benlik</h2>
-            <div class="card">
-                <textarea id="my-post" style="width:100%; background:none; border:none; color:#fff; font-size:16px; outline:none; height:80px;" placeholder="Fısıltın evrende süzülsün..."></textarea>
-                <button class="btn" style="float:right;" onclick="addPost()">PAYLAŞ</button>
-                <div style="clear:both;"></div>
-            </div>
-            <div class="card" style="text-align:center;">
-                <h3 id="display-name">?</h3>
-                <p style="opacity:0.4; font-size:12px;">Enerji Seviyesi: <span id="e-val">120</span></p>
-                <button onclick="location.reload()" style="background:none; border:1px solid #ff4444; color:#ff4444; padding:10px 20px; border-radius:15px; font-size:12px;">ÇIKIŞ YAP</button>
-            </div>
-        </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('explore', this)">🔮<span>KEŞFET</span></div>
-            <div class="nav-item" onclick="tab('rooms', this)">✨<span>ODALAR</span></div>
-            <div class="nav-item" onclick="tab('self', this)">👤<span>BENLİK</span></div>
+            <div class="nav-item active" onclick="tab('home', this)">🏠</div>
+            <div class="nav-item" onclick="showRooms()">✨</div>
+            <div class="nav-item" onclick="showDM()">💬</div>
+            <div class="nav-item" onclick="logout()">👤</div>
         </nav>
     </div>
 
-    <div id="room-ui">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span onclick="closeRoom()" style="font-size:30px;">✕</span>
-            <b id="room-title">Oda İsmi</b>
-            <span></span>
+    <div id="dm-panel" class="overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="margin:0;">Fısıltılar</h2>
+            <span onclick="closeOverlay('dm-panel')" style="font-size:30px;">✕</span>
         </div>
-        <div id="room-player" style="margin-top:40px;"></div>
-        <div id="room-chat" style="flex:1; overflow-y:auto; margin-top:20px; font-size:14px; opacity:0.7;"></div>
-        <input type="text" id="room-input" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:#fff;" placeholder="Odaya fısılda...">
+        <div class="glass-card" onclick="openChat('Can')"><b>Can:</b> Yarınki konser için hazır mısın?</div>
+        <div class="glass-card" onclick="openChat('Melis')"><b>Melis:</b> Bu şarkı tam senin auranı yansıtıyor.</div>
+    </div>
+
+    <div id="room-panel" class="overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="margin:0;">Odalar</h2>
+            <span onclick="closeOverlay('room-panel')" style="font-size:30px;">✕</span>
+        </div>
+        <div class="glass-card">
+            <h3>Gece Yarısı Lo-Fi</h3>
+                <p style="opacity:0.5;">Sadece fısıltılar ve ritim.</p>
+                <button class="btn-main" style="width:100%;">KATIL</button>
+        </div>
     </div>
 
     <script>
-        let me = localStorage.getItem('aura_v7_name') || "";
-        let posts = JSON.parse(localStorage.getItem('aura_v7_posts')) || [];
+        let me = localStorage.getItem('aura_final_me');
+        let posts = [
+            {n: "Aura", t: "Hoş geldin. Burası senin güvenli alanın. Rahatla ve akışa bırak.", c: "#FF8E53"},
+            {n: "Deniz", t: "Yağmurun sesiyle bu şarkı o kadar iyi gidiyor ki...", c: "#38bdf8"},
+            {n: "Selim", t: "Bugün enerji seviyem tavan! Kimler benimle?", c: "#4ade80"}
+        ];
 
-        function start() {
-            const n = document.getElementById('u-name').value.trim();
+        function startApp() {
+            const n = document.getElementById('username').value.trim();
             if(!n) return;
-            localStorage.setItem('aura_v7_name', n);
+            localStorage.setItem('aura_final_me', n);
             me = n;
             document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('display-name').innerText = me;
-            renderAll();
+            renderFeed();
         }
-        if(me) start();
+        if(me) startApp();
 
+        function renderFeed() {
+            const feed = document.getElementById('main-feed');
+            feed.innerHTML = posts.map(p => `
+                <div class="feed-card">
+                    <div class="glass-card" style="border-left: 5px solid ${p.c}">
+                        <b style="color:${p.c}; font-size:18px;">${p.n}</b>
+                        <p style="margin:15px 0; line-height:1.6; font-size:16px; opacity:0.9;">${p.t}</p>
+                        <div style="display:flex; gap:20px; opacity:0.4; font-size:12px;">
+                            <span onclick="alert('Enerji verildi!')">✨ Enerji Ver</span>
+                            <span onclick="showDM()">💬 Cevapla</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showDM() { document.getElementById('dm-panel').style.display = 'flex'; }
+        function showRooms() { document.getElementById('room-panel').style.display = 'flex'; }
+        function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
+        function logout() { localStorage.clear(); location.reload(); }
+        
         function tab(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
+            if(id === 'home') renderFeed();
         }
-
-        function renderAll() {
-            const container = document.getElementById('bubble-container');
-            container.innerHTML = "";
-            // Her post bir baloncuk olur
-            posts.forEach((p, i) => {
-                const b = document.createElement('div');
-                b.className = 'aura-bubble';
-                b.style.left = (Math.random() * 70 + 5) + "%";
-                b.style.top = (Math.random() * 70 + 5) + "%";
-                b.style.animationDelay = (Math.random() * 5) + "s";
-                b.innerText = p.n[0].toUpperCase();
-                b.onclick = () => alert(p.n + " fısıldadı: " + p.t);
-                container.appendChild(b);
-            });
-        }
-
-        function addPost() {
-            const t = document.getElementById('my-post').value;
-            if(!t) return;
-            posts.unshift({n: me, t: t});
-            localStorage.setItem('aura_v7_posts', JSON.stringify(posts));
-            document.getElementById('my-post').value = '';
-            renderAll();
-            tab('explore', document.querySelectorAll('.nav-item')[0]);
-        }
-
-        function openRoom(name, id) {
-            document.getElementById('room-title').innerText = name;
-            document.getElementById('room-player').innerHTML = `<iframe style="border-radius:20px" src="http://googleusercontent.com/spotify.com/3{id}" width="100%" height="80" frameBorder="0" allow="encrypted-media"></iframe>`;
-            document.getElementById('room-ui').style.display = 'flex';
-        }
-        function closeRoom() { document.getElementById('room-ui').style.display = 'none'; }
     </script>
 </body>
 </html>
