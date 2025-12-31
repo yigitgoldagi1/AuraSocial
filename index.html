@@ -7,135 +7,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #121212; /* Zifiri siyah yerine yumuşak antrasit */
+            --bg: #121212;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
             --soft-gold: #d4af37;
             --glass: rgba(255, 255, 255, 0.05);
-            --warm-white: #e0e0e0;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            background: var(--bg); color: var(--warm-white); 
-            font-family: 'Inter', sans-serif; overflow: hidden; 
-        }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* GİRİŞ EKRANI - Daha yumuşak geçişli */
-        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s ease-in-out; }
-        .aura-logo { font-family: 'Playfair Display', serif; font-size: 75px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+        /* GİRİŞ */
+        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
+        .aura-logo { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* ANA SAYFALAR */
-        .page { position: fixed; inset: 0; padding: 60px 25px 120px; overflow-y: auto; display: none; }
+        /* SAYFALAR */
+        .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; }
         .page.active { display: block; animation: softFade 0.5s ease; }
-        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+        @keyframes softFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* YUMUŞAK KARTLAR */
-        .card { 
-            background: var(--glass); 
-            border-radius: 35px; /* Daha yuvarlak, daha dost canlısı */
-            padding: 25px; 
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(15px);
-            margin-bottom: 20px;
-        }
+        /* AKIŞ KARTLARI (POSTS) */
+        .feed-card { background: var(--glass); border-radius: 30px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .mini-av { width: 35px; height: 35px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; font-size: 12px; }
+        .post-name { font-family: 'Playfair Display'; font-weight: 700; color: var(--soft-gold); }
+        
+        /* IŞIK GÖNDER BUTONU */
+        .light-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .light-btn:active { transform: scale(0.9); background: rgba(191,149,63,0.2); border-color: var(--soft-gold); }
 
-        /* RADAR - Soğuk değil, mistik */
-        .aura-circle {
-            width: 150px; height: 150px;
-            background: radial-gradient(circle, rgba(191,149,63,0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; animation: breathe 4s infinite ease-in-out;
-        }
-        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.8; } }
+        /* NAVİGASYON */
+        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); }
+        .nav-item { font-size: 24px; opacity: 0.4; transition: 0.3s; }
+        .nav-item.active { opacity: 1; transform: translateY(-5px); color: var(--soft-gold); }
 
-        /* PREMIUM İSİM STİLİ (Yiğit Yazısı) */
-        .premium-name { 
-            font-family: 'Playfair Display', serif; 
-            background: var(--gold); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        /* ALT NAVİGASYON - Daha şeffaf */
-        nav { 
-            position: fixed; bottom: 35px; left: 40px; right: 40px; height: 70px;
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(25px);
-            border-radius: 35px; display: flex; justify-content: space-around; 
-            align-items: center; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .nav-item { font-size: 22px; opacity: 0.4; transition: 0.3s; color: white; }
-        .nav-item.active { opacity: 1; transform: scale(1.2); }
-
-        .status-badge {
-            background: rgba(191,149,63,0.1);
-            color: var(--soft-gold);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 5px;
-        }
+        .premium-name { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
 
     <div id="gate">
         <h1 class="aura-logo">Aura</h1>
-        <p style="opacity:0.4; font-size:12px; letter-spacing:4px; margin-top:-10px;">BİZ BİZE</p>
-        <input type="text" id="name-input" style="background:transparent; border:none; border-bottom:1px solid #333; padding:15px; color:white; text-align:center; width:200px; margin:30px 0; outline:none;" placeholder="İsminiz nedir?">
-        <button onclick="enterApp()" style="background:white; color:black; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; cursor:pointer;">Başlayalım</button>
+        <input type="text" id="name-input" style="background:transparent; border:none; border-bottom:1px solid #444; padding:15px; color:white; text-align:center; width:200px; margin:30px 0; outline:none; font-size:18px;" placeholder="İsminiz?">
+        <button onclick="enterApp()" style="background:white; color:black; border:none; padding:15px 45px; border-radius:30px; font-weight:800;">Giriş</button>
     </div>
 
     <div id="app-content" style="display:none;">
-        <div id="v-chats" class="page active">
-            <h2 style="font-family:'Playfair Display'; font-size:32px;">Selamlar</h2>
-            <div class="card" style="text-align:center;">
-                <p style="opacity:0.6;">Sohbetler burada başlayacak...</p>
+        
+        <div id="v-feed" class="page active">
+            <h2 style="font-family:'Playfair Display'; font-size:32px; margin-bottom:25px;">Aura Akışı</h2>
+            
+            <div class="feed-card">
+                <div class="post-header">
+                    <div class="mini-av">S</div>
+                    <span class="post-name">Selina</span>
+                    <span style="font-size:10px; opacity:0.3;">• 10dk önce</span>
+                </div>
+                <p style="font-size:14px; line-height:1.6; opacity:0.8;">Bugün Galata'da rüzgar tam da bir "Aura" gibi esiyor. İçimdeki enerji çok yüksek! ✨</p>
+                <div class="light-btn" onclick="this.innerHTML='✨ Işık Gönderildi'">✨ Işık Gönder</div>
+            </div>
+
+            <div class="feed-card">
+                <div class="post-header">
+                    <div class="mini-av" style="background:silver;">M</div>
+                    <span class="post-name" style="background:silver; -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Mert</span>
+                    <span style="font-size:10px; opacity:0.3;">• 1sa önce</span>
+                </div>
+                <p style="font-size:14px; line-height:1.6; opacity:0.8;">Yeni bir başlangıç için her zaman doğru zamandır. Sakin kalın.</p>
+                <div class="light-btn" onclick="this.innerHTML='✨ Işık Gönderildi'">✨ Işık Gönder</div>
             </div>
         </div>
 
         <div id="v-radar" class="page">
             <h2 style="font-family:'Playfair Display'; font-size:32px;">Esinti</h2>
-            <div style="height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div class="aura-circle">
-                    <div style="width:60px; height:60px; background:var(--gold); border-radius:50%; box-shadow:0 0 40px rgba(191,149,63,0.3);"></div>
-                </div>
-                <p style="margin-top:20px; opacity:0.4; font-size:13px;">Etrafındaki enerjiler...</p>
+            <div style="height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;">
+                <div style="width:100px; height:100px; background:var(--gold); border-radius:50%; filter:blur(40px); opacity:0.3; animation: pulse 3s infinite;"></div>
+                <p style="position:absolute; font-size:12px; letter-spacing:3px; opacity:0.5;">YAKINDA 3 ENERJİ VAR</p>
+                
+                <div style="position:absolute; top:20%; left:20%; width:10px; height:10px; background:var(--soft-gold); border-radius:50%; box-shadow:0 0 10px gold;"></div>
+                <div style="position:absolute; bottom:30%; right:25%; width:10px; height:10px; background:white; border-radius:50%; box-shadow:0 0 10px white;"></div>
+            </div>
+            <div class="feed-card" style="text-align:center;">
+                <p style="font-size:13px; color:var(--soft-gold);">Hemen yanındaki Selina ile eşleşebilirsin.</p>
             </div>
         </div>
 
         <div id="v-profile" class="page">
             <h2 style="font-family:'Playfair Display'; font-size:32px;">Benlik</h2>
-            <div class="card">
+            <div class="feed-card">
                 <div style="display:flex; align-items:center; gap:20px;">
                     <div id="user-av" style="width:65px; height:65px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:24px;">Y</div>
                     <div>
                         <h3 id="user-name" class="premium-name" style="font-size:26px; margin:0;"></h3>
-                        <div class="status-badge">Anın Tadını Çıkarıyor ☕</div>
+                        <div style="background:rgba(191,149,63,0.1); color:var(--soft-gold); padding:4px 12px; border-radius:12px; font-size:11px; margin-top:5px;">Aura Seviyesi: %85</div>
                     </div>
                 </div>
             </div>
-
-            <div class="card" style="padding:15px;">
-                <p style="font-size:14px; margin-bottom:15px; opacity:0.8;">Ayarlar</p>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; opacity:0.6;">
-                    <span>Görünürlük</span>
-                    <span>Açık</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:14px; opacity:0.6;">
-                    <span>Bildirimler</span>
-                    <span>Sessiz</span>
-                </div>
+            
+            <div class="feed-card" style="padding:15px; font-size:14px; opacity:0.7;">
+                <p>✨ Toplam alınan ışık: 12</p>
+                <p>👤 Profil görüntüleme: 4</p>
             </div>
 
-            <p onclick="location.reload()" style="text-align:center; color:#666; font-size:12px; margin-top:30px;">Oturumu Kapat</p>
+            <p onclick="location.reload()" style="text-align:center; color:#555; font-size:12px; margin-top:20px;">Oturumu Kapat</p>
         </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('chats', this)">💬</div>
+            <div class="nav-item active" onclick="tab('feed', this)">📜</div>
             <div class="nav-item" onclick="tab('radar', this)">✨</div>
             <div class="nav-item" onclick="tab('profile', this)">👤</div>
         </nav>
@@ -151,7 +128,7 @@
             setTimeout(() => {
                 document.getElementById('gate').style.display = 'none';
                 document.getElementById('app-content').style.display = 'block';
-            }, 800);
+            }, 600);
         }
 
         function tab(id, el) {
