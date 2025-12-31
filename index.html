@@ -4,180 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Social</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #080808;
-            --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.07);
-            --aura-glow: 0 0 20px rgba(191, 149, 63, 0.3);
+            --brand: linear-gradient(135deg, #FF6B6B, #4ECDC4, #FFE66D);
+            --bg: #121212;
+            --card: #1E1E1E;
+            --text: #FFFFFF;
+            --accent: #FF6B6B;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background: var(--bg); color: var(--text); 
+            font-family: 'Inter', sans-serif; overflow: hidden;
+        }
 
-        /* GİRİŞ */
-        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* GİRİŞ EKRANI */
+        #gate { 
+            position: fixed; inset: 0; background: var(--bg); 
+            z-index: 100000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .logo { font-size: 48px; font-weight: 800; background: var(--brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
 
-        /* ANA YAPI */
-        .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; overflow-y: auto; background: var(--bg); }
-        .page.active { display: block; animation: softIn 0.4s ease; }
-        @keyframes softIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANA SAYFA YAPISI */
+        .page { position: fixed; inset: 0; padding: 60px 20px 100px; display: none; overflow-y: auto; }
+        .page.active { display: block; }
 
-        /* SOSYAL KARTLAR (Instagram-ish) */
-        .social-card { background: var(--glass); border-radius: 24px; padding: 20px; margin: 0 15px 15px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
-        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .avatar-ring { width: 45px; height: 45px; border-radius: 50%; padding: 2px; background: var(--gold); box-shadow: var(--aura-glow); }
-        .avatar-inner { width: 100%; height: 100%; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #d4af37; }
-        
-        .post-content { font-size: 15px; line-height: 1.5; opacity: 0.9; margin-bottom: 15px; }
-        .post-actions { display: flex; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
-        .action-btn { background: none; border: none; color: white; opacity: 0.5; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .action-btn:active { transform: scale(0.9); opacity: 1; color: #d4af37; }
+        /* KARTLAR */
+        .card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar { width: 35px; height: 35px; border-radius: 12px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; }
 
-        /* NAVİGASYON (Geliştirilmiş 3 Küre) */
-        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 45px; align-items: center; z-index: 50000; padding: 15px 30px; background: rgba(255,255,255,0.03); border-radius: 40px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
-        .nav-orb { width: 8px; height: 8px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; }
-        .nav-orb.active { opacity: 1; transform: scale(2); background: #d4af37; box-shadow: 0 0 15px #d4af37; }
+        /* NAVİGASYON */
+        nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
+            background: #181818; display: flex; justify-content: space-around; 
+            align-items: center; border-top: 1px solid #222; z-index: 1000;
+        }
+        .nav-item { font-size: 24px; opacity: 0.4; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { opacity: 1; transform: scale(1.2); color: var(--accent); }
 
-        /* BUTONLAR */
-        .btn-gold { background: var(--gold); border: none; padding: 12px 30px; border-radius: 30px; font-weight: 800; color: black; cursor: pointer; transition: 0.3s; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(191,149,63,0.3); }
+        /* INPUT & BUTTON */
+        input, textarea { background: #2a2a2a; border: none; border-radius: 12px; padding: 15px; color: white; width: 100%; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+        .btn { background: var(--brand); border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; color: #000; cursor: pointer; width: 100%; }
 
-        /* DM PANEL */
-        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); z-index: 60000; padding: 30px 20px 60px; }
-        #whisper-panel.open { transform: translateY(0); }
+        /* CHAT SİSTEMİ */
+        #chat-modal { position: fixed; inset: 0; background: var(--bg); z-index: 20000; display: none; flex-direction: column; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 80%; padding: 12px; border-radius: 15px; font-size: 14px; }
+        .bubble.me { align-self: flex-end; background: var(--accent); color: white; }
+        .bubble.them { align-self: flex-start; background: #333; }
     </style>
 </head>
 <body>
 
     <div id="gate">
-        <h1 class="premium-font" style="font-size:70px; margin-bottom:10px;">Aura</h1>
-        <p style="opacity:0.3; letter-spacing:8px; font-size:10px; margin-bottom:40px;">THE SOCIAL SPACE</p>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
-            <input type="text" id="u-in" style="background:#111; border:1px solid #333; padding:18px; color:white; border-radius:20px; text-align:center; width:260px; outline:none;" placeholder="İsminiz?">
-            <button onclick="startApp()" class="btn-gold">GİRİŞ YAP</button>
-        </div>
+        <div class="logo">Aura</div>
+        <input type="text" id="login-name" placeholder="İsminiz nedir?">
+        <button class="btn" onclick="login()">Hadi Başlayalım!</button>
     </div>
 
     <div id="app" style="display:none;">
-        
-        <div id="p-universe" class="page active">
-            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px; margin:0;">Evren</h1><p style="opacity:0.4; font-size:12px;">Neler oluyor?</p></div>
-            <div id="feed">
-                <div class="social-card">
-                    <div class="user-info">
-                        <div class="avatar-ring"><div class="avatar-inner">M</div></div>
-                        <div><b style="font-size:14px;">Melis</b><br><small style="opacity:0.4;">2 dk önce</small></div>
-                    </div>
-                    <div class="post-content">Güne bu şarkıyla başlamak ruhumu temizledi. ✨</div>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="sendEnergy(this)">✨ Enerji Gönder</button>
-                        <button class="action-btn" onclick="openWhisper('Melis')">💬 Fısılda</button>
-                    </div>
-                </div>
+        <div id="p-home" class="page active">
+            <h2 style="margin-top:0;">Neler Oluyor?</h2>
+            <div class="card">
+                <textarea id="post-text" placeholder="Bir şeyler yaz..."></textarea>
+                <button class="btn" style="width:auto; float:right;" onclick="addPost()">Paylaş</button>
+                <div style="clear:both;"></div>
             </div>
+            <div id="home-feed"></div>
         </div>
 
-        <div id="p-self" class="page">
-            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px;">Benlik</h1></div>
-            <div class="social-card" style="margin-top:20px;">
-                <div class="user-info">
-                    <div class="avatar-ring" style="width:60px; height:60px;"><div class="avatar-inner" id="my-av" style="font-size:20px;">A</div></div>
-                    <div><b id="my-name" class="premium-font" style="font-size:24px;"></b><br><small style="color:#d4af37;">SPARK LEVEL</small></div>
-                </div>
-                <textarea id="p-input" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid #333; border-radius:15px; padding:15px; color:white; outline:none; height:100px; font-family:inherit;" placeholder="Evren'e ne fısıldamak istersin?"></textarea>
-                <button class="btn-gold" style="width:100%; margin-top:15px;" onclick="publish()">PAYLAŞ</button>
+        <div id="p-rooms" class="page">
+            <h2>Canlı Odalar</h2>
+            <div class="card">
+                <input type="text" id="room-name" placeholder="Oda ismi...">
+                <button class="btn" onclick="createRoom()">+ Oda Oluştur</button>
             </div>
+            <div id="room-list"></div>
         </div>
 
         <div id="p-msgs" class="page">
-            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px;">Fısıltılar</h1></div>
-            <div id="inbox" style="text-align:center; margin-top:50px; opacity:0.3;">
-                <p>Henüz kimseyle fısıldaşmadın.</p>
-            </div>
+            <h2>Mesajlar</h2>
+            <div id="inbox-list"></div>
         </div>
 
-        <div class="aura-nav">
-            <div class="nav-orb active" onclick="tab('universe', this)"></div>
-            <div class="nav-orb" onclick="tab('self', this)"></div>
-            <div class="nav-orb" onclick="tab('msgs', this)"></div>
+        <div id="p-profile" class="page">
+            <h2>Profilim</h2>
+            <div class="card" style="text-align:center;">
+                <div class="avatar" style="width:80px; height:80px; margin:0 auto 15px; font-size:32px;" id="prof-av">?</div>
+                <h3 id="prof-name">İsim</h3>
+                <p id="prof-bio" style="opacity:0.6;">Aura v1.0 Üyesi</p>
+                <button class="btn" onclick="editProfile()" style="background:#333; color:white;">Düzenle</button>
+            </div>
+            <button class="btn" onclick="logout()" style="margin-top:20px; background:transparent; color:red; border:1px solid red;">Çıkış Yap</button>
         </div>
+
+        <nav>
+            <div class="nav-item active" onclick="tab('home', this)">🏠</div>
+            <div class="nav-item" onclick="tab('rooms', this)">✨</div>
+            <div class="nav-item" onclick="tab('msgs', this)">💬</div>
+            <div class="nav-item" onclick="tab('profile', this)">👤</div>
+        </nav>
     </div>
 
-    <div id="whisper-panel">
-        <h2 id="w-name" class="premium-font"></h2>
-        <div id="chat-flow" style="height:250px; overflow-y:auto; margin:20px 0; font-size:14px; opacity:0.8;"></div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="w-in" style="flex:1; background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:white;" placeholder="Bir fısıltı yaz...">
-            <button onclick="sendMsg()" class="btn-gold" style="padding:0 20px;">↑</button>
+    <div id="chat-modal">
+        <div style="padding:40px 20px 20px; border-bottom:1px solid #222; display:flex; align-items:center; gap:15px;">
+            <span onclick="closeChat()" style="font-size:24px; cursor:pointer;">←</span>
+            <b id="chat-title">Sohbet</b>
         </div>
-        <button onclick="closeWhisper()" style="width:100%; background:none; border:none; color:white; opacity:0.3; margin-top:20px; font-size:12px;">Kapat</button>
+        <div class="chat-messages" id="chat-flow"></div>
+        <div style="padding:20px; display:flex; gap:10px;">
+            <input type="text" id="chat-in" placeholder="Mesaj yaz...">
+            <button onclick="sendMsg()" class="btn" style="width:60px;">🚀</button>
+        </div>
     </div>
 
     <script>
-        let me = localStorage.getItem('A_USER') || "";
-        let posts = JSON.parse(localStorage.getItem('A_POSTS')) || [];
+        let me = localStorage.getItem('au_name') || "";
+        let bio = localStorage.getItem('au_bio') || "Aura v1.0 Üyesi";
+        let posts = JSON.parse(localStorage.getItem('au_posts')) || [];
+        let rooms = JSON.parse(localStorage.getItem('au_rooms')) || [{n: "Müzik Lounge", c: "Sistem"}];
+        let dms = JSON.parse(localStorage.getItem('au_dms')) || [];
+        let activeChat = "";
 
-        function startApp() {
-            const val = document.getElementById('u-in').value.trim();
-            if(!val) return;
-            localStorage.setItem('A_USER', val);
-            me = val;
+        function login() {
+            const n = document.getElementById('login-name').value.trim();
+            if(!n) return;
+            localStorage.setItem('au_name', n);
+            location.reload();
+        }
+
+        if(me) {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('my-name').innerText = me;
-            document.getElementById('my-av').innerText = me[0].toUpperCase();
-            render();
+            document.getElementById('prof-name').innerText = me;
+            document.getElementById('prof-av').innerText = me[0];
+            document.getElementById('prof-bio').innerText = bio;
+            renderAll();
         }
 
-        if(me) startApp();
+        function renderAll() {
+            renderFeed();
+            renderRooms();
+            renderInbox();
+        }
 
-        function publish() {
-            const txt = document.getElementById('p-input').value.trim();
+        function addPost() {
+            const txt = document.getElementById('post-text').value;
             if(!txt) return;
-            posts.unshift({n: me, t: txt, time: 'Şimdi'});
-            localStorage.setItem('A_POSTS', JSON.stringify(posts));
-            document.getElementById('p-input').value = "";
-            render();
-            tab('universe', document.querySelectorAll('.nav-orb')[0]);
+            posts.unshift({n: me, t: txt});
+            localStorage.setItem('au_posts', JSON.stringify(posts));
+            document.getElementById('post-text').value = '';
+            renderFeed();
         }
 
-        function render() {
-            const list = document.getElementById('feed');
+        function renderFeed() {
+            const list = document.getElementById('home-feed');
             list.innerHTML = posts.map(p => `
-                <div class="social-card">
-                    <div class="user-info">
-                        <div class="avatar-ring"><div class="avatar-inner">${p.n[0].toUpperCase()}</div></div>
-                        <div><b style="font-size:14px;">${p.n}</b><br><small style="opacity:0.4;">${p.time}</small></div>
-                    </div>
-                    <div class="post-content">${p.t}</div>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="sendEnergy(this)">✨ Enerji Gönder</button>
-                        <button class="action-btn" onclick="openWhisper('${p.n}')">💬 Fısılda</button>
-                    </div>
+                <div class="card" onclick="openChat('${p.n}')">
+                    <div class="user-header"><div class="avatar">${p.n[0]}</div><b>${p.n}</b></div>
+                    <p style="margin:0;">${p.t}</p>
                 </div>
             `).join('');
         }
 
-        function sendEnergy(btn) {
-            btn.innerHTML = "✨ Enerji Gönderildi!";
-            btn.style.color = "#d4af37";
-            setTimeout(() => { btn.innerHTML = "✨ Enerji Gönder"; btn.style.color = "white"; }, 2000);
+        function createRoom() {
+            const rn = document.getElementById('room-name').value;
+            if(!rn) return;
+            rooms.unshift({n: rn, c: me});
+            localStorage.setItem('au_rooms', JSON.stringify(rooms));
+            document.getElementById('room-name').value = '';
+            renderRooms();
         }
 
-        function openWhisper(name) {
-            if(name === me) return;
-            document.getElementById('w-name').innerText = name;
-            document.getElementById('whisper-panel').classList.add('open');
+        function renderRooms() {
+            document.getElementById('room-list').innerHTML = rooms.map(r => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>${r.n}</b><br><small style="opacity:0.5;">Kurucu: ${r.c}</small></div>
+                    <button class="btn" style="width:auto; padding:8px 15px;" onclick="openChat('${r.c}')">Katıl</button>
+                </div>
+            `).join('');
         }
 
-        function closeWhisper() { document.getElementById('whisper-panel').classList.remove('open'); }
+        function openChat(target) {
+            if(target === me) return;
+            activeChat = target;
+            document.getElementById('chat-title').innerText = target;
+            document.getElementById('chat-modal').style.display = 'flex';
+            renderMessages();
+        }
+
+        function closeChat() { document.getElementById('chat-modal').style.display = 'none'; renderInbox(); }
+
+        function sendMsg() {
+            const txt = document.getElementById('chat-in').value;
+            if(!txt) return;
+            dms.push({f: me, t: activeChat, m: txt});
+            localStorage.setItem('au_dms', JSON.stringify(dms));
+            document.getElementById('chat-in').value = '';
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const flow = document.getElementById('chat-flow');
+            flow.innerHTML = dms.filter(d => (d.f === me && d.t === activeChat) || (d.f === activeChat && d.t === me))
+                                .map(d => `<div class="bubble ${d.f === me ? 'me' : 'them'}">${d.m}</div>`).join('');
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function renderInbox() {
+            const talkers = [...new Set(dms.map(d => d.f === me ? d.t : d.f))];
+            document.getElementById('inbox-list').innerHTML = talkers.map(t => `
+                <div class="card" onclick="openChat('${t}')"><b>${t}</b><br><small style="opacity:0.5;">Sohbeti aç</small></div>
+            `).join('');
+        }
+
+        function editProfile() {
+            const nBio = prompt("Biyografini düzenle:", bio);
+            if(nBio) { bio = nBio; localStorage.setItem('au_bio', bio); document.getElementById('prof-bio').innerText = bio; }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
 
         function tab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             el.classList.add('active');
         }
