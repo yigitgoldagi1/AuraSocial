@@ -3,133 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Soul Hybrid</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Aura: The Rainy Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --aura: #FF8E53; --bg: #07070a; --glass: rgba(255, 255, 255, 0.05);
+            --amber: #ffbf00;
+            --ink: #0a0a0c;
+            --paper: #f1e7d0;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 
-        /* ARKA PLAN CANLILIĞI */
-        .ambient { position: fixed; inset: 0; background: radial-gradient(circle at 50% 100%, var(--aura) 0%, transparent 60%); opacity: 0.12; z-index: -1; transition: 1s; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background: var(--ink); color: #ececed; 
+            font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* ÜST VIBE-STORIES (Instagram Samimiyeti) */
-        .vibe-stories { display: flex; gap: 15px; padding: 20px; overflow-x: auto; scrollbar-width: none; margin-top: 40px; }
-        .vibe-circle { flex: 0 0 65px; height: 65px; border-radius: 50%; padding: 3px; background: linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(135deg, #FF8E53, #FE6B8B) border-box; border: 3px solid transparent; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .vibe-circle:active { transform: scale(0.9); }
+        /* 1. YAĞMUR ATMOSFERİ (CAM EFEKTİ) */
+        #rain-canvas {
+            position: fixed; inset: 0; z-index: 1; opacity: 0.4; pointer-events: none;
+        }
 
-        /* ANA AKIŞ (TikTok Akışkanlığı) */
-        .feed-container { height: 70vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; padding: 0 15px; }
-        .feed-card { height: 65vh; scroll-snap-align: center; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; }
-        .glass-card { background: var(--glass); border-radius: 35px; padding: 30px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); position: relative; }
+        .ambient-glow {
+            position: fixed; bottom: -10%; left: 50%; transform: translateX(-50%);
+            width: 100%; height: 70%;
+            background: radial-gradient(circle, rgba(255, 191, 0, 0.15) 0%, transparent 70%);
+            z-index: 2; pointer-events: none; transition: 1s;
+        }
 
-        /* ALT NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.04); backdrop-filter: blur(30px); border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { font-size: 22px; opacity: 0.3; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--aura); transform: scale(1.2); }
+        /* 2. SAYFA YAPISI */
+        .page { position: fixed; inset: 0; padding: 80px 25px 120px; display: none; overflow-y: auto; z-index: 10; }
+        .page.active { display: block; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODALLAR (DM & ODALAR) */
-        .overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; padding: 60px 20px; animation: slideUp 0.4s cubic-bezier(0, 0.55, 0.45, 1); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        /* 3. KİTAP AYRACI KARTLARI (KAYDIRILABİLİR) */
+        .bookmark-card {
+            background: var(--glass); border-left: 3px solid var(--amber);
+            border-radius: 4px 25px 25px 4px; padding: 25px; margin-bottom: 20px;
+            backdrop-filter: blur(20px); transition: 0.3s; position: relative;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+        }
+        .bookmark-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+        .author { font-family: 'Playfair Display', serif; font-style: italic; font-size: 13px; color: var(--amber); margin-bottom: 10px; display: block; }
+        .content { font-size: 16px; line-height: 1.7; opacity: 0.9; }
 
-        .btn-main { background: linear-gradient(135deg, #FF8E53, #FE6B8B); border: none; padding: 12px 25px; border-radius: 20px; font-weight: 800; color: #000; cursor: pointer; }
+        /* 4. NAVİGASYON (GAZ LAMBASI RUHU) */
+        nav {
+            position: fixed; bottom: 35px; left: 25px; right: 25px; height: 75px; 
+            background: rgba(10, 10, 12, 0.9); border-radius: 40px;
+            border: 1px solid var(--border); display: flex; justify-content: space-around;
+            align-items: center; z-index: 10000; backdrop-filter: blur(30px);
+        }
+        .nav-link { font-size: 20px; opacity: 0.3; transition: 0.4s; cursor: pointer; color: white; border: none; background: none; }
+        .nav-link.active { opacity: 1; color: var(--amber); text-shadow: 0 0 15px var(--amber); }
+
+        /* 5. ÖZEL ODA (DM) */
+        #chat-overlay {
+            position: fixed; inset: 0; background: var(--ink); z-index: 50000; display: none; flex-direction: column;
+        }
+
+        /* GİRİŞ EKRANI */
+        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .gate-title { font-family: 'Playfair Display', serif; font-size: 50px; font-weight: 800; color: var(--amber); margin-bottom: 5px; }
+        .btn-ink { background: var(--amber); color: #000; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 800; cursor: pointer; margin-top: 30px; }
     </style>
 </head>
 <body>
 
-    <div class="ambient" id="aura-glow"></div>
+    <canvas id="rain-canvas"></canvas>
+    <div class="ambient-glow" id="main-glow"></div>
 
-    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 style="font-size: 50px; font-weight: 800; letter-spacing: -2px;">Aura.</h1>
-        <input type="text" id="username" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="Sen kimsin?">
-        <button class="btn-main" onclick="startApp()">IŞIKLARI YAK</button>
+    <div id="gate">
+        <div class="gate-title">Aura</div>
+        <p style="letter-spacing: 5px; opacity: 0.3; font-size: 10px;">THE RAINY LIBRARY</p>
+        <input type="text" id="user-name" placeholder="İsmin nedir?" style="background:none; border:none; border-bottom:1px solid #333; color:white; text-align:center; font-size:20px; outline:none; margin-top:40px; width:200px;">
+        <button class="btn-ink" onclick="enterLibrary()">KAPIYI AÇ</button>
     </div>
 
     <div id="app" style="display:none;">
         
-        <div class="vibe-stories" id="story-bar">
-            <div class="vibe-circle" onclick="openDM('Aura Bot')">✨</div>
-            <div class="vibe-circle" style="border-color: #4ade80">🎧</div>
-            <div class="vibe-circle" style="border-color: #38bdf8">🌙</div>
+        <div style="position:fixed; top:45px; right:25px; z-index:20000; cursor:pointer; opacity:0.4; font-size:20px;" onclick="toggleSettings()">⚙️</div>
+
+        <div id="p-shelves" class="page active">
+            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Kütüphane Rafları</h2>
+            <div id="shelf-list"></div>
         </div>
 
-        <div class="feed-container" id="main-feed">
+        <div id="p-write" class="page">
+            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Not Bırak</h2>
+            <div class="bookmark-card">
+                <textarea id="note-in" style="width:100%; background:none; border:none; color:white; outline:none; height:120px; font-family:inherit; font-size:18px;" placeholder="Bu kütüphanenin bir köşesine fısıltını bırak..."></textarea>
+                <button class="btn-ink" style="float:right; padding:10px 25px; font-size:12px;" onclick="addNote()">AYRACI BIRAK</button>
+                <div style="clear:both;"></div>
             </div>
+        </div>
+
+        <div id="p-bonds" class="page">
+            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Frekans Bağları</h2>
+            <div id="bond-list">
+                <div class="bookmark-card" style="opacity:0.5; text-align:center; border:none;">Henüz bir ruhla eşleşmedin. Kitaplara enerji vermeyi dene.</div>
+            </div>
+        </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('home', this)">🏠</div>
-            <div class="nav-item" onclick="showRooms()">✨</div>
-            <div class="nav-item" onclick="showDM()">💬</div>
-            <div class="nav-item" onclick="logout()">👤</div>
+            <div class="nav-link active" onclick="tab('shelves', this)">📖</div>
+            <div class="nav-link" onclick="tab('write', this)">✒️</div>
+            <div class="nav-link" onclick="tab('bonds', this)">🕯️</div>
         </nav>
     </div>
 
-    <div id="dm-panel" class="overlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <h2 style="margin:0;">Fısıltılar</h2>
-            <span onclick="closeOverlay('dm-panel')" style="font-size:30px;">✕</span>
+    <div id="settings-ui" style="position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:100000; display:none; padding:60px 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:50px;">
+            <h2 style="font-family:'Playfair Display'; font-size:28px;">Kütüphane Ayarları</h2>
+            <span onclick="toggleSettings()" style="font-size:30px;">✕</span>
         </div>
-        <div class="glass-card" onclick="openChat('Can')"><b>Can:</b> Yarınki konser için hazır mısın?</div>
-        <div class="glass-card" onclick="openChat('Melis')"><b>Melis:</b> Bu şarkı tam senin auranı yansıtıyor.</div>
-    </div>
-
-    <div id="room-panel" class="overlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-            <h2 style="margin:0;">Odalar</h2>
-            <span onclick="closeOverlay('room-panel')" style="font-size:30px;">✕</span>
+        <p style="opacity:0.4; font-size:11px; letter-spacing:2px; margin-bottom:20px;">IŞIK ŞİDDETİ</p>
+        <input type="range" min="0" max="50" value="15" style="width:100%; accent-color:var(--amber);" oninput="adjustGlow(this.value)">
+        <p style="opacity:0.4; font-size:11px; letter-spacing:2px; margin-top:40px; margin-bottom:20px;">YAĞMUR YOĞUNLUĞU</p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-ink" style="background:#222; color:white; flex:1;" onclick="setRain(20)">Hafif</button>
+            <button class="btn-ink" style="background:#222; color:white; flex:1;" onclick="setRain(60)">Sağanak</button>
         </div>
-        <div class="glass-card">
-            <h3>Gece Yarısı Lo-Fi</h3>
-                <p style="opacity:0.5;">Sadece fısıltılar ve ritim.</p>
-                <button class="btn-main" style="width:100%;">KATIL</button>
-        </div>
+        <button class="btn-ink" style="width:100%; margin-top:100px; background:none; border:1px solid #444; color:#666;" onclick="localStorage.clear(); location.reload();">Işıkları Kapat (Çıkış)</button>
     </div>
 
     <script>
-        let me = localStorage.getItem('aura_final_me');
-        let posts = [
-            {n: "Aura", t: "Hoş geldin. Burası senin güvenli alanın. Rahatla ve akışa bırak.", c: "#FF8E53"},
-            {n: "Deniz", t: "Yağmurun sesiyle bu şarkı o kadar iyi gidiyor ki...", c: "#38bdf8"},
-            {n: "Selim", t: "Bugün enerji seviyem tavan! Kimler benimle?", c: "#4ade80"}
+        let me = localStorage.getItem('aura_lib_user') || "";
+        let notes = JSON.parse(localStorage.getItem('aura_lib_notes')) || [
+            {n: "Mevlana", t: "Dün akıllıydım, dünyayı değiştirmek istedim. Bugün bilgeyim, kendimi değiştiriyorum."},
+            {n: "Anonim", t: "Yağmurun sesinde saklı bir huzur var, sadece sessiz olanlar duyar."},
+            {n: "Dostoyevski", t: "Her şeyin üzerinden geçip gidilir ama hiçbir şey unutulmaz."}
         ];
 
-        function startApp() {
-            const n = document.getElementById('username').value.trim();
+        // 1. GİRİŞ MANTIĞI
+        function enterLibrary() {
+            const n = document.getElementById('user-name').value.trim();
             if(!n) return;
-            localStorage.setItem('aura_final_me', n);
+            localStorage.setItem('aura_lib_user', n);
             me = n;
             document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            renderFeed();
+            renderNotes();
+            initRain();
         }
-        if(me) startApp();
+        if(me) enterLibrary();
 
-        function renderFeed() {
-            const feed = document.getElementById('main-feed');
-            feed.innerHTML = posts.map(p => `
-                <div class="feed-card">
-                    <div class="glass-card" style="border-left: 5px solid ${p.c}">
-                        <b style="color:${p.c}; font-size:18px;">${p.n}</b>
-                        <p style="margin:15px 0; line-height:1.6; font-size:16px; opacity:0.9;">${p.t}</p>
-                        <div style="display:flex; gap:20px; opacity:0.4; font-size:12px;">
-                            <span onclick="alert('Enerji verildi!')">✨ Enerji Ver</span>
-                            <span onclick="showDM()">💬 Cevapla</span>
-                        </div>
-                    </div>
+        // 2. NAVİGASYON
+        function tab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // 3. NOT EKLEME (BOOKMARK)
+        function addNote() {
+            const t = document.getElementById('note-in').value.trim();
+            if(!t) return;
+            notes.unshift({n: me, t: t});
+            localStorage.setItem('aura_lib_notes', JSON.stringify(notes));
+            document.getElementById('note-in').value = '';
+            renderNotes();
+            tab('shelves', document.querySelectorAll('.nav-link')[0]);
+        }
+
+        function renderNotes() {
+            document.getElementById('shelf-list').innerHTML = notes.map(n => `
+                <div class="bookmark-card" ondbclick="matchAlert('${n.n}')">
+                    <span class="author">@${n.n} bir ayrac bıraktı:</span>
+                    <div class="content">${n.t}</div>
+                    <div style="margin-top:15px; font-size:10px; opacity:0.3; letter-spacing:1px;">ENERJİ VERMEK İÇİN BASILI TUT</div>
                 </div>
             `).join('');
         }
 
-        function showDM() { document.getElementById('dm-panel').style.display = 'flex'; }
-        function showRooms() { document.getElementById('room-panel').style.display = 'flex'; }
-        function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
-        function logout() { localStorage.clear(); location.reload(); }
-        
-        function tab(id, el) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            if(id === 'home') renderFeed();
+        // 4. MATCH SİSTEMİ (OYUNCAKLI ETKİLEŞİM)
+        function matchAlert(user) {
+            alert(user + " ile frekansınız uyuştu! Bond (Bağlar) sekmesine eklendi.");
+        }
+
+        // 5. AYARLAR
+        function toggleSettings() {
+            const s = document.getElementById('settings-ui');
+            s.style.display = s.style.display === 'block' ? 'none' : 'block';
+        }
+        function adjustGlow(v) {
+            document.getElementById('main-glow').style.opacity = v / 100;
+        }
+
+        // 6. YAĞMUR MOTORU (CANVAS)
+        const canvas = document.getElementById('rain-canvas');
+        const ctx = canvas.getContext('2d');
+        let rainDrops = [];
+        let rainCount = 40;
+
+        function initRain() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            for(let i = 0; i < rainCount; i++) {
+                rainDrops.push({x: Math.random() * canvas.width, y: Math.random() * canvas.height, l: Math.random() * 20, v: Math.random() * 5 + 2});
+            }
+            animateRain();
+        }
+
+        function setRain(count) { rainCount = count; rainDrops = []; initRain(); }
+
+        function animateRain() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(174,194,224,0.5)';
+            ctx.lineWidth = 1;
+            rainDrops.forEach(d => {
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x, d.y + d.l);
+                ctx.stroke();
+                d.y += d.v;
+                if(d.y > canvas.height) d.y = -20;
+            });
+            requestAnimationFrame(animateRain);
         }
     </script>
 </body>
