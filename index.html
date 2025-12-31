@@ -3,159 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Pure</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Aura Social</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
+            --bg: #080808;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
             --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --soft-gold: #d4af37;
+            --border: rgba(255, 255, 255, 0.07);
+            --aura-glow: 0 0 20px rgba(191, 149, 63, 0.3);
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* ARKA PLAN */
-        .aura-glow { position: fixed; top: 50%; left: 50%; width: 400px; height: 400px; background: #bf953f; filter: blur(150px); opacity: 0.08; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; }
-
-        /* GİRİŞ EKRANI - Z-index düzeltildi */
+        /* GİRİŞ */
         #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ANA YAPI */
+        .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; overflow-y: auto; background: var(--bg); }
+        .page.active { display: block; animation: softIn 0.4s ease; }
+        @keyframes softIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* SOSYAL KARTLAR (Instagram-ish) */
+        .social-card { background: var(--glass); border-radius: 24px; padding: 20px; margin: 0 15px 15px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
+        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .avatar-ring { width: 45px; height: 45px; border-radius: 50%; padding: 2px; background: var(--gold); box-shadow: var(--aura-glow); }
+        .avatar-inner { width: 100%; height: 100%; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #d4af37; }
         
-        /* SAYFALAR */
-        .page { position: fixed; inset: 0; padding: 60px 20px 140px; display: none; overflow-y: auto; z-index: 10; }
-        .page.active { display: block; animation: softFade 0.5s ease; }
-        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+        .post-content { font-size: 15px; line-height: 1.5; opacity: 0.9; margin-bottom: 15px; }
+        .post-actions { display: flex; gap: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
+        .action-btn { background: none; border: none; color: white; opacity: 0.5; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .action-btn:active { transform: scale(0.9); opacity: 1; color: #d4af37; }
 
-        /* KARTLAR */
-        .aura-card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
+        /* NAVİGASYON (Geliştirilmiş 3 Küre) */
+        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 45px; align-items: center; z-index: 50000; padding: 15px 30px; background: rgba(255,255,255,0.03); border-radius: 40px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
+        .nav-orb { width: 8px; height: 8px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; }
+        .nav-orb.active { opacity: 1; transform: scale(2); background: #d4af37; box-shadow: 0 0 15px #d4af37; }
 
-        /* NAVİGASYON (3 KÜRE) */
-        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; align-items: center; z-index: 50000; padding: 20px; }
-        .nav-orb { width: 12px; height: 12px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; cursor: pointer; border: 2px solid transparent; }
-        .nav-orb.active { opacity: 1; transform: scale(1.6); box-shadow: 0 0 15px white; }
+        /* BUTONLAR */
+        .btn-gold { background: var(--gold); border: none; padding: 12px 30px; border-radius: 30px; font-weight: 800; color: black; cursor: pointer; transition: 0.3s; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(191,149,63,0.3); }
 
-        /* INPUTS & BUTTONS */
-        .aura-input { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 20px; padding: 18px; color: white; width: 100%; outline: none; box-sizing: border-box; font-size: 16px; }
-        .btn-gold { background: var(--gold); border: none; padding: 15px 40px; border-radius: 30px; font-weight: 900; color: black; cursor: pointer; z-index: 100001; position: relative; }
-
-        /* MESAJLAŞMA */
-        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 1, 0.3, 1); z-index: 60000; padding: 30px 20px 60px; }
+        /* DM PANEL */
+        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); z-index: 60000; padding: 30px 20px 60px; }
         #whisper-panel.open { transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <div class="aura-glow"></div>
-
     <div id="gate">
-        <h1 class="premium-font" style="font-size:65px; margin-bottom:10px;">Aura</h1>
-        <p style="opacity:0.3; letter-spacing:5px; font-size:10px; margin-bottom:40px;">BİZ BİZE</p>
+        <h1 class="premium-font" style="font-size:70px; margin-bottom:10px;">Aura</h1>
+        <p style="opacity:0.3; letter-spacing:8px; font-size:10px; margin-bottom:40px;">THE SOCIAL SPACE</p>
         <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
-            <input type="text" id="u-in" class="aura-input" style="width:240px; text-align:center;" placeholder="İsminiz?">
-            <button onclick="startApp()" class="btn-gold">KEŞFET</button>
+            <input type="text" id="u-in" style="background:#111; border:1px solid #333; padding:18px; color:white; border-radius:20px; text-align:center; width:260px; outline:none;" placeholder="İsminiz?">
+            <button onclick="startApp()" class="btn-gold">GİRİŞ YAP</button>
         </div>
     </div>
 
     <div id="app" style="display:none;">
         
         <div id="p-universe" class="page active">
-            <h1 class="premium-font" style="font-size:38px; margin-bottom:30px;">Evren</h1>
-            
-            <div class="aura-card" onclick="openWhisper('Lounge Stage')">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <b class="premium-font" style="font-size:18px;">Canlı: Lounge</b><br>
-                        <small style="opacity:0.4;">After Hours çalıyor...</small>
+            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px; margin:0;">Evren</h1><p style="opacity:0.4; font-size:12px;">Neler oluyor?</p></div>
+            <div id="feed">
+                <div class="social-card">
+                    <div class="user-info">
+                        <div class="avatar-ring"><div class="avatar-inner">M</div></div>
+                        <div><b style="font-size:14px;">Melis</b><br><small style="opacity:0.4;">2 dk önce</small></div>
                     </div>
-                    <div style="color:var(--soft-gold); font-size:20px;">✨</div>
+                    <div class="post-content">Güne bu şarkıyla başlamak ruhumu temizledi. ✨</div>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="sendEnergy(this)">✨ Enerji Gönder</button>
+                        <button class="action-btn" onclick="openWhisper('Melis')">💬 Fısılda</button>
+                    </div>
                 </div>
             </div>
-
-            <div id="dynamic-posts">
-                </div>
         </div>
 
         <div id="p-self" class="page">
-            <h1 class="premium-font" style="font-size:38px;">Benlik</h1>
-            <div class="aura-card">
-                <textarea id="p-text" class="aura-input" style="height:100px; background:transparent; border:none; padding:0;" placeholder="Şu anki enerjin nedir?"></textarea>
-                <button class="btn-gold" style="width:100%; margin-top:20px;" onclick="publish()">PAYLAŞ</button>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <div class="aura-card" style="flex:1; text-align:center;"><small style="font-size:9px; opacity:0.4;">ENERJİ</small><br><b class="premium-font">Spark</b></div>
-                <div class="aura-card" style="flex:1; text-align:center;"><small style="font-size:9px; opacity:0.4;">FISILTI</small><br><b class="premium-font" id="msg-count">0</b></div>
+            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px;">Benlik</h1></div>
+            <div class="social-card" style="margin-top:20px;">
+                <div class="user-info">
+                    <div class="avatar-ring" style="width:60px; height:60px;"><div class="avatar-inner" id="my-av" style="font-size:20px;">A</div></div>
+                    <div><b id="my-name" class="premium-font" style="font-size:24px;"></b><br><small style="color:#d4af37;">SPARK LEVEL</small></div>
+                </div>
+                <textarea id="p-input" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid #333; border-radius:15px; padding:15px; color:white; outline:none; height:100px; font-family:inherit;" placeholder="Evren'e ne fısıldamak istersin?"></textarea>
+                <button class="btn-gold" style="width:100%; margin-top:15px;" onclick="publish()">PAYLAŞ</button>
             </div>
         </div>
 
         <div id="p-msgs" class="page">
-            <h1 class="premium-font" style="font-size:38px;">Fısıltılar</h1>
-            <div id="inbox">
-                <p style="opacity:0.2; text-align:center; margin-top:100px;">Henüz bir fısıltı yok.</p>
+            <div style="padding: 0 20px 20px;"><h1 class="premium-font" style="font-size:38px;">Fısıltılar</h1></div>
+            <div id="inbox" style="text-align:center; margin-top:50px; opacity:0.3;">
+                <p>Henüz kimseyle fısıldaşmadın.</p>
             </div>
         </div>
 
         <div class="aura-nav">
-            <div class="nav-orb active" id="orb1" onclick="tab('universe', this)"></div>
-            <div class="nav-orb" id="orb2" onclick="tab('self', this)"></div>
-            <div class="nav-orb" id="orb3" onclick="tab('msgs', this)"></div>
+            <div class="nav-orb active" onclick="tab('universe', this)"></div>
+            <div class="nav-orb" onclick="tab('self', this)"></div>
+            <div class="nav-orb" onclick="tab('msgs', this)"></div>
         </div>
     </div>
 
     <div id="whisper-panel">
-        <h2 id="w-name" class="premium-font" style="font-size:24px;"></h2>
-        <div id="chat-flow" style="height:250px; overflow-y:auto; margin-bottom:20px; font-size:14px; line-height:1.6; opacity:0.8;"></div>
+        <h2 id="w-name" class="premium-font"></h2>
+        <div id="chat-flow" style="height:250px; overflow-y:auto; margin:20px 0; font-size:14px; opacity:0.8;"></div>
         <div style="display:flex; gap:10px;">
-            <input type="text" id="w-input" class="aura-input" placeholder="Bir şeyler yaz...">
-            <button onclick="send()" style="background:var(--gold); border:none; border-radius:15px; width:50px; color:black; font-weight:bold;">↑</button>
+            <input type="text" id="w-in" style="flex:1; background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:white;" placeholder="Bir fısıltı yaz...">
+            <button onclick="sendMsg()" class="btn-gold" style="padding:0 20px;">↑</button>
         </div>
-        <button class="btn-gold" style="width:100%; margin-top:15px; background:white; color:black;" onclick="closeWhisper()">KAPAT</button>
+        <button onclick="closeWhisper()" style="width:100%; background:none; border:none; color:white; opacity:0.3; margin-top:20px; font-size:12px;">Kapat</button>
     </div>
 
     <script>
-        let me = localStorage.getItem('aura_n') || "";
-        let posts = JSON.parse(localStorage.getItem('aura_p')) || [];
+        let me = localStorage.getItem('A_USER') || "";
+        let posts = JSON.parse(localStorage.getItem('A_POSTS')) || [];
 
         function startApp() {
             const val = document.getElementById('u-in').value.trim();
-            if(!val) { alert("Lütfen isminizi girin."); return; }
-            localStorage.setItem('aura_n', val);
+            if(!val) return;
+            localStorage.setItem('A_USER', val);
             me = val;
             document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
+            document.getElementById('my-name').innerText = me;
+            document.getElementById('my-av').innerText = me[0].toUpperCase();
             render();
         }
 
-        window.onload = () => { if(me) startApp(); };
-
-        function tab(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
-            el.classList.add('active');
-        }
+        if(me) startApp();
 
         function publish() {
-            const txt = document.getElementById('p-text').value.trim();
+            const txt = document.getElementById('p-input').value.trim();
             if(!txt) return;
-            posts.unshift({n: me, t: txt});
-            localStorage.setItem('aura_p', JSON.stringify(posts));
-            document.getElementById('p-text').value = '';
+            posts.unshift({n: me, t: txt, time: 'Şimdi'});
+            localStorage.setItem('A_POSTS', JSON.stringify(posts));
+            document.getElementById('p-input').value = "";
             render();
-            tab('universe', document.getElementById('orb1'));
+            tab('universe', document.querySelectorAll('.nav-orb')[0]);
         }
 
         function render() {
-            const list = document.getElementById('dynamic-posts');
-            list.innerHTML = '';
-            posts.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'aura-card';
-                div.onclick = () => openWhisper(p.n);
-                div.innerHTML = `<b style="font-size:14px; color:var(--soft-gold);">${p.n}</b><p style="margin:10px 0 0; font-size:15px; opacity:0.9;">${p.t}</p>`;
-                list.appendChild(div);
-            });
+            const list = document.getElementById('feed');
+            list.innerHTML = posts.map(p => `
+                <div class="social-card">
+                    <div class="user-info">
+                        <div class="avatar-ring"><div class="avatar-inner">${p.n[0].toUpperCase()}</div></div>
+                        <div><b style="font-size:14px;">${p.n}</b><br><small style="opacity:0.4;">${p.time}</small></div>
+                    </div>
+                    <div class="post-content">${p.t}</div>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="sendEnergy(this)">✨ Enerji Gönder</button>
+                        <button class="action-btn" onclick="openWhisper('${p.n}')">💬 Fısılda</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function sendEnergy(btn) {
+            btn.innerHTML = "✨ Enerji Gönderildi!";
+            btn.style.color = "#d4af37";
+            setTimeout(() => { btn.innerHTML = "✨ Enerji Gönder"; btn.style.color = "white"; }, 2000);
         }
 
         function openWhisper(name) {
@@ -166,13 +175,11 @@
 
         function closeWhisper() { document.getElementById('whisper-panel').classList.remove('open'); }
 
-        function send() {
-            const inp = document.getElementById('w-input');
-            if(!inp.value) return;
-            const flow = document.getElementById('chat-flow');
-            flow.innerHTML += `<p><b>Sen:</b> ${inp.value}</p>`;
-            inp.value = '';
-            flow.scrollTop = flow.scrollHeight;
+        function tab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            el.classList.add('active');
         }
     </script>
 </body>
