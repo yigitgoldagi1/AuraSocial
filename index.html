@@ -7,128 +7,205 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #121212;
+            --bg: #0f0f0f;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
             --soft-gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
+
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; }
 
+        /* GİRİŞ EKRANI */
+        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        .aura-title { font-family: 'Playfair Display', serif; font-size: 60px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+
         /* SAYFA YAPISI */
-        .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; }
-        .page.active { display: block; }
-        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); }
+        .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; background: var(--bg); }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* KARTLAR VE ELEMANLAR */
+        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
         .premium-text { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        
+        /* PAYLAŞIM ALANI */
+        .post-input-box { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
+        textarea { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; resize: none; height: 40px; }
+        
+        /* BUTONLAR */
+        .btn-gold { background: var(--gold); border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; color: black; cursor: pointer; transition: 0.3s; }
+        .btn-gold:active { transform: scale(0.95); opacity: 0.8; }
 
-        /* SPOTIFY OYNATICI (GERÇEK İŞLEV) */
-        .spotify-embed { border-radius: 12px; width: 100%; height: 80px; border: none; margin-top: 10px; }
+        /* SPOTIFY PLAYER */
+        .sp-player { border-radius: 12px; width: 100%; height: 80px; border: none; margin-top: 10px; }
 
-        /* PAYLAŞ BUTONU */
-        .btn-gold { background: var(--gold); border: none; padding: 12px 30px; border-radius: 20px; font-weight: bold; color: #000; cursor: pointer; }
-        textarea { background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; width: 100%; border-radius: 15px; padding: 15px; outline: none; resize: none; box-sizing: border-box; }
+        /* NAVİGASYON */
+        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 1000; }
+        .nav-item { font-size: 20px; opacity: 0.3; transition: 0.3s; color: white; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--soft-gold); transform: translateY(-3px); }
 
-        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { font-size: 24px; opacity: 0.3; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--soft-gold); }
+        /* AYARLAR MODAL */
+        #settings-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; padding: 40px 20px; }
     </style>
 </head>
 <body>
 
-    <div id="gate" style="position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 class="premium-text" style="font-size:60px;">Aura</h1>
-        <input type="text" id="name-input" style="background:#222; border:none; padding:15px; border-radius:15px; color:white; text-align:center; width:240px;" placeholder="İsminizi yazın...">
-        <button class="btn-gold" style="margin-top:20px;" onclick="startApp()">BAŞLA</button>
+    <div id="gate">
+        <h1 class="aura-title">Aura</h1>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:15px;">
+            <input type="text" id="user-name-input" style="background:#1a1a1a; border:1px solid #333; padding:15px; color:white; border-radius:15px; text-align:center; width:220px; outline:none;" placeholder="İsminiz?">
+            <button class="btn-gold" style="width:100%;" onclick="login()">KEŞFET</button>
+        </div>
     </div>
 
-    <div id="app" style="display:none;">
-        <div id="v-feed" class="page active">
-            <h2 class="premium-text" style="font-size:32px;">Akış</h2>
-            <div class="card">
-                <textarea id="post-input" placeholder="Spotify şarkı linki veya bir fısıltı..."></textarea>
+    <div id="main-app" style="display:none;">
+        
+        <div id="p-feed" class="page active">
+            <h2 class="premium-text" style="font-size:30px;">Akış</h2>
+            <div class="post-input-box">
+                <textarea id="post-text" placeholder="Neler oluyor? Spotify linki bırakabilirsin..."></textarea>
                 <div style="display:flex; justify-content:flex-end; margin-top:10px;">
-                    <button class="btn-gold" onclick="sendPost()">Paylaş</button>
+                    <button class="btn-gold" style="font-size:12px;" onclick="addPost()">Paylaş</button>
                 </div>
             </div>
-            <div id="feed-items"></div>
+            <div id="feed-container"></div>
         </div>
 
-        <div id="v-profile" class="page">
-            <h2 class="premium-text" style="font-size:32px;">Benlik</h2>
+        <div id="p-explore" class="page">
+            <h2 class="premium-text" style="font-size:30px;">Keşfet</h2>
+            <div class="card" style="text-align:center; padding:50px 20px;">
+                <div style="font-size:40px; margin-bottom:15px;">✨</div>
+                <p style="font-size:14px; opacity:0.6;">Sana benzer enerjiye sahip 3 kişi yakında şarkı paylaştı.</p>
+            </div>
+        </div>
+
+        <div id="p-profile" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 class="premium-text" style="font-size:30px; margin:0;">Benlik</h2>
+                <span onclick="toggleSettings(true)" style="font-size:24px; cursor:pointer;">⚙️</span>
+            </div>
             <div class="card">
-                <h3 id="u-name" class="premium-text" style="font-size:28px; margin:0;"></h3>
-                <p id="auth-status" style="font-size:12px; color: #666; margin-top:10px;">Spotify Bağlı Değil</p>
-                <button class="btn-gold" style="font-size:12px; padding:8px 20px;" onclick="connectSpotify()">Spotify'ı Bağla</button>
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div id="avatar" style="width:70px; height:70px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:28px;">A</div>
+                    <div>
+                        <h3 id="profile-name" class="premium-text" style="font-size:24px; margin:0;"></h3>
+                        <p style="font-size:12px; opacity:0.4; margin-top:5px;">Aura Seviyesi: %100</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <p style="font-size:13px; color:var(--soft-gold);">SPOTIFY DURUMU</p>
+                <p id="sp-status" style="font-size:14px; margin:10px 0;">Henüz bir şarkı paylaşılmadı.</p>
             </div>
         </div>
 
         <nav>
-            <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
-            <div class="nav-item" onclick="tab('profile', this)">👤</div>
+            <div class="nav-item active" onclick="showPage('feed', this)">🏠</div>
+            <div class="nav-item" onclick="showPage('explore', this)">✨</div>
+            <div class="nav-item" onclick="showPage('profile', this)">👤</div>
         </nav>
     </div>
 
-    <script>
-        let posts = JSON.parse(localStorage.getItem('aura_real_posts')) || [];
+    <div id="settings-menu">
+        <h2 class="premium-text">Ayarlar</h2>
+        <div class="card" onclick="logout()" style="color:#ff4444; border-color:rgba(255,68,68,0.2);">
+            Oturumu Kapat ve Verileri Sil
+        </div>
+        <div class="card" onclick="toggleSettings(false)">
+            Geri Dön
+        </div>
+    </div>
 
-        function startApp() {
-            const name = document.getElementById('name-input').value;
-            if(!name) return;
-            localStorage.setItem('user', name);
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('u-name').innerText = name;
+    <script>
+        let myPosts = JSON.parse(localStorage.getItem('aura_posts_v4')) || [];
+        let myName = localStorage.getItem('aura_name_v4');
+
+        window.onload = () => {
+            if(myName) {
+                setupUI(myName);
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+            }
+        };
+
+        function login() {
+            const n = document.getElementById('user-name-input').value.trim();
+            if(!n) return;
+            localStorage.setItem('aura_name_v4', n);
+            myName = n;
+            setupUI(n);
+            document.getElementById('gate').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+            }, 500);
+        }
+
+        function setupUI(name) {
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('avatar').innerText = name[0].toUpperCase();
             renderPosts();
         }
 
-        function connectSpotify() {
-            // Bu kısım gerçek Spotify API yönlendirmesi için başlangıçtır
-            alert("Spotify API izni için yönlendiriliyorsunuz... (Geliştirici modunda gerçek hesap bağlama yakında)");
-            document.getElementById('auth-status').innerText = "Spotify Hesabın Başarıyla Bağlandı ✅";
-            document.getElementById('auth-status').style.color = "#1DB954";
-        }
-
-        function sendPost() {
-            const text = document.getElementById('post-input').value;
+        function addPost() {
+            const text = document.getElementById('post-text').value.trim();
             if(!text) return;
 
-            let spotifyId = "";
-            if(text.includes('open.spotify.com/track/')) {
-                spotifyId = text.split('track/')[1].split('?')[0];
+            let spId = "";
+            if(text.includes('spotify.com/track/')) {
+                spId = text.split('track/')[1].substring(0,22);
             }
 
-            const post = {
-                user: localStorage.getItem('user'),
+            const newPost = {
+                user: myName,
                 content: text,
-                trackId: spotifyId,
-                time: new Date().toLocaleTimeString()
+                spotify: spId,
+                date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
-            posts.unshift(post);
-            localStorage.setItem('aura_real_posts', JSON.stringify(posts));
-            document.getElementById('post-input').value = "";
+            myPosts.unshift(newPost);
+            localStorage.setItem('aura_posts_v4', JSON.stringify(myPosts));
+            document.getElementById('post-text').value = "";
             renderPosts();
+            
+            if(spId) {
+                document.getElementById('sp-status').innerText = "Son paylaşılan şarkı aktif ✅";
+                document.getElementById('sp-status').style.color = "#1DB954";
+            }
         }
 
         function renderPosts() {
-            const container = document.getElementById('feed-items');
+            const container = document.getElementById('feed-container');
             container.innerHTML = "";
-            posts.forEach(p => {
+            myPosts.forEach(p => {
                 const card = document.createElement('div');
                 card.className = "card";
                 card.innerHTML = `
-                    <div style="font-size:12px; margin-bottom:8px;"><b class="premium-text">${p.user}</b> <span style="opacity:0.3; float:right;">${p.time}</span></div>
-                    <p style="font-size:14px; margin-bottom:10px;">${p.trackId ? "Bir şarkı fısıldadı:" : p.content}</p>
-                    ${p.trackId ? `<iframe class="spotify-embed" src="https://open.spotify.com/embed/track/${p.trackId}" allow="encrypted-media"></iframe>` : ''}
+                    <div style="font-size:12px; margin-bottom:10px; opacity:0.5;">
+                        <b class="premium-text">${p.user}</b> • ${p.date}
+                    </div>
+                    <p style="font-size:14px; line-height:1.5;">${p.content}</p>
+                    ${p.spotify ? `<iframe class="sp-player" src="https://open.spotify.com/embed/track/${p.spotify}" allow="encrypted-media"></iframe>` : ''}
                 `;
                 container.appendChild(card);
             });
         }
 
-        function tab(id, el) {
+        function showPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
+            document.getElementById('p-' + id).classList.add('active');
             el.classList.add('active');
+        }
+
+        function toggleSettings(show) {
+            document.getElementById('settings-menu').style.display = show ? 'block' : 'none';
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
         }
     </script>
 </body>
