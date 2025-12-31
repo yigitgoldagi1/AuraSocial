@@ -3,129 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Social</title>
+    <title>Aura</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #000;
+            --bg: #121212; /* Zifiri siyah yerine yumuşak antrasit */
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
-            --gold-s: #d4af37;
-            --glass: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
+            --soft-gold: #d4af37;
+            --glass: rgba(255, 255, 255, 0.05);
+            --warm-white: #e0e0e0;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            background: var(--bg); color: var(--warm-white); 
+            font-family: 'Inter', sans-serif; overflow: hidden; 
+        }
 
-        /* GİRİŞ EKRANI */
-        #gate { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.6s; }
-        .aura-logo { font-family: 'Playfair Display', serif; font-size: 85px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(191,149,63,0.5)); margin: 0; }
+        /* GİRİŞ EKRANI - Daha yumuşak geçişli */
+        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s ease-in-out; }
+        .aura-logo { font-family: 'Playfair Display', serif; font-size: 75px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
 
-        /* ANA YAPI */
-        #app-content { display: none; opacity: 0; transition: 0.5s; }
-        .page { position: fixed; inset: 0; padding: 70px 25px 100px; overflow-y: auto; display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANA SAYFALAR */
+        .page { position: fixed; inset: 0; padding: 60px 25px 120px; overflow-y: auto; display: none; }
+        .page.active { display: block; animation: softFade 0.5s ease; }
+        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* KARTLAR VE AYARLAR */
-        .premium-card { background: var(--glass); border: 1px solid var(--border); border-radius: 28px; padding: 20px; margin-bottom: 15px; backdrop-filter: blur(20px); }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .setting-item:last-child { border: none; }
-        
-        /* RADAR ANİMASYONU */
-        .radar-container { height: 350px; display: flex; align-items: center; justify-content: center; position: relative; }
-        .pulse { position: absolute; width: 100px; height: 100px; background: var(--gold); border-radius: 50%; opacity: 0.6; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 0; } }
+        /* YUMUŞAK KARTLAR */
+        .card { 
+            background: var(--glass); 
+            border-radius: 35px; /* Daha yuvarlak, daha dost canlısı */
+            padding: 25px; 
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            margin-bottom: 20px;
+        }
 
-        .premium-name { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; margin: 0; }
+        /* RADAR - Soğuk değil, mistik */
+        .aura-circle {
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(191,149,63,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; animation: breathe 4s infinite ease-in-out;
+        }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.8; } }
 
-        /* NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.08); backdrop-filter: blur(30px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 1000; }
-        .nav-item { font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.3s; color: white; }
-        .nav-item.active { opacity: 1; color: var(--gold-s); transform: translateY(-5px); }
+        /* PREMIUM İSİM STİLİ (Yiğit Yazısı) */
+        .premium-name { 
+            font-family: 'Playfair Display', serif; 
+            background: var(--gold); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
 
-        .btn-gold { background: white; color: black; border: none; padding: 18px 60px; border-radius: 25px; font-weight: 800; cursor: pointer; }
+        /* ALT NAVİGASYON - Daha şeffaf */
+        nav { 
+            position: fixed; bottom: 35px; left: 40px; right: 40px; height: 70px;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(25px);
+            border-radius: 35px; display: flex; justify-content: space-around; 
+            align-items: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-item { font-size: 22px; opacity: 0.4; transition: 0.3s; color: white; }
+        .nav-item.active { opacity: 1; transform: scale(1.2); }
+
+        .status-badge {
+            background: rgba(191,149,63,0.1);
+            color: var(--soft-gold);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
 
     <div id="gate">
         <h1 class="aura-logo">Aura</h1>
-        <p style="color:var(--gold-s); letter-spacing:5px; opacity:0.6; font-size:10px; margin-top:-10px;">PREMIUM SOCIAL</p>
-        <input type="text" id="name-field" style="background:#111; border:1px solid #333; padding:20px; border-radius:20px; color:white; text-align:center; width:260px; margin:40px 0 20px;" placeholder="İsminiz">
-        <button class="btn-gold" onclick="enterApp()">GİRİŞ YAP</button>
+        <p style="opacity:0.4; font-size:12px; letter-spacing:4px; margin-top:-10px;">BİZ BİZE</p>
+        <input type="text" id="name-input" style="background:transparent; border:none; border-bottom:1px solid #333; padding:15px; color:white; text-align:center; width:200px; margin:30px 0; outline:none;" placeholder="İsminiz nedir?">
+        <button onclick="enterApp()" style="background:white; color:black; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; cursor:pointer;">Başlayalım</button>
     </div>
 
-    <div id="app-content">
+    <div id="app-content" style="display:none;">
         <div id="v-chats" class="page active">
-            <h2 class="premium-name" style="font-size:35px;">Fısıltılar</h2>
-            <div class="premium-card" style="margin-top:20px; text-align:center; opacity:0.5;">
-                <p>Henüz bir fısıltı gelmedi...</p>
+            <h2 style="font-family:'Playfair Display'; font-size:32px;">Selamlar</h2>
+            <div class="card" style="text-align:center;">
+                <p style="opacity:0.6;">Sohbetler burada başlayacak...</p>
             </div>
         </div>
 
         <div id="v-radar" class="page">
-            <h2 class="premium-name" style="font-size:35px;">Radar</h2>
-            <div class="radar-container">
-                <div class="pulse"></div>
-                <div class="pulse" style="animation-delay: 0.5s;"></div>
-                <div style="z-index:10; width:80px; height:80px; background:var(--gold); border-radius:50%; box-shadow:0 0 30px rgba(191,149,63,0.6);"></div>
+            <h2 style="font-family:'Playfair Display'; font-size:32px;">Esinti</h2>
+            <div style="height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div class="aura-circle">
+                    <div style="width:60px; height:60px; background:var(--gold); border-radius:50%; box-shadow:0 0 40px rgba(191,149,63,0.3);"></div>
+                </div>
+                <p style="margin-top:20px; opacity:0.4; font-size:13px;">Etrafındaki enerjiler...</p>
             </div>
-            <p style="text-align:center; color:var(--gold-s); font-size:12px; letter-spacing:2px;">YAKINDAKİ AURARLAR TARANIYOR</p>
         </div>
 
         <div id="v-profile" class="page">
-            <h2 class="premium-name" style="font-size:35px;">Benlik</h2>
-            
-            <div class="premium-card">
+            <h2 style="font-family:'Playfair Display'; font-size:32px;">Benlik</h2>
+            <div class="card">
                 <div style="display:flex; align-items:center; gap:20px;">
-                    <div id="display-av" style="width:70px; height:70px; background:var(--gold); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#000; font-weight:bold;">?</div>
+                    <div id="user-av" style="width:65px; height:65px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:24px;">Y</div>
                     <div>
-                        <h3 id="display-name" class="premium-name" style="font-size:28px;">Yiğit</h3>
-                        <p style="opacity:0.4; font-size:12px;">Aura Elite Member</p>
+                        <h3 id="user-name" class="premium-name" style="font-size:26px; margin:0;"></h3>
+                        <div class="status-badge">Anın Tadını Çıkarıyor ☕</div>
                     </div>
                 </div>
             </div>
 
-            <div class="premium-card">
-                <h4 style="margin:0 0 15px 0; font-size:14px; color:var(--gold-s);">UYGULAMA AYARLARI</h4>
-                <div class="setting-item">
-                    <span>Gizli Mod</span>
-                    <input type="checkbox" checked>
+            <div class="card" style="padding:15px;">
+                <p style="font-size:14px; margin-bottom:15px; opacity:0.8;">Ayarlar</p>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; opacity:0.6;">
+                    <span>Görünürlük</span>
+                    <span>Açık</span>
                 </div>
-                <div class="setting-item">
+                <div style="display:flex; justify-content:space-between; font-size:14px; opacity:0.6;">
                     <span>Bildirimler</span>
-                    <input type="checkbox" checked>
-                </div>
-                <div class="setting-item" onclick="alert('Aura Premium aktif!')">
-                    <span>Üyelik Durumu</span>
-                    <span style="color:var(--gold-s); font-size:12px;">ELITE</span>
+                    <span>Sessiz</span>
                 </div>
             </div>
 
-            <div class="premium-card" style="text-align:center; color:#ff4444;" onclick="location.reload()">
-                <b>Oturumu Kapat</b>
-            </div>
+            <p onclick="location.reload()" style="text-align:center; color:#666; font-size:12px; margin-top:30px;">Oturumu Kapat</p>
         </div>
 
         <nav>
             <div class="nav-item active" onclick="tab('chats', this)">💬</div>
-            <div class="nav-item" onclick="tab('radar', this)">📡</div>
+            <div class="nav-item" onclick="tab('radar', this)">✨</div>
             <div class="nav-item" onclick="tab('profile', this)">👤</div>
         </nav>
     </div>
 
     <script>
         function enterApp() {
-            const name = document.getElementById('name-field').value;
-            if(!name) return alert("İsim yazın");
-            document.getElementById('display-name').innerText = name;
-            document.getElementById('display-av').innerText = name[0].toUpperCase();
+            const n = document.getElementById('name-input').value;
+            if(!n) return;
+            document.getElementById('user-name').innerText = n;
+            document.getElementById('user-av').innerText = n[0].toUpperCase();
             document.getElementById('gate').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('gate').style.display = 'none';
                 document.getElementById('app-content').style.display = 'block';
-                setTimeout(() => document.getElementById('app-content').style.opacity = '1', 50);
-            }, 600);
+            }, 800);
         }
 
         function tab(id, el) {
