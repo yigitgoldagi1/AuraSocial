@@ -3,153 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Social: Multiverse</title>
+    <title>Aura: The Creator</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
             --soft-gold: #d4af37;
         }
 
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* SAYFA YAPISI */
         .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; overflow-y: auto; background: var(--bg); }
-        .page.active { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .container { padding: 0 20px; }
 
-        /* KARTLAR */
-        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); backdrop-filter: blur(15px); }
-        .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* ODA KARTLARI */
+        .room-card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .room-info b { font-size: 18px; display: block; margin-bottom: 4px; }
+        .room-info span { font-size: 12px; opacity: 0.5; }
 
-        /* ODA ÖNİZLEME KARTLARI (KEŞFET) */
-        .room-preview { position: relative; height: 150px; border-radius: 25px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: flex-end; padding: 20px; border: 1px solid var(--border); cursor: pointer; }
-        .room-bg { position: absolute; inset: 0; background: linear-gradient(45deg, #1a1a1a, #000); z-index: -1; }
-        .room-live-tag { position: absolute; top: 15px; right: 15px; background: red; color: white; font-size: 10px; padding: 4px 8px; border-radius: 10px; font-weight: bold; }
-
-        /* CANLI ODA MODALI (FULLSCREEN) */
+        /* LIVE STAGE MODAL */
         #live-stage { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; }
-        .stage-header { padding: 50px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .stage-chat { flex: 1; overflow-y: auto; padding: 20px; mask-image: linear-gradient(to bottom, transparent 0%, black 15%); }
+        .stage-header { padding: 50px 20px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .stage-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
 
-        /* NAVİGASYON */
+        /* SPOTIFY MINI PLAYER */
+        .sp-mini { width: 100%; height: 80px; border-radius: 15px; border: none; margin-bottom: 15px; }
+
+        /* NAV */
         nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 5000; }
-        .nav-item { font-size: 22px; opacity: 0.3; transition: 0.3s; color: white; }
+        .nav-item { font-size: 22px; opacity: 0.3; color: white; transition: 0.3s; }
         .nav-item.active { opacity: 1; color: var(--soft-gold); }
 
-        .btn-gold { background: var(--gold); border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; color: black; }
+        .btn-gold { background: var(--gold); border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; color: black; cursor: pointer; }
+        .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
 
     <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <h1 class="premium-font" style="font-size:60px;">Aura</h1>
-        <input type="text" id="user-name" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:white; text-align:center; width:220px;" placeholder="İsminiz?">
-        <button onclick="login()" class="btn-gold" style="margin-top:20px;">KEŞFET</button>
+        <input type="text" id="user-name" style="background:#111; border:none; padding:15px; border-radius:15px; color:white; text-align:center; width:220px;" placeholder="İsminiz?">
+        <button onclick="login()" class="btn-gold" style="margin-top:20px;">GİRİŞ YAP</button>
     </div>
 
     <div id="main" style="display:none;">
-        
         <div id="p-feed" class="page active">
-            <div class="container">
-                <h2 class="premium-font" style="font-size:32px;">Akış</h2>
-                <div class="card">
-                    <textarea id="p-input" style="background:transparent; border:none; color:white; width:100%; outline:none; height:40px;" placeholder="Bir şeyler fısılda..."></textarea>
-                    <button onclick="addPost()" class="btn-gold" style="float:right; font-size:12px; margin-top:5px;">Paylaş</button>
-                    <div style="clear:both;"></div>
-                </div>
-                <div id="feed-list"></div>
-            </div>
+            <div class="container"><h2 class="premium-font" style="font-size:32px;">Akış</h2><div id="feed-list"></div></div>
         </div>
 
         <div id="p-rooms" class="page">
             <div class="container">
-                <h2 class="premium-font" style="font-size:32px;">Odalar</h2>
-                
-                <div class="room-preview" onclick="openStage('Late Night Lounge', 'After Hours - The Weeknd')">
-                    <div class="room-bg" style="background: linear-gradient(to top, #1a0a2a, transparent);"></div>
-                    <div class="room-live-tag">CANLI</div>
-                    <div>
-                        <b style="font-size:18px;">Late Night Lounge</b><br>
-                        <small style="opacity:0.6;">4 kişi içeride • Müzik Odası</small>
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 class="premium-font" style="font-size:32px;">Odalar</h2>
+                    <button class="btn-gold" style="font-size:12px; padding:8px 15px;" onclick="openCreateRoom()">+ ODA KUR</button>
                 </div>
-
-                <div class="room-preview" onclick="openStage('Zen Garden', 'Nature Sounds')">
-                    <div class="room-bg" style="background: linear-gradient(to top, #0a1a0a, transparent);"></div>
-                    <div>
-                        <b style="font-size:18px;">Zen Garden</b><br>
-                        <small style="opacity:0.6;">2 kişi içeride • Meditasyon</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="p-msgs" class="page">
-            <div class="container">
-                <h2 class="premium-font" style="font-size:32px;">Fısıltılar</h2>
-                <div id="msg-list"></div>
+                <div id="room-list"></div>
             </div>
         </div>
 
         <div id="p-profile" class="page">
-            <div class="container">
-                <div style="text-align:center; padding:30px 0;">
-                    <div style="width:80px; height:80px; background:var(--gold); border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:30px;" id="u-av">?</div>
-                    <h2 id="u-name" class="premium-font" style="margin:15px 0 5px;"></h2>
-                    <p style="font-size:12px; color:var(--soft-gold); letter-spacing:2px;">SPARK TIER</p>
-                </div>
-                <button onclick="localStorage.clear(); location.reload();" class="card" style="width:100%; color:red; border-color:rgba(255,0,0,0.2);">Çıkış Yap ve Sıfırla</button>
-            </div>
+            <div class="container"><h2 class="premium-font" style="font-size:32px;">Benlik</h2><div class="room-card"><b id="my-display-name"></b></div></div>
         </div>
 
         <nav>
             <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
             <div class="nav-item" onclick="tab('rooms', this)">✨</div>
-            <div class="nav-item" onclick="tab('msgs', this)">💬</div>
             <div class="nav-item" onclick="tab('profile', this)">👤</div>
         </nav>
     </div>
 
+    <div id="create-room-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:20000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <h2 class="premium-font">Odanı Tasarla</h2>
+        <input type="text" id="new-room-name" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:15px; margin-bottom:10px;" placeholder="Oda Adı">
+        <input type="text" id="new-room-song" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:15px; margin-bottom:20px;" placeholder="Spotify Şarkı Linki">
+        <div style="display:flex; gap:10px; width:100%;">
+            <button class="btn-gold" style="flex:1;" onclick="createRoom()">KUR</button>
+            <button class="btn-gold" style="flex:1; background:white;" onclick="closeCreateRoom()">İPTAL</button>
+        </div>
+    </div>
+
     <div id="live-stage">
         <div class="stage-header">
-            <span onclick="closeStage()" style="font-size:30px;">✕</span>
-            <div style="text-align:center;">
-                <b id="stage-title" class="premium-font"></b><br>
-                <small id="stage-sub" style="opacity:0.5;"></small>
-            </div>
+            <span onclick="exitRoom()" style="font-size:30px; cursor:pointer;">✕</span>
+            <b id="active-room-name" class="premium-font"></b>
             <div style="width:30px;"></div>
         </div>
-        <div class="stage-chat" id="stage-chat-flow"></div>
-        <div style="padding:20px 20px 40px; background:rgba(255,255,255,0.05); display:flex; gap:10px;">
-            <input type="text" id="stage-input" style="flex:1; background:#111; border:1px solid #333; padding:12px; border-radius:20px; color:white;" placeholder="Mesaj gönder...">
-            <button onclick="sendStageMsg()" class="btn-gold">✨</button>
+        <div class="stage-content">
+            <div id="music-player-area"></div>
+            <div id="room-chat" style="flex:1; overflow-y:auto; margin-bottom:20px;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="room-input" style="flex:1; background:#111; border:1px solid #333; padding:12px; border-radius:20px; color:white;" placeholder="Fısılda...">
+                <button onclick="sendRoomMsg()" class="btn-gold">✨</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let me = localStorage.getItem('au_name_vfinal');
-        let posts = JSON.parse(localStorage.getItem('au_posts_vfinal')) || [];
-        let messages = JSON.parse(localStorage.getItem('au_msgs_vfinal')) || [];
+        let me = localStorage.getItem('aura_v_final_user');
+        let rooms = JSON.parse(localStorage.getItem('aura_rooms')) || [
+            {name: "Late Night Lounge", song: "https://open.spotify.com/track/7sz730BvD0O3qvpq9S9Ape", creator: "Aura"}
+        ];
 
         function login() {
             const n = document.getElementById('user-name').value;
             if(!n) return;
-            localStorage.setItem('au_name_vfinal', n);
+            localStorage.setItem('aura_v_final_user', n);
             location.reload();
         }
 
         if(me) {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('main').style.display = 'block';
-            document.getElementById('u-name').innerText = me;
-            document.getElementById('u-av').innerText = me[0].toUpperCase();
-            renderFeed();
-            renderInbox();
+            document.getElementById('my-display-name').innerText = me;
+            renderRooms();
+        }
+
+        function renderRooms() {
+            const list = document.getElementById('room-list');
+            list.innerHTML = '';
+            rooms.forEach((r, idx) => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="room-info"><b>${r.name}</b><span>Yöneten: ${r.creator}</span></div>
+                    <button class="btn-gold" style="font-size:11px;" onclick="joinRoom(${idx})">GİR</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function openCreateRoom() { document.getElementById('create-room-modal').style.display = 'flex'; }
+        function closeCreateRoom() { document.getElementById('create-room-modal').style.display = 'none'; }
+
+        function createRoom() {
+            const name = document.getElementById('new-room-name').value;
+            const song = document.getElementById('new-room-song').value;
+            if(!name || !song) return;
+            rooms.unshift({name: name, song: song, creator: me});
+            localStorage.setItem('aura_rooms', JSON.stringify(rooms));
+            closeCreateRoom();
+            renderRooms();
+        }
+
+        function joinRoom(idx) {
+            const r = rooms[idx];
+            document.getElementById('active-room-name').innerText = r.name;
+            let songId = r.song.includes('track/') ? r.song.split('track/')[1].substring(0,22) : "7sz730BvD0O3qvpq9S9Ape";
+            document.getElementById('music-player-area').innerHTML = `<iframe class="sp-mini" src="https://open.spotify.com/embed/track/${songId}" allow="encrypted-media"></iframe>`;
+            document.getElementById('live-stage').style.display = 'flex';
+        }
+
+        function exitRoom() { document.getElementById('live-stage').style.display = 'none'; }
+
+        function sendRoomMsg() {
+            const inp = document.getElementById('room-input');
+            if(!inp.value) return;
+            const chat = document.getElementById('room-chat');
+            const d = document.createElement('div');
+            d.style.marginBottom = "8px";
+            d.innerHTML = `<b style="color:var(--soft-gold); font-size:13px;">${me}:</b> <span style="font-size:14px;">${inp.value}</span>`;
+            chat.appendChild(d);
+            chat.scrollTop = chat.scrollHeight;
+            inp.value = '';
         }
 
         function tab(id, el) {
@@ -157,51 +177,6 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             el.classList.add('active');
-        }
-
-        function openStage(title, sub) {
-            document.getElementById('stage-title').innerText = title;
-            document.getElementById('stage-sub').innerText = sub;
-            document.getElementById('live-stage').style.display = 'flex';
-        }
-
-        function closeStage() { document.getElementById('live-stage').style.display = 'none'; }
-
-        function sendStageMsg() {
-            const inp = document.getElementById('stage-input');
-            if(!inp.value) return;
-            const flow = document.getElementById('stage-chat-flow');
-            const d = document.createElement('div');
-            d.style.marginBottom = "10px";
-            d.innerHTML = `<b style="color:var(--soft-gold); font-size:13px;">${me}:</b> <span style="font-size:14px;">${inp.value}</span>`;
-            flow.appendChild(d);
-            flow.scrollTop = flow.scrollHeight;
-            inp.value = '';
-        }
-
-        function addPost() {
-            const val = document.getElementById('p-input').value;
-            if(!val) return;
-            posts.unshift({n: me, t: val});
-            localStorage.setItem('au_posts_vfinal', JSON.stringify(posts));
-            document.getElementById('p-input').value = '';
-            renderFeed();
-        }
-
-        function renderFeed() {
-            const list = document.getElementById('feed-list');
-            list.innerHTML = '';
-            posts.forEach(p => {
-                const c = document.createElement('div');
-                c.className = 'card';
-                c.innerHTML = `<b>${p.n}</b><p style="margin:10px 0 0; opacity:0.8;">${p.t}</p>`;
-                list.appendChild(c);
-            });
-        }
-
-        function renderInbox() {
-            // Basit bir placeholder listesi
-            document.getElementById('msg-list').innerHTML = '<p style="text-align:center; opacity:0.3; margin-top:50px;">Yeni fısıltı yok.</p>';
         }
     </script>
 </body>
