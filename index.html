@@ -13,77 +13,66 @@
             --glass: rgba(255, 255, 255, 0.05);
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; touch-action: manipulation; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* SİHİRLİ DOKUNUŞ EFEKTİ */
+        /* PARILTI EFEKTİ - Tıklamayı engellememesi için 'pointer-events: none' eklendi */
         .sparkle {
-            position: absolute; width: 15px; height: 15px;
+            position: absolute; width: 12px; height: 12px;
             background: var(--gold); border-radius: 50%;
-            pointer-events: none; transform: translate(-50%, -50%);
-            animation: fly 0.6s ease-out forwards; z-index: 9999;
+            pointer-events: none; /* KRİTİK: Butonlara basmayı engellemez */
+            transform: translate(-50%, -50%);
+            animation: fly 0.6s ease-out forwards; z-index: 100000;
         }
         @keyframes fly { 
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-            100% { transform: translate(-50%, -100%) scale(0); opacity: 0; }
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(0); opacity: 0; }
         }
 
-        /* GİRİŞ */
+        /* GİRİŞ EKRANI */
         #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
-        .aura-logo { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(191,149,63,0.3)); }
+        .aura-logo { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        
+        .input-group { display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 100001; }
+        #name-input { background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 18px; color: white; text-align: center; width: 240px; border-radius: 20px; outline: none; font-size: 16px; }
+        .login-btn { background: white; color: black; border: none; padding: 18px 60px; border-radius: 30px; font-weight: 800; cursor: pointer; font-size: 16px; -webkit-appearance: none; }
 
         /* SAYFALAR */
         .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; }
         .page.active { display: block; animation: softIn 0.4s ease; }
         @keyframes softIn { from { opacity: 0; filter: blur(5px); } to { opacity: 1; filter: blur(0); } }
 
-        /* KARTLAR */
-        .card { background: var(--glass); border-radius: 30px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+        .card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
         
-        /* MOD ŞERİDİ (Kullanımı Kolay Oyuncak) */
-        .mood-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .mood-scroller::-webkit-scrollbar { display: none; }
-        .mood-item { 
-            flex: 0 0 auto; padding: 8px 20px; border-radius: 20px; 
-            background: rgba(255,255,255,0.05); border: 1px solid transparent;
-            font-size: 13px; transition: 0.3s; cursor: pointer;
-        }
-        .mood-item.active { background: rgba(191,149,63,0.15); border-color: var(--soft-gold); color: var(--soft-gold); }
-
         /* NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { font-size: 24px; opacity: 0.4; transition: 0.3s; color: white; }
-        .nav-item.active { opacity: 1; transform: scale(1.2); }
+        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .nav-item { font-size: 24px; opacity: 0.4; transition: 0.3s; color: white; cursor: pointer; }
+        .nav-item.active { opacity: 1; transform: scale(1.2); color: var(--soft-gold); }
 
         .premium-name { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body onclick="createSparkle(event)">
+<body onmousedown="createSparkle(event)">
 
     <div id="gate">
         <h1 class="aura-logo">Aura</h1>
-        <input type="text" id="name-input" style="background:transparent; border:none; border-bottom:1px solid #444; padding:15px; color:white; text-align:center; width:200px; margin:30px 0; outline:none;" placeholder="İsminiz?">
-        <button onclick="enterApp()" style="background:white; color:black; border:none; padding:15px 45px; border-radius:30px; font-weight:800;">Giriş</button>
+        <div class="input-group">
+            <input type="text" id="name-input" placeholder="İsminiz?" autocomplete="off">
+            <button class="login-btn" onclick="enterApp()">BAŞLAYALIM</button>
+        </div>
     </div>
 
     <div id="app-content" style="display:none;">
-        
         <div id="v-feed" class="page active">
             <h2 style="font-family:'Playfair Display'; font-size:32px;">Akış</h2>
             <div class="card">
-                <p style="font-size:14px; opacity:0.8;">Hoş geldin! Bugün etrafındaki enerjileri keşfetmeye hazır mısın?</p>
-            </div>
-            <div class="card" style="opacity:0.5; text-align:center; border: 1px dashed #444;">
-                <p style="font-size:12px;">Henüz yeni bir paylaşım yok.</p>
+                <p style="font-size:14px; opacity:0.8;">Hoş geldin! Sihirli dokunuşlar aktif. Ekranda herhangi bir yere dokunmayı dene.</p>
             </div>
         </div>
 
         <div id="v-radar" class="page">
             <h2 style="font-family:'Playfair Display'; font-size:32px;">Esinti</h2>
             <div style="height:300px; display:flex; align-items:center; justify-content:center;">
-                <div style="width:120px; height:120px; border: 1px solid var(--soft-gold); border-radius:50%; display:flex; align-items:center; justify-content:center; animation: rotate 10s linear infinite;">
-                    <div style="width:10px; height:10px; background:white; border-radius:50%; margin-top:-120px;"></div>
-                </div>
-                <div style="position:absolute; width:60px; height:60px; background:var(--gold); border-radius:50%; filter:blur(15px); opacity:0.5;"></div>
+                <div style="width:100px; height:100px; background:var(--gold); border-radius:50%; filter:blur(40px); opacity:0.3; animation: pulse 3s infinite;"></div>
             </div>
         </div>
 
@@ -91,4 +80,59 @@
             <h2 style="font-family:'Playfair Display'; font-size:32px;">Benlik</h2>
             <div class="card">
                 <div style="display:flex; align-items:center; gap:20px;">
-                    <div id="user-av" style="width:65px; height:65px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:
+                    <div id="user-av" style="width:65px; height:65px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:24px;">?</div>
+                    <div>
+                        <h3 id="user-name" class="premium-name" style="font-size:26px; margin:0;"></h3>
+                        <p style="font-size:11px; opacity:0.5; margin-top:5px;">Aura Seviyesi: %100</p>
+                    </div>
+                </div>
+            </div>
+            <p onclick="location.reload()" style="text-align:center; color:#555; font-size:12px; margin-top:20px;">Oturumu Kapat</p>
+        </div>
+
+        <nav>
+            <div class="nav-item active" onclick="tab('feed', this)">📜</div>
+            <div class="nav-item" onclick="tab('radar', this)">✨</div>
+            <div class="nav-item" onclick="tab('profile', this)">👤</div>
+        </nav>
+    </div>
+
+    <script>
+        // Parıltı oluşturma fonksiyonu (Düzeltildi)
+        function createSparkle(e) {
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            // Mobil uyumluluk için dokunma noktasını belirle
+            const x = e.pageX || (e.touches ? e.touches[0].pageX : 0);
+            const y = e.pageY || (e.touches ? e.touches[0].pageY : 0);
+            s.style.left = x + 'px';
+            s.style.top = y + 'px';
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 600);
+        }
+
+        // Giriş fonksiyonu (Düzeltildi)
+        function enterApp() {
+            const n = document.getElementById('name-input').value.trim();
+            if(!n) {
+                alert("Lütfen isminizi girin.");
+                return;
+            }
+            document.getElementById('user-name').innerText = n;
+            document.getElementById('user-av').innerText = n[0].toUpperCase();
+            document.getElementById('gate').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+            }, 600);
+        }
+
+        function tab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+    </script>
+</body>
+</html>
