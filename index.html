@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Essence</title>
+    <title>Aura: Core</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --p: #FF8E53; --s: #FE6B8B; /* Varsayılan Aura */
+            --p: #FF8E53; --s: #FE6B8B;
             --bg: #07070a;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* TEMA MODLARI */
         body.theme-nature { --p: #4ade80; --s: #22c55e; --bg: #050a05; }
         body.theme-ocean { --p: #38bdf8; --s: #1d4ed8; --bg: #020617; }
         body.theme-night { --p: #a78bfa; --s: #4c1d95; --bg: #020205; }
@@ -22,125 +21,111 @@
             margin: 0; padding: 0; height: 100%; 
             background: var(--bg); color: #fff; 
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
-            transition: background 0.8s ease;
+            transition: background 0.8s ease; touch-action: none;
         }
 
-        /* ARKA PLAN RUHU */
         .aura-spirit {
             position: fixed; inset: 0;
-            background: radial-gradient(circle at 50% 120%, var(--p) 0%, transparent 60%);
-            opacity: 0.15; z-index: 1; pointer-events: none; transition: 1s;
+            background: radial-gradient(circle at 50% 85%, var(--p) 0%, transparent 50%);
+            opacity: 0.2; z-index: 1; pointer-events: none; transition: 1s;
         }
 
-        /* SAYFALAR */
-        .view { position: fixed; inset: 0; padding: 80px 20px 140px; display: none; overflow-y: auto; z-index: 10; }
-        .view.active { display: block; animation: viewIn 0.5s ease; }
-        @keyframes viewIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .view { position: fixed; inset: 0; padding: 60px 20px 180px; display: none; overflow-y: auto; z-index: 10; }
+        .view.active { display: block; animation: softIn 0.4s ease; }
+        @keyframes softIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* KARTLAR */
-        .essence-card { background: var(--glass); border: 1px solid var(--border); border-radius: 28px; padding: 22px; margin-bottom: 15px; backdrop-filter: blur(25px); }
+        .essence-card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 22px; margin-bottom: 15px; backdrop-filter: blur(25px); }
 
-        /* ALT ENERJİ HAVUZU (NAVİGASYON) */
-        .energy-pool {
-            position: fixed; bottom: -30px; left: 50%; transform: translateX(-50%);
-            width: 300px; height: 120px; background: linear-gradient(to top, var(--p), var(--s));
-            border-radius: 100px 100px 0 0; filter: blur(30px); opacity: 0.4; z-index: 500;
+        /* SÜZÜLEN KÜRE (CORE) */
+        #aura-core-wrapper {
+            position: fixed; bottom: 40px; left: 0; right: 0;
+            height: 100px; display: flex; align-items: center; justify-content: center; z-index: 5000;
         }
-        .nav-orb-area {
-            position: fixed; bottom: 30px; left: 0; right: 0;
-            display: flex; justify-content: center; gap: 40px; z-index: 1000;
+        #aura-core {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--p), var(--s));
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--p);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 800; color: #000; letter-spacing: 1px;
+            cursor: grab; transition: transform 0.2s ease-out, background 0.8s;
+            user-select: none;
         }
-        .nav-orb {
-            width: 14px; height: 14px; border-radius: 50%; background: #fff;
-            opacity: 0.2; cursor: pointer; transition: 0.4s;
-        }
-        .nav-orb.active { opacity: 1; transform: scale(1.8); box-shadow: 0 0 20px #fff; }
+        #aura-core:active { cursor: grabbing; transform: scale(0.9); }
 
-        /* AYARLAR PANELİ */
-        #settings-panel {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 20000; display: none; padding: 60px 30px;
-        }
-        .theme-btn {
-            width: 100%; padding: 20px; border-radius: 20px; border: 1px solid var(--border);
-            margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 15px;
-            background: rgba(255,255,255,0.05); color: white; font-weight: 600;
-        }
+        /* AYARLAR */
+        #settings-trigger { position: fixed; top: 45px; right: 25px; z-index: 10000; font-size: 20px; opacity: 0.5; }
+        #settings-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000; display: none; padding: 60px 30px; }
+        .theme-btn { width: 100%; padding: 20px; border-radius: 20px; background: rgba(255,255,255,0.05); margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border); color: #fff; font-weight: 600; display: flex; align-items: center; gap: 15px; }
 
-        /* GİRİŞ */
+        .btn-aura { background: linear-gradient(135deg, var(--p), var(--s)); border: none; padding: 12px 30px; border-radius: 20px; font-weight: 800; cursor: pointer; color: #000; }
         #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-aura { background: linear-gradient(135deg, var(--p), var(--s)); border: none; padding: 15px 40px; border-radius: 30px; color: #000; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="aura-spirit" id="bg-spirit"></div>
-    <div class="energy-pool" id="pool"></div>
+    <div class="aura-spirit"></div>
 
     <div id="gate">
-        <h1 style="font-weight: 800; font-size: 50px; margin-bottom: 30px;">Aura<span id="gate-dot">.</span></h1>
-        <input type="text" id="name-in" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="Sen kimsin?">
+        <h1 style="font-weight: 800; font-size: 45px; margin-bottom: 40px;">Aura<span style="color:var(--p)">.</span></h1>
+        <input type="text" id="name-in" style="background:none; border:none; border-bottom:2px solid #333; color:#fff; font-size:24px; text-align:center; outline:none; margin-bottom:40px;" placeholder="İsmin?">
         <button class="btn-aura" onclick="enter()">IŞIKLARI YAK</button>
     </div>
 
     <div id="app" style="display:none;">
-        
-        <div style="position:fixed; top:40px; right:25px; z-index:1000; cursor:pointer; font-size:20px;" onclick="openSettings()">⚙️</div>
+        <div id="settings-trigger" onclick="toggleSettings()">⚙️</div>
 
         <div id="v-salon" class="view active">
-            <h1 style="font-weight: 800; font-size: 35px;">Salon</h1>
+            <h1 style="font-weight: 800; font-size: 32px;">Salon</h1>
             <div class="essence-card">
-                <textarea id="post-in" style="width:100%; background:none; border:none; color:#fff; outline:none; height:40px; font-family:inherit;" placeholder="Neler fısıldayacaksın?"></textarea>
-                <button class="btn-aura" style="padding:8px 20px; font-size:12px; float:right;" onclick="addPost()">Fısılda</button>
+                <textarea id="post-in" style="width:100%; background:none; border:none; color:#fff; outline:none; height:40px; font-family:inherit;" placeholder="Evrene ne fısıldayacaksın?"></textarea>
+                <button class="btn-aura" style="float:right; font-size:11px;" onclick="addPost()">Fısılda</button>
                 <div style="clear:both;"></div>
             </div>
             <div id="feed"></div>
         </div>
 
         <div id="v-mutfak" class="view">
-            <h1 style="font-weight: 800; font-size: 35px;">Mutfak</h1>
-            <p style="opacity:0.4; margin-bottom:30px;">Fısıltılar burada isimsizleşir...</p>
+            <h1 style="font-weight: 800; font-size: 32px;">Mutfak</h1>
+            <p style="opacity:0.4; margin-bottom:20px;">Anonim fısıltılar sokağı...</p>
             <div id="kitchen-feed"></div>
         </div>
 
         <div id="v-benlik" class="view">
-            <h1 style="font-weight: 800; font-size: 35px;">Benlik</h1>
+            <h1 style="font-weight: 800; font-size: 32px;">Benlik</h1>
             <div class="essence-card" style="text-align:center;">
-                <div id="u-av" style="width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg, var(--p), var(--s)); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:30px; color:#000;">?</div>
-                <h2 id="u-name">İsim</h2>
-                <p id="u-theme-name" style="color:var(--p); font-size:12px; font-weight:800;">AURA KLASİK</p>
+                <div id="u-av" style="width:70px; height:70px; background:linear-gradient(135deg, var(--p), var(--s)); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#000;">?</div>
+                <h2 id="u-name" style="margin:0;">İsim</h2>
+                <p id="u-theme" style="color:var(--p); font-size:11px; font-weight:800; margin-top:10px;">AURA CLASSIC</p>
             </div>
         </div>
 
-        <div class="nav-orb-area">
-            <div class="nav-orb active" onclick="tab('salon', this)"></div>
-            <div class="nav-orb" onclick="tab('mutfak', this)"></div>
-            <div class="nav-orb" onclick="tab('benlik', this)"></div>
+        <div id="aura-core-wrapper">
+            <div id="aura-core">SALON</div>
         </div>
     </div>
 
     <div id="settings-panel">
-        <div style="display:flex; justify-content:space-between; margin-bottom:40px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
             <h2 style="font-weight:800;">Atmosfer</h2>
-            <span onclick="closeSettings()" style="font-size:30px;">✕</span>
+            <span onclick="toggleSettings()" style="font-size:30px;">✕</span>
         </div>
-        
-        <div class="theme-btn" onclick="setTheme('aura')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #FF8E53, #FE6B8B);"></div> Aura Klasik</div>
-        <div class="theme-btn" onclick="setTheme('nature')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #4ade80, #22c55e);"></div> Doğa (Amazon)</div>
-        <div class="theme-btn" onclick="setTheme('ocean')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #38bdf8, #1d4ed8);"></div> Okyanus Derinliği</div>
-        <div class="theme-btn" onclick="setTheme('night')"><div style="width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg, #a78bfa, #4c1d95);"></div> Gece Yarısı</div>
-
-        <button class="btn-aura" style="width:100%; margin-top:40px; background:none; border:1px solid red; color:red;" onclick="localStorage.clear(); location.reload();">Sıfırla ve Çık</button>
+        <div class="theme-btn" onclick="setTheme('aura')"><div style="width:20px; height:20px; border-radius:50%; background:#FF8E53;"></div> Klasik Aura</div>
+        <div class="theme-btn" onclick="setTheme('nature')"><div style="width:20px; height:20px; border-radius:50%; background:#4ade80;"></div> Doğa (Amazon)</div>
+        <div class="theme-btn" onclick="setTheme('ocean')"><div style="width:20px; height:20px; border-radius:50%; background:#38bdf8;"></div> Okyanus</div>
+        <div class="theme-btn" onclick="setTheme('night')"><div style="width:20px; height:20px; border-radius:50%; background:#a78bfa;"></div> Gece Yarısı</div>
+        <button class="btn-aura" style="width:100%; margin-top:40px; background:none; border:1px solid red; color:red;" onclick="localStorage.clear(); location.reload();">Sıfırla</button>
     </div>
 
     <script>
-        let me = localStorage.getItem('essence_user') || "";
-        let posts = JSON.parse(localStorage.getItem('essence_posts')) || [];
+        let me = localStorage.getItem('aura_core_user') || "";
+        let posts = JSON.parse(localStorage.getItem('aura_core_posts')) || [];
+        let currentTab = 'salon';
+        const tabs = ['salon', 'mutfak', 'benlik'];
 
         function enter() {
             const n = document.getElementById('name-in').value.trim();
             if(!n) return;
-            localStorage.setItem('essence_user', n);
+            localStorage.setItem('aura_core_user', n);
             me = n;
             document.getElementById('gate').style.display = 'none';
             document.getElementById('app').style.display = 'block';
@@ -151,42 +136,64 @@
 
         if(me) { document.getElementById('name-in').value = me; enter(); }
 
-        function tab(id, el) {
+        // KÜRE SÜRÜKLEME VE ODA GEÇİŞİ
+        let core = document.getElementById('aura-core');
+        let startX = 0;
+
+        core.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        core.addEventListener('touchend', (e) => {
+            let diff = e.changedTouches[0].clientX - startX;
+            let idx = tabs.indexOf(currentTab);
+
+            if(diff > 50 && idx > 0) { // Sağa kaydır, sola git
+                switchTab(tabs[idx - 1]);
+            } else if(diff < -50 && idx < tabs.length - 1) { // Sola kaydır, sağa git
+                switchTab(tabs[idx + 1]);
+            }
+        });
+
+        function switchTab(id) {
+            currentTab = id;
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
-            el.classList.add('active');
+            core.innerText = id.toUpperCase();
+            // Küreye küçük bir zıplama efekti
+            core.style.transform = 'scale(1.2)';
+            setTimeout(() => core.style.transform = 'scale(1)', 200);
         }
 
         function addPost() {
             const t = document.getElementById('post-in').value.trim();
             if(!t) return;
             posts.unshift({n: me, t: t});
-            localStorage.setItem('essence_posts', JSON.stringify(posts));
+            localStorage.setItem('aura_core_posts', JSON.stringify(posts));
             document.getElementById('post-in').value = '';
             render();
         }
 
         function render() {
-            const feed = document.getElementById('feed');
-            const kitchen = document.getElementById('kitchen-feed');
-            feed.innerHTML = posts.map(p => `<div class="essence-card"><b>${p.n}</b><p style="margin:10px 0 0; opacity:0.8;">${p.t}</p></div>`).join('');
-            kitchen.innerHTML = posts.map(p => `<div class="essence-card" style="font-size:14px; opacity:0.6;">☕️ Birisi fısıldadı: "${p.t}"</div>`).join('');
+            const f = document.getElementById('feed');
+            const k = document.getElementById('kitchen-feed');
+            f.innerHTML = posts.map(p => `<div class="essence-card"><b>${p.n}</b><p style="margin:10px 0 0; opacity:0.8;">${p.t}</p></div>`).join('');
+            k.innerHTML = posts.map(p => `<div class="essence-card" style="font-size:14px; opacity:0.6;">☕️ Birisi fısıldadı: "${p.t}"</div>`).join('');
         }
 
         function setTheme(t) {
             document.body.className = 'theme-' + t;
-            const names = {aura: 'AURA KLASİK', nature: 'DOĞA (AMAZON)', ocean: 'OKYANUS DERİNLİĞİ', night: 'GECE YARISI'};
-            document.getElementById('u-theme-name').innerText = names[t];
-            localStorage.setItem('essence_theme', t);
-            closeSettings();
+            localStorage.setItem('aura_core_theme', t);
+            document.getElementById('u-theme').innerText = t.toUpperCase();
+            toggleSettings();
         }
 
-        function openSettings() { document.getElementById('settings-panel').style.display = 'block'; }
-        function closeSettings() { document.getElementById('settings-panel').style.display = 'none'; }
-        
-        // Kaydedilmiş temayı yükle
-        const savedTheme = localStorage.getItem('essence_theme');
+        function toggleSettings() {
+            const p = document.getElementById('settings-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        }
+
+        const savedTheme = localStorage.getItem('aura_core_theme');
         if(savedTheme) setTheme(savedTheme);
     </script>
 </body>
