@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Home</title>
+    <title>Aura Social: Living Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,56 +17,43 @@
             margin: 0; padding: 0; height: 100%; 
             background: var(--night); color: #ececed; 
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* ARKA PLAN PARILTISI - pointer-events:none ile butonların önüne geçmesi engellendi */
+        /* ARKA PLAN */
         .home-glow {
             position: fixed; bottom: -10%; left: -10%; width: 500px; height: 500px;
             background: radial-gradient(circle, rgba(254, 107, 139, 0.12) 0%, transparent 70%);
             z-index: 1; pointer-events: none;
         }
 
-        /* GİRİŞ EKRANI - Kesin Çözüm: Z-index ve Pointer */
-        #gate { 
-            position: fixed; inset: 0; background: #000; 
-            z-index: 100000; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; padding: 20px;
-        }
-        .gate-content { position: relative; z-index: 100001; text-align: center; width: 100%; max-width: 300px; }
+        /* GİRİŞ EKRANI */
+        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
         /* SAYFA YAPISI */
         .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; overflow-y: auto; z-index: 10; }
-        .page.active { display: block; animation: softZoom 0.4s ease; }
-        @keyframes softZoom { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+        .page.active { display: block; animation: softIn 0.4s ease; }
+        @keyframes softIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .container { padding: 0 20px; }
 
         /* KARTLAR */
-        .home-card {
-            background: var(--soft-glass); border: 1px solid var(--border);
-            border-radius: 30px; padding: 22px; margin-bottom: 15px;
-            backdrop-filter: blur(20px); transition: 0.3s;
-        }
-        .home-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
+        .home-card { background: var(--soft-glass); border: 1px solid var(--border); border-radius: 30px; padding: 22px; margin-bottom: 15px; backdrop-filter: blur(20px); }
 
-        /* NAVİGASYON (Ev Menüsü) */
+        /* NAVİGASYON */
         nav { 
             position: fixed; bottom: 30px; left: 25px; right: 25px; height: 70px; 
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(30px);
             border-radius: 35px; border: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 50000;
         }
-        .nav-link { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; cursor: pointer; transition: 0.3s; color: white; border: none; background: none; }
-        .nav-link.active { opacity: 1; color: #FE6B8B; transform: scale(1.1); font-weight: 800; }
+        .nav-link { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; cursor: pointer; color: white; border: none; background: none; }
+        .nav-link.active { opacity: 1; color: #FE6B8B; font-weight: 800; }
 
-        /* BUTONLAR & GİRİŞLER */
-        .btn-warm {
-            background: var(--sunrise); border: none; padding: 15px 35px;
-            border-radius: 25px; color: white; font-weight: 800; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(254, 107, 139, 0.2); transition: 0.3s;
-        }
-        .btn-warm:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(254, 107, 139, 0.2); }
-        .aura-input { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 18px; padding: 18px; color: white; width: 100%; box-sizing: border-box; outline: none; font-size: 16px; margin-bottom: 20px; }
+        /* ODA MODALI (TERAS) */
+        #room-overlay { position: fixed; inset: 0; background: #000; z-index: 60000; display: none; flex-direction: column; }
+
+        /* BUTONLAR */
+        .btn-warm { background: var(--sunrise); border: none; padding: 12px 25px; border-radius: 20px; color: white; font-weight: 800; cursor: pointer; }
+        .aura-input { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 15px; padding: 15px; color: white; width: 100%; box-sizing: border-box; outline: none; }
     </style>
 </head>
 <body>
@@ -74,22 +61,19 @@
     <div class="home-glow"></div>
 
     <div id="gate">
-        <div class="gate-content">
-            <h1 style="font-weight: 800; font-size: 45px; margin: 0 0 10px;">Aura<span style="color:#FE6B8B">.</span></h1>
-            <p style="opacity:0.3; letter-spacing:4px; font-size:10px; margin-bottom:40px;">EVE HOŞ GELDİN</p>
-            <input type="text" id="user-name" class="aura-input" placeholder="İsmin nedir?" style="text-align:center;">
-            <button class="btn-warm" onclick="enterApp()" style="width:100%;">IŞIKLARI AÇ</button>
-        </div>
+        <h1 style="font-weight: 800; font-size: 40px; margin-bottom: 10px;">Aura<span style="color:#FE6B8B">.</span></h1>
+        <input type="text" id="user-name-in" class="aura-input" style="width:250px; text-align:center; margin-bottom:20px;" placeholder="İsmin nedir?">
+        <button class="btn-warm" onclick="enterApp()">IŞIKLARI AÇ</button>
     </div>
 
     <div id="app" style="display:none;">
         
         <div id="p-salon" class="page active">
             <div class="container">
-                <h2 style="font-weight: 800; font-size: 30px;">Salon</h2>
+                <h2 style="font-size:30px;">Salon</h2>
                 <div class="home-card">
-                    <textarea id="salon-in" style="width:100%; background:transparent; border:none; color:white; outline:none; height:45px; font-family:inherit; font-size:15px;" placeholder="Bir şeyler fısılda..."></textarea>
-                    <button class="btn-warm" style="float:right; padding:8px 20px; font-size:12px;" onclick="addPost()">Paylaş</button>
+                    <textarea id="salon-in" style="width:100%; background:transparent; border:none; color:white; outline:none; height:40px;" placeholder="Neler fısıldayacaksın?"></textarea>
+                    <button class="btn-warm" style="float:right; font-size:11px;" onclick="addPost()">Paylaş</button>
                     <div style="clear:both;"></div>
                 </div>
                 <div id="salon-feed"></div>
@@ -98,43 +82,36 @@
 
         <div id="p-mutfak" class="page">
             <div class="container">
-                <h2 style="font-weight: 800; font-size: 30px;">Mutfak</h2>
-                <p style="opacity:0.5; margin-bottom:25px; font-size:14px;">Gece yarısı dertleşmeleri...</p>
-                <div class="home-card" style="border-left: 4px solid #FE6B8B; background: rgba(254, 107, 139, 0.05);">
-                    <p style="font-size:14px;"><b>Günün Sorusu:</b> En son ne zaman sadece gökyüzünü izledin?</p>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <input type="text" id="mutfak-in" placeholder="Fikrini fısılda..." style="flex:1; background:rgba(255,255,255,0.05); border:none; border-radius:12px; padding:12px; color:white; outline:none;">
-                        <button class="btn-warm" style="padding:10px 15px;" onclick="addMutfak()">Ekle</button>
-                    </div>
+                <h2 style="font-size:30px;">Mutfak</h2>
+                <p style="opacity:0.5; font-size:14px; margin-bottom:20px;">Gece dertleşmeleri (Anonim)</p>
+                <div class="home-card">
+                    <input type="text" id="mutfak-in" class="aura-input" placeholder="İçinden ne geçiyor?">
+                    <button class="btn-warm" style="width:100%; margin-top:10px;" onclick="addMutfak()">Fısılda</button>
                 </div>
-                <div id="mutfak-list"></div>
+                <div id="mutfak-feed"></div>
             </div>
         </div>
 
         <div id="p-teras" class="page">
             <div class="container">
-                <h2 style="font-weight: 800; font-size: 30px;">Teras</h2>
-                <p style="opacity:0.5; margin-bottom:25px; font-size:14px;">Uzaklardaki enerjileri izle.</p>
-                <div class="home-card" onclick="alert('Oda yakında aktif!')">
-                    <h3>Lo-Fi Odası</h3>
-                    <p style="font-size:13px; opacity:0.6;">Sadece müzik ve yağmur sesi.</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <span style="font-size:11px; color:#FE6B8B;">3 kişi içeride</span>
-                        <button class="btn-warm" style="padding:6px 15px; font-size:11px;">GİR</button>
-                    </div>
+                <h2 style="font-size:30px;">Teras</h2>
+                <div class="home-card" onclick="joinRoom('Chill Station', '7sz730BvD0O3qvpq9S9Ape')">
+                    <h3>Chill Station</h3>
+                    <p style="opacity:0.5; font-size:13px;">Gecenin ritmi burada...</p>
+                    <button class="btn-warm" style="margin-top:10px; font-size:10px;">KATIL</button>
                 </div>
             </div>
         </div>
 
         <div id="p-benlik" class="page">
             <div class="container">
-                <h2 style="font-weight: 800; font-size: 30px;">Benlik</h2>
-                <div class="home-card" style="text-align:center; padding:40px 20px;">
-                    <div style="width:85px; height:85px; background:var(--sunrise); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:800; color:white; box-shadow: 0 10px 30px rgba(254, 107, 139, 0.3);" id="u-av">?</div>
-                    <h3 id="u-name-display" style="margin:0; font-size:24px;"></h3>
-                    <p style="opacity:0.4; font-size:13px; margin-top:10px;">Evin Sakini</p>
+                <h2 style="font-size:30px;">Benlik</h2>
+                <div class="home-card" style="text-align:center;">
+                    <div id="u-av" style="width:80px; height:80px; border-radius:50%; background:var(--sunrise); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:800;">?</div>
+                    <h3 id="u-name-display"></h3>
+                    <button class="btn-warm" style="font-size:10px; background:transparent; border:1px solid #FE6B8B;" onclick="changeAv()">Görseli Değiştir</button>
                 </div>
-                <button onclick="logout()" style="width:100%; padding:18px; background:transparent; border:1px solid rgba(255,0,0,0.2); color:#ff4444; border-radius:20px; font-weight:bold; margin-top:20px;">IŞIKLARI KAPAT</button>
+                <button class="btn-warm" style="width:100%; background:none; color:red;" onclick="localStorage.clear(); location.reload();">ÇIKIŞ YAP</button>
             </div>
         </div>
 
@@ -146,31 +123,40 @@
         </nav>
     </div>
 
+    <div id="room-overlay">
+        <div style="padding:50px 20px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <span onclick="closeRoom()" style="font-size:24px;">✕</span>
+            <b id="active-room-name">Oda</b>
+            <span></span>
+        </div>
+        <div id="room-content" style="flex:1; padding:20px; overflow-y:auto;">
+            <div id="room-player"></div>
+            <div id="room-chat" style="margin-top:20px; font-size:14px; opacity:0.8;"></div>
+        </div>
+        <div style="padding:20px; background:rgba(255,255,255,0.05); display:flex; gap:10px;">
+            <input type="text" id="room-msg-in" class="aura-input" placeholder="Odaya fısılda...">
+            <button onclick="sendRoomMsg()" class="btn-warm">↑</button>
+        </div>
+    </div>
+
     <script>
-        let me = localStorage.getItem('aura_home_user') || "";
-        let posts = JSON.parse(localStorage.getItem('aura_home_posts')) || [];
-        let mutfakItems = JSON.parse(localStorage.getItem('aura_home_mutfak')) || [];
+        let me = localStorage.getItem('aura_v24_user');
+        let posts = JSON.parse(localStorage.getItem('aura_v24_posts')) || [];
+        let mutfak = JSON.parse(localStorage.getItem('aura_v24_mutfak')) || [];
 
         function enterApp() {
-            const n = document.getElementById('user-name').value.trim();
+            const n = document.getElementById('user-name-in').value.trim();
             if(!n) return;
-            localStorage.setItem('aura_home_user', n);
+            localStorage.setItem('aura_v24_user', n);
             me = n;
-            document.getElementById('gate').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('gate').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-                setup();
-            }, 400);
-        }
-
-        window.onload = () => { if(me) { enterApp(); } };
-
-        function setup() {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
             document.getElementById('u-name-display').innerText = me;
             document.getElementById('u-av').innerText = me[0].toUpperCase();
             renderAll();
         }
+
+        if(me) { document.getElementById('user-name-in').value = me; enterApp(); }
 
         function tab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -180,19 +166,19 @@
         }
 
         function addPost() {
-            const txt = document.getElementById('salon-in').value.trim();
-            if(!txt) return;
-            posts.unshift({n: me, t: txt});
-            localStorage.setItem('aura_home_posts', JSON.stringify(posts));
+            const t = document.getElementById('salon-in').value;
+            if(!t) return;
+            posts.unshift({n: me, t: t, energy: 0});
+            localStorage.setItem('aura_v24_posts', JSON.stringify(posts));
             document.getElementById('salon-in').value = '';
             renderFeed();
         }
 
         function addMutfak() {
-            const txt = document.getElementById('mutfak-in').value.trim();
-            if(!txt) return;
-            mutfakItems.unshift(txt);
-            localStorage.setItem('aura_home_mutfak', JSON.stringify(mutfakItems));
+            const t = document.getElementById('mutfak-in').value;
+            if(!t) return;
+            mutfak.unshift(t);
+            localStorage.setItem('aura_v24_mutfak', JSON.stringify(mutfak));
             document.getElementById('mutfak-in').value = '';
             renderMutfak();
         }
@@ -200,23 +186,42 @@
         function renderAll() { renderFeed(); renderMutfak(); }
 
         function renderFeed() {
-            const f = document.getElementById('salon-feed');
-            f.innerHTML = posts.map(p => `
+            document.getElementById('salon-feed').innerHTML = posts.map(p => `
                 <div class="home-card">
-                    <b style="color:#FE6B8B; font-size:14px;">${p.n}</b>
-                    <p style="margin:10px 0 0; opacity:0.8; font-size:15px;">${p.t}</p>
+                    <b>${p.n}</b>
+                    <p style="margin:10px 0;">${p.t}</p>
+                    <small onclick="alert('Enerji gönderildi!')" style="cursor:pointer; color:#FE6B8B;">✨ Enerji Ver</small>
                 </div>
             `).join('');
         }
 
         function renderMutfak() {
-            const l = document.getElementById('mutfak-list');
-            l.innerHTML = mutfakItems.map(k => `
-                <div class="home-card" style="font-size:14px; opacity:0.7;">☕️ ${k}</div>
+            document.getElementById('mutfak-feed').innerHTML = mutfak.map(m => `
+                <div class="home-card" style="font-size:14px; opacity:0.8;">☕️ Birisi: ${m}</div>
             `).join('');
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
+        function joinRoom(name, songId) {
+            document.getElementById('active-room-name').innerText = name;
+            document.getElementById('room-player').innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${songId}" width="100%" height="80" frameBorder="0" allow="encrypted-media"></iframe>`;
+            document.getElementById('room-overlay').style.display = 'flex';
+        }
+
+        function closeRoom() { document.getElementById('room-overlay').style.display = 'none'; }
+
+        function sendRoomMsg() {
+            const val = document.getElementById('room-msg-in').value;
+            if(!val) return;
+            const chat = document.getElementById('room-chat');
+            chat.innerHTML += `<p><b>${me}:</b> ${val}</p>`;
+            document.getElementById('room-msg-in').value = '';
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function changeAv() {
+            const url = prompt("Fotoğraf URL girin:");
+            if(url) document.getElementById('u-av').innerHTML = `<img src="${url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        }
     </script>
 </body>
 </html>
