@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura Social</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Aura Social Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -18,42 +18,46 @@
 
         /* SAYFA YAPISI */
         .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; background: var(--bg); overflow-y: auto; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .container { padding: 0 20px; }
 
         /* KARTLAR */
         .card { background: var(--glass); border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
         .premium-text { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
 
-        /* INSTAGRAM STYLE DM */
-        .chat-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .chat-av { width: 50px; height: 50px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; }
-        
-        #chat-room { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; }
-        .chat-header { padding: 50px 20px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        
-        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 14px; line-height: 1.4; }
-        .bubble.me { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 4px; font-weight: 500; }
-        .bubble.them { align-self: flex-start; background: var(--glass); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        /* PROFİL TASARIMI */
+        .profile-header { text-align: center; padding: 20px 0; }
+        .aura-circle { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 900; color: #000; box-shadow: 0 0 20px rgba(191, 149, 63, 0.3); }
+        .stats-row { display: flex; justify-content: space-around; margin: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 15px 0; }
+        .stat-item { text-align: center; }
+        .stat-val { font-weight: 700; color: var(--soft-gold); font-size: 18px; }
+        .stat-label { font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; }
+        .bio-text { font-size: 14px; opacity: 0.8; font-style: italic; margin-bottom: 20px; }
 
-        .chat-input-area { padding: 20px; padding-bottom: 40px; display: flex; gap: 10px; background: var(--bg); }
-        .chat-input { flex: 1; background: #1a1a1a; border: 1px solid var(--border); border-radius: 25px; padding: 12px 20px; color: #fff; outline: none; }
+        /* CHAT & DM (BOZULMADI) */
+        .chat-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .chat-av { width: 45px; height: 45px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; }
+        #chat-room { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; }
+        .chat-header { padding: 50px 20px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 75%; padding: 12px 16px; border-radius: 20px; font-size: 14px; }
+        .bubble.me { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 4px; }
+        .bubble.them { align-self: flex-start; background: var(--glass); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
         /* NAV */
         nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 70px; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 1000; }
         .nav-item { font-size: 22px; opacity: 0.3; transition: 0.3s; cursor: pointer; }
         .nav-item.active { opacity: 1; color: var(--soft-gold); }
-
-        .btn-gold { background: var(--gold); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; }
+        .btn-gold { background: var(--gold); border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <h1 style="font-family:'Playfair Display'; font-size:50px;" class="premium-text">Aura</h1>
-        <input type="text" id="user-in" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:#fff; text-align:center; width:220px;" placeholder="İsminiz?">
-        <button onclick="login()" class="btn-gold" style="margin-top:20px; width:150px;">GİRİŞ</button>
+        <input type="text" id="user-in" style="background:#111; border:1px solid #333; padding:15px; border-radius:15px; color:#fff; text-align:center; width:220px;" placeholder="Kullanıcı Adınız?">
+        <button onclick="login()" class="btn-gold" style="margin-top:20px; width:150px;">BAŞLA</button>
     </div>
 
     <div id="main" style="display:none;">
@@ -62,7 +66,7 @@
             <div class="container">
                 <h2 class="premium-text" style="font-size:30px;">Akış</h2>
                 <div class="card">
-                    <textarea id="p-text" style="background:transparent; border:none; color:#fff; width:100%; outline:none; height:40px;" placeholder="Bir şeyler fısılda..."></textarea>
+                    <textarea id="p-text" style="background:transparent; border:none; color:#fff; width:100%; outline:none; height:40px; font-family:inherit;" placeholder="Neler oluyor?"></textarea>
                     <div style="display:flex; justify-content:flex-end; margin-top:10px;">
                         <button onclick="post()" class="btn-gold" style="font-size:12px;">Paylaş</button>
                     </div>
@@ -78,12 +82,23 @@
 
         <div id="p-profile" class="page">
             <div class="container">
-                <h2 class="premium-text" style="font-size:30px;">Benlik</h2>
-                <div class="card">
-                    <h3 id="my-name-display" class="premium-text" style="margin:0;"></h3>
-                    <p style="font-size:12px; opacity:0.4;">Aura Pro Member</p>
-                    <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:red; padding:0; margin-top:15px; font-size:11px;">Çıkışı Yap</button>
+                <div class="profile-header">
+                    <div class="aura-circle" id="prof-av">A</div>
+                    <h2 id="prof-name" class="premium-text" style="margin:0; font-size:28px;"></h2>
+                    <p class="bio-text" id="prof-bio">Müziğin ve ışığın peşinde...</p>
+                    <button onclick="editBio()" style="background:none; border:1px solid var(--border); color:var(--soft-gold); border-radius:10px; font-size:10px; padding:5px 10px;">Biyografiyi Düzenle</button>
                 </div>
+
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-val" id="stat-posts">0</div><div class="stat-label">Paylaşım</div></div>
+                    <div class="stat-item"><div class="stat-val" id="stat-msgs">0</div><div class="stat-label">Fısıltı</div></div>
+                    <div class="stat-item"><div class="stat-val">100</div><div class="stat-label">Aura</div></div>
+                </div>
+
+                <h3 class="premium-text" style="font-size:18px; margin-bottom:15px;">Paylaşımlarım</h3>
+                <div id="my-posts-list"></div>
+                
+                <button onclick="localStorage.clear(); location.reload();" style="width:100%; background:none; border:1px solid rgba(255,0,0,0.2); color:red; padding:12px; border-radius:15px; font-size:12px; margin-top:30px;">Oturumu Kapat ve Sıfırla</button>
             </div>
         </div>
 
@@ -96,51 +111,77 @@
 
     <div id="chat-room">
         <div class="chat-header">
-            <span onclick="closeChat()" style="font-size:24px;">←</span>
-            <div class="chat-av" id="chat-target-av" style="width:35px; height:35px; font-size:14px;"></div>
-            <b id="chat-target-name" class="premium-text"></b>
+            <span onclick="closeChat()" style="font-size:24px; cursor:pointer;">←</span>
+            <div class="chat-av" id="target-av" style="width:35px; height:35px; font-size:14px;"></div>
+            <b id="target-name" class="premium-text"></b>
         </div>
         <div class="chat-messages" id="chat-flow"></div>
-        <div class="chat-input-area">
-            <input type="text" id="chat-in" class="chat-input" placeholder="Mesaj yaz...">
+        <div style="padding:20px; display:flex; gap:10px; background:var(--bg);">
+            <input type="text" id="chat-in" style="flex:1; background:#1a1a1a; border:1px solid var(--border); border-radius:25px; padding:12px 20px; color:#fff; outline:none;" placeholder="Mesaj yaz...">
             <button onclick="sendMsg()" class="btn-gold">Gönder</button>
         </div>
     </div>
 
     <script>
-        let user = localStorage.getItem('au_name');
-        let posts = JSON.parse(localStorage.getItem('au_posts')) || [
-            {n: 'Melis', t: 'Bu akşam harika bir enerji var!'},
-            {n: 'Emre', t: 'Yeni bir müzik listesi hazırladım.'}
-        ];
-        let messages = JSON.parse(localStorage.getItem('au_msgs')) || [];
+        let me = localStorage.getItem('aura_me');
+        let posts = JSON.parse(localStorage.getItem('aura_posts')) || [];
+        let msgs = JSON.parse(localStorage.getItem('aura_msgs')) || [];
+        let bio = localStorage.getItem('aura_bio') || "Müziğin ve ışığın peşinde...";
         let activeChat = null;
 
-        window.onload = () => { if(user) { start(); } };
+        window.onload = () => { if(me) start(); };
 
         function login() {
-            const n = document.getElementById('user-in').value;
-            if(!n) return;
-            localStorage.setItem('au_name', n);
-            user = n;
+            const val = document.getElementById('user-in').value;
+            if(!val) return;
+            localStorage.setItem('aura_me', val);
+            me = val;
             start();
         }
 
         function start() {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('main').style.display = 'block';
-            document.getElementById('my-name-display').innerText = user;
+            updateProfile();
             renderFeed();
             renderInbox();
+        }
+
+        function updateProfile() {
+            document.getElementById('prof-name').innerText = me;
+            document.getElementById('prof-av').innerText = me[0].toUpperCase();
+            document.getElementById('prof-bio').innerText = bio;
+            const myPosts = posts.filter(p => p.n === me);
+            document.getElementById('stat-posts').innerText = myPosts.length;
+            document.getElementById('stat-msgs').innerText = msgs.filter(m => m.f === me).length;
+            
+            const list = document.getElementById('my-posts-list');
+            list.innerHTML = myPosts.length ? '' : '<p style="opacity:0.3; font-size:12px;">Henüz bir şey paylaşmadın.</p>';
+            myPosts.forEach(p => {
+                const c = document.createElement('div');
+                c.className = 'card';
+                c.innerHTML = `<p style="margin:0; font-size:14px;">${p.t}</p>`;
+                list.appendChild(c);
+            });
+        }
+
+        function editBio() {
+            const newBio = prompt("Yeni biyografiniz:", bio);
+            if(newBio) {
+                bio = newBio;
+                localStorage.setItem('aura_bio', bio);
+                updateProfile();
+            }
         }
 
         function post() {
             const t = document.getElementById('p-text').value;
             if(!t) return;
-            posts.unshift({n: user, t: t});
-            localStorage.setItem('au_posts', JSON.stringify(posts));
+            posts.unshift({n: me, t: t});
+            localStorage.setItem('aura_posts', JSON.stringify(posts));
             document.getElementById('p-text').value = '';
             renderFeed();
+            updateProfile();
         }
 
         function renderFeed() {
@@ -157,27 +198,22 @@
 
         function renderInbox() {
             const list = document.getElementById('inbox-list');
-            const uniqueUsers = [...new Set(messages.map(m => m.f === user ? m.t : m.f))];
-            // Eğer kimseyle konuşmadıysak örnek birilerini ekleyelim
-            if(uniqueUsers.length === 0) {
-                list.innerHTML = '<p style="text-align:center; opacity:0.3; margin-top:40px;">Mesaj kutun boş.</p>';
-                return;
-            }
-            list.innerHTML = '';
-            uniqueUsers.forEach(u => {
+            const users = [...new Set(msgs.map(m => m.f === me ? m.t : m.f))];
+            list.innerHTML = users.length ? '' : '<p style="text-align:center; opacity:0.3; margin-top:40px;">Henüz kimseyle fısıldaşmadın.</p>';
+            users.forEach(u => {
                 const item = document.createElement('div');
                 item.className = 'chat-item';
                 item.onclick = () => openChat(u);
-                item.innerHTML = `<div class="chat-av">${u[0]}</div><div><b>${u}</b><br><small style="opacity:0.5;">Sohbeti açmak için tıkla</small></div>`;
+                item.innerHTML = `<div class="chat-av">${u[0].toUpperCase()}</div><div><b>${u}</b><br><small style="opacity:0.4;">Sohbeti gör</small></div>`;
                 list.appendChild(item);
             });
         }
 
         function openChat(target) {
-            if(target === user) return;
+            if(target === me) return;
             activeChat = target;
-            document.getElementById('chat-target-name').innerText = target;
-            document.getElementById('chat-target-av').innerText = target[0];
+            document.getElementById('target-name').innerText = target;
+            document.getElementById('target-av').innerText = target[0].toUpperCase();
             document.getElementById('chat-room').style.display = 'flex';
             renderMessages();
         }
@@ -190,22 +226,23 @@
         function sendMsg() {
             const txt = document.getElementById('chat-in').value;
             if(!txt) return;
-            messages.push({f: user, t: activeChat, m: txt});
-            localStorage.setItem('au_msgs', JSON.stringify(messages));
+            msgs.push({f: me, t: activeChat, m: txt});
+            localStorage.setItem('aura_msgs', JSON.stringify(msgs));
             document.getElementById('chat-in').value = '';
             renderMessages();
+            updateProfile();
         }
 
         function renderMessages() {
             const flow = document.getElementById('chat-flow');
             flow.innerHTML = '';
-            messages.filter(m => (m.f === user && m.t === activeChat) || (m.f === activeChat && m.t === user))
-                    .forEach(m => {
-                        const b = document.createElement('div');
-                        b.className = `bubble ${m.f === user ? 'me' : 'them'}`;
-                        b.innerText = m.m;
-                        flow.appendChild(b);
-                    });
+            msgs.filter(m => (m.f === me && m.t === activeChat) || (m.f === activeChat && m.t === me))
+                .forEach(m => {
+                    const b = document.createElement('div');
+                    b.className = `bubble ${m.f === me ? 'me' : 'them'}`;
+                    b.innerText = m.m;
+                    flow.appendChild(b);
+                });
             flow.scrollTop = flow.scrollHeight;
         }
 
@@ -214,6 +251,7 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             el.classList.add('active');
+            if(id === 'profile') updateProfile();
         }
     </script>
 </body>
