@@ -3,180 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: The Creator</title>
+    <title>Aura: Pure</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
+            --bg: #050505;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
-            --glass: rgba(255, 255, 255, 0.04);
-            --border: rgba(255, 255, 255, 0.08);
-            --soft-gold: #d4af37;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.07);
         }
 
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        .page { position: fixed; inset: 0; padding: 60px 0 120px; display: none; overflow-y: auto; background: var(--bg); }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .container { padding: 0 20px; }
+        /* ARKA PLAN PARILTISI */
+        .aura-glow { position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; background: #bf953f; filter: blur(150px); opacity: 0.1; transform: translate(-50%, -50%); z-index: -1; pointer-events: none; }
 
-        /* ODA KARTLARI */
-        .room-card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .room-info b { font-size: 18px; display: block; margin-bottom: 4px; }
-        .room-info span { font-size: 12px; opacity: 0.5; }
+        /* SAYFALAR */
+        .page { position: fixed; inset: 0; padding: 40px 20px 120px; display: none; overflow-y: auto; }
+        .page.active { display: block; animation: softFade 0.6s ease; }
+        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* LIVE STAGE MODAL */
-        #live-stage { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; }
-        .stage-header { padding: 50px 20px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-        .stage-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-
-        /* SPOTIFY MINI PLAYER */
-        .sp-mini { width: 100%; height: 80px; border-radius: 15px; border: none; margin-bottom: 15px; }
-
-        /* NAV */
-        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 5000; }
-        .nav-item { font-size: 22px; opacity: 0.3; color: white; transition: 0.3s; }
-        .nav-item.active { opacity: 1; color: var(--soft-gold); }
-
-        .btn-gold { background: var(--gold); border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; color: black; cursor: pointer; }
+        /* SADELEŞTİRİLMİŞ KARTLAR */
+        .aura-card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
         .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* EVREN (AKIŞ + ODALAR BİR ARADA) */
+        .universe-item { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer; }
+        .universe-av { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--soft-gold); padding: 2px; }
+        .universe-av div { width: 100%; height: 100%; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
+
+        /* FISILTI (DM) PANELİ */
+        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); z-index: 10000; padding: 30px 20px 60px; }
+        #whisper-panel.open { transform: translateY(0); }
+
+        /* MINIMAL NAVİGASYON (3 KÜRE) */
+        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; align-items: center; z-index: 5000; }
+        .nav-orb { width: 12px; height: 12px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; cursor: pointer; }
+        .nav-orb.active { opacity: 1; transform: scale(1.5); box-shadow: 0 0 15px white; }
+
+        /* INPUTS */
+        .aura-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; padding: 15px; color: white; width: 100%; outline: none; box-sizing: border-box; }
+        .btn-send { background: var(--gold); border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
+    <div class="aura-glow"></div>
+
     <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h1 class="premium-font" style="font-size:60px;">Aura</h1>
-        <input type="text" id="user-name" style="background:#111; border:none; padding:15px; border-radius:15px; color:white; text-align:center; width:220px;" placeholder="İsminiz?">
-        <button onclick="login()" class="btn-gold" style="margin-top:20px;">GİRİŞ YAP</button>
+        <h1 class="premium-font" style="font-size:50px;">Aura</h1>
+        <input type="text" id="u-in" class="aura-input" style="width:200px; text-align:center;" placeholder="İsminiz?">
+        <button onclick="startApp()" class="btn-send" style="width:150px;">KEŞFET</button>
     </div>
 
-    <div id="main" style="display:none;">
-        <div id="p-feed" class="page active">
-            <div class="container"><h2 class="premium-font" style="font-size:32px;">Akış</h2><div id="feed-list"></div></div>
-        </div>
-
-        <div id="p-rooms" class="page">
-            <div class="container">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 class="premium-font" style="font-size:32px;">Odalar</h2>
-                    <button class="btn-gold" style="font-size:12px; padding:8px 15px;" onclick="openCreateRoom()">+ ODA KUR</button>
+    <div id="app" style="display:none;">
+        
+        <div id="p-universe" class="page active">
+            <h1 class="premium-font" style="font-size:35px; margin-bottom:40px;">Evren</h1>
+            <div id="universe-list">
+                <div class="universe-item" onclick="openWhisper('Melis')">
+                    <div class="universe-av"><div>M</div></div>
+                    <div><b style="font-size:16px;">Melis</b><br><small style="opacity:0.4;">"Geceye bir şarkı bırak..."</small></div>
                 </div>
-                <div id="room-list"></div>
+                <div class="universe-item" onclick="openWhisper('Aura Lounge')">
+                    <div class="universe-av" style="border-color:white;"><div>✨</div></div>
+                    <div><b class="premium-font" style="font-size:18px;">Canlı Oda: Lounge</b><br><small style="color:var(--soft-gold);">4 kişi fısıldaşıyor...</small></div>
+                </div>
             </div>
         </div>
 
-        <div id="p-profile" class="page">
-            <div class="container"><h2 class="premium-font" style="font-size:32px;">Benlik</h2><div class="room-card"><b id="my-display-name"></b></div></div>
-        </div>
-
-        <nav>
-            <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
-            <div class="nav-item" onclick="tab('rooms', this)">✨</div>
-            <div class="nav-item" onclick="tab('profile', this)">👤</div>
-        </nav>
-    </div>
-
-    <div id="create-room-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:20000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-        <h2 class="premium-font">Odanı Tasarla</h2>
-        <input type="text" id="new-room-name" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:15px; margin-bottom:10px;" placeholder="Oda Adı">
-        <input type="text" id="new-room-song" style="width:100%; padding:15px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:15px; margin-bottom:20px;" placeholder="Spotify Şarkı Linki">
-        <div style="display:flex; gap:10px; width:100%;">
-            <button class="btn-gold" style="flex:1;" onclick="createRoom()">KUR</button>
-            <button class="btn-gold" style="flex:1; background:white;" onclick="closeCreateRoom()">İPTAL</button>
-        </div>
-    </div>
-
-    <div id="live-stage">
-        <div class="stage-header">
-            <span onclick="exitRoom()" style="font-size:30px; cursor:pointer;">✕</span>
-            <b id="active-room-name" class="premium-font"></b>
-            <div style="width:30px;"></div>
-        </div>
-        <div class="stage-content">
-            <div id="music-player-area"></div>
-            <div id="room-chat" style="flex:1; overflow-y:auto; margin-bottom:20px;"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="room-input" style="flex:1; background:#111; border:1px solid #333; padding:12px; border-radius:20px; color:white;" placeholder="Fısılda...">
-                <button onclick="sendRoomMsg()" class="btn-gold">✨</button>
+        <div id="p-self" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Benlik</h1>
+            <div class="aura-card">
+                <textarea id="p-text" class="aura-input" style="height:80px; background:transparent; border:none; padding:0;" placeholder="Şu anki enerjin nedir?"></textarea>
+                <button class="btn-send" onclick="addPost()">Paylaş</button>
             </div>
+            <div id="my-stats" style="display:flex; gap:10px;">
+                <div class="aura-card" style="flex:1; text-align:center;"><small>ENERJİ</small><br><b class="premium-font">Spark</b></div>
+                <div class="aura-card" style="flex:1; text-align:center;"><small>PUAN</small><br><b class="premium-font">120</b></div>
+            </div>
+        </div>
+
+        <div id="p-msgs" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Fısıltılar</h1>
+            <div id="inbox-list">
+                <p style="opacity:0.2; text-align:center; margin-top:100px;">Henüz bir fısıltı gelmedi.</p>
+            </div>
+        </div>
+
+        <div class="aura-nav">
+            <div class="nav-orb active" onclick="tab('universe', this)"></div>
+            <div class="nav-orb" onclick="tab('self', this)"></div>
+            <div class="nav-orb" onclick="tab('msgs', this)"></div>
+        </div>
+    </div>
+
+    <div id="whisper-panel">
+        <h2 id="w-name" class="premium-font"></h2>
+        <div id="chat-flow" style="height:200px; overflow-y:auto; margin-bottom:20px; font-size:14px; opacity:0.8;"></div>
+        <input type="text" id="w-input" class="aura-input" placeholder="Bir fısıltı gönder...">
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn-send" style="margin:0;" onclick="sendWhisper()">GÖNDER</button>
+            <button class="btn-send" style="margin:0; background:white; color:black;" onclick="closeWhisper()">KAPAT</button>
         </div>
     </div>
 
     <script>
-        let me = localStorage.getItem('aura_v_final_user');
-        let rooms = JSON.parse(localStorage.getItem('aura_rooms')) || [
-            {name: "Late Night Lounge", song: "https://open.spotify.com/track/7sz730BvD0O3qvpq9S9Ape", creator: "Aura"}
-        ];
-
-        function login() {
-            const n = document.getElementById('user-name').value;
-            if(!n) return;
-            localStorage.setItem('aura_v_final_user', n);
-            location.reload();
-        }
-
-        if(me) {
+        let me = "";
+        function startApp() {
+            me = document.getElementById('u-in').value;
+            if(!me) return;
             document.getElementById('gate').style.display = 'none';
-            document.getElementById('main').style.display = 'block';
-            document.getElementById('my-display-name').innerText = me;
-            renderRooms();
-        }
-
-        function renderRooms() {
-            const list = document.getElementById('room-list');
-            list.innerHTML = '';
-            rooms.forEach((r, idx) => {
-                const card = document.createElement('div');
-                card.className = 'room-card';
-                card.innerHTML = `
-                    <div class="room-info"><b>${r.name}</b><span>Yöneten: ${r.creator}</span></div>
-                    <button class="btn-gold" style="font-size:11px;" onclick="joinRoom(${idx})">GİR</button>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        function openCreateRoom() { document.getElementById('create-room-modal').style.display = 'flex'; }
-        function closeCreateRoom() { document.getElementById('create-room-modal').style.display = 'none'; }
-
-        function createRoom() {
-            const name = document.getElementById('new-room-name').value;
-            const song = document.getElementById('new-room-song').value;
-            if(!name || !song) return;
-            rooms.unshift({name: name, song: song, creator: me});
-            localStorage.setItem('aura_rooms', JSON.stringify(rooms));
-            closeCreateRoom();
-            renderRooms();
-        }
-
-        function joinRoom(idx) {
-            const r = rooms[idx];
-            document.getElementById('active-room-name').innerText = r.name;
-            let songId = r.song.includes('track/') ? r.song.split('track/')[1].substring(0,22) : "7sz730BvD0O3qvpq9S9Ape";
-            document.getElementById('music-player-area').innerHTML = `<iframe class="sp-mini" src="https://open.spotify.com/embed/track/${songId}" allow="encrypted-media"></iframe>`;
-            document.getElementById('live-stage').style.display = 'flex';
-        }
-
-        function exitRoom() { document.getElementById('live-stage').style.display = 'none'; }
-
-        function sendRoomMsg() {
-            const inp = document.getElementById('room-input');
-            if(!inp.value) return;
-            const chat = document.getElementById('room-chat');
-            const d = document.createElement('div');
-            d.style.marginBottom = "8px";
-            d.innerHTML = `<b style="color:var(--soft-gold); font-size:13px;">${me}:</b> <span style="font-size:14px;">${inp.value}</span>`;
-            chat.appendChild(d);
-            chat.scrollTop = chat.scrollHeight;
-            inp.value = '';
+            document.getElementById('app').style.display = 'block';
         }
 
         function tab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
             document.getElementById('p-' + id).classList.add('active');
             el.classList.add('active');
+        }
+
+        function openWhisper(name) {
+            document.getElementById('w-name').innerText = name;
+            document.getElementById('whisper-panel').classList.add('open');
+        }
+
+        function closeWhisper() {
+            document.getElementById('whisper-panel').classList.remove('open');
+        }
+
+        function sendWhisper() {
+            const txt = document.getElementById('w-input').value;
+            if(!txt) return;
+            const flow = document.getElementById('chat-flow');
+            flow.innerHTML += `<p><b>Sen:</b> ${txt}</p>`;
+            document.getElementById('w-input').value = '';
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function addPost() {
+            alert("Enerjin Evren'e gönderildi. ✨");
+            document.getElementById('p-text').value = '';
+            tab('universe', document.querySelectorAll('.nav-orb')[0]);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Aura: Pure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.07);
+        }
+
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        /* ARKA PLAN PARILTISI */
+        .aura-glow { position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; background: #bf953f; filter: blur(150px); opacity: 0.1; transform: translate(-50%, -50%); z-index: -1; pointer-events: none; }
+
+        /* SAYFALAR */
+        .page { position: fixed; inset: 0; padding: 40px 20px 120px; display: none; overflow-y: auto; }
+        .page.active { display: block; animation: softFade 0.6s ease; }
+        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+
+        /* SADELEŞTİRİLMİŞ KARTLAR */
+        .aura-card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
+        .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* EVREN (AKIŞ + ODALAR BİR ARADA) */
+        .universe-item { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer; }
+        .universe-av { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--soft-gold); padding: 2px; }
+        .universe-av div { width: 100%; height: 100%; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
+
+        /* FISILTI (DM) PANELİ */
+        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); z-index: 10000; padding: 30px 20px 60px; }
+        #whisper-panel.open { transform: translateY(0); }
+
+        /* MINIMAL NAVİGASYON (3 KÜRE) */
+        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; align-items: center; z-index: 5000; }
+        .nav-orb { width: 12px; height: 12px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; cursor: pointer; }
+        .nav-orb.active { opacity: 1; transform: scale(1.5); box-shadow: 0 0 15px white; }
+
+        /* INPUTS */
+        .aura-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; padding: 15px; color: white; width: 100%; outline: none; box-sizing: border-box; }
+        .btn-send { background: var(--gold); border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="aura-glow"></div>
+
+    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 class="premium-font" style="font-size:50px;">Aura</h1>
+        <input type="text" id="u-in" class="aura-input" style="width:200px; text-align:center;" placeholder="İsminiz?">
+        <button onclick="startApp()" class="btn-send" style="width:150px;">KEŞFET</button>
+    </div>
+
+    <div id="app" style="display:none;">
+        
+        <div id="p-universe" class="page active">
+            <h1 class="premium-font" style="font-size:35px; margin-bottom:40px;">Evren</h1>
+            <div id="universe-list">
+                <div class="universe-item" onclick="openWhisper('Melis')">
+                    <div class="universe-av"><div>M</div></div>
+                    <div><b style="font-size:16px;">Melis</b><br><small style="opacity:0.4;">"Geceye bir şarkı bırak..."</small></div>
+                </div>
+                <div class="universe-item" onclick="openWhisper('Aura Lounge')">
+                    <div class="universe-av" style="border-color:white;"><div>✨</div></div>
+                    <div><b class="premium-font" style="font-size:18px;">Canlı Oda: Lounge</b><br><small style="color:var(--soft-gold);">4 kişi fısıldaşıyor...</small></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-self" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Benlik</h1>
+            <div class="aura-card">
+                <textarea id="p-text" class="aura-input" style="height:80px; background:transparent; border:none; padding:0;" placeholder="Şu anki enerjin nedir?"></textarea>
+                <button class="btn-send" onclick="addPost()">Paylaş</button>
+            </div>
+            <div id="my-stats" style="display:flex; gap:10px;">
+                <div class="aura-card" style="flex:1; text-align:center;"><small>ENERJİ</small><br><b class="premium-font">Spark</b></div>
+                <div class="aura-card" style="flex:1; text-align:center;"><small>PUAN</small><br><b class="premium-font">120</b></div>
+            </div>
+        </div>
+
+        <div id="p-msgs" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Fısıltılar</h1>
+            <div id="inbox-list">
+                <p style="opacity:0.2; text-align:center; margin-top:100px;">Henüz bir fısıltı gelmedi.</p>
+            </div>
+        </div>
+
+        <div class="aura-nav">
+            <div class="nav-orb active" onclick="tab('universe', this)"></div>
+            <div class="nav-orb" onclick="tab('self', this)"></div>
+            <div class="nav-orb" onclick="tab('msgs', this)"></div>
+        </div>
+    </div>
+
+    <div id="whisper-panel">
+        <h2 id="w-name" class="premium-font"></h2>
+        <div id="chat-flow" style="height:200px; overflow-y:auto; margin-bottom:20px; font-size:14px; opacity:0.8;"></div>
+        <input type="text" id="w-input" class="aura-input" placeholder="Bir fısıltı gönder...">
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn-send" style="margin:0;" onclick="sendWhisper()">GÖNDER</button>
+            <button class="btn-send" style="margin:0; background:white; color:black;" onclick="closeWhisper()">KAPAT</button>
+        </div>
+    </div>
+
+    <script>
+        let me = "";
+        function startApp() {
+            me = document.getElementById('u-in').value;
+            if(!me) return;
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+        }
+
+        function tab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function openWhisper(name) {
+            document.getElementById('w-name').innerText = name;
+            document.getElementById('whisper-panel').classList.add('open');
+        }
+
+        function closeWhisper() {
+            document.getElementById('whisper-panel').classList.remove('open');
+        }
+
+        function sendWhisper() {
+            const txt = document.getElementById('w-input').value;
+            if(!txt) return;
+            const flow = document.getElementById('chat-flow');
+            flow.innerHTML += `<p><b>Sen:</b> ${txt}</p>`;
+            document.getElementById('w-input').value = '';
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function addPost() {
+            alert("Enerjin Evren'e gönderildi. ✨");
+            document.getElementById('p-text').value = '';
+            tab('universe', document.querySelectorAll('.nav-orb')[0]);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Aura: Pure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.07);
+        }
+
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        /* ARKA PLAN PARILTISI */
+        .aura-glow { position: fixed; top: 50%; left: 50%; width: 300px; height: 300px; background: #bf953f; filter: blur(150px); opacity: 0.1; transform: translate(-50%, -50%); z-index: -1; pointer-events: none; }
+
+        /* SAYFALAR */
+        .page { position: fixed; inset: 0; padding: 40px 20px 120px; display: none; overflow-y: auto; }
+        .page.active { display: block; animation: softFade 0.6s ease; }
+        @keyframes softFade { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+
+        /* SADELEŞTİRİLMİŞ KARTLAR */
+        .aura-card { background: var(--glass); border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); backdrop-filter: blur(20px); }
+        .premium-font { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* EVREN (AKIŞ + ODALAR BİR ARADA) */
+        .universe-item { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer; }
+        .universe-av { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--soft-gold); padding: 2px; }
+        .universe-av div { width: 100%; height: 100%; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
+
+        /* FISILTI (DM) PANELİ */
+        #whisper-panel { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.98); border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); z-index: 10000; padding: 30px 20px 60px; }
+        #whisper-panel.open { transform: translateY(0); }
+
+        /* MINIMAL NAVİGASYON (3 KÜRE) */
+        .aura-nav { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; align-items: center; z-index: 5000; }
+        .nav-orb { width: 12px; height: 12px; background: white; border-radius: 50%; opacity: 0.2; transition: 0.4s; cursor: pointer; }
+        .nav-orb.active { opacity: 1; transform: scale(1.5); box-shadow: 0 0 15px white; }
+
+        /* INPUTS */
+        .aura-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; padding: 15px; color: white; width: 100%; outline: none; box-sizing: border-box; }
+        .btn-send { background: var(--gold); border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="aura-glow"></div>
+
+    <div id="gate" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 class="premium-font" style="font-size:50px;">Aura</h1>
+        <input type="text" id="u-in" class="aura-input" style="width:200px; text-align:center;" placeholder="İsminiz?">
+        <button onclick="startApp()" class="btn-send" style="width:150px;">KEŞFET</button>
+    </div>
+
+    <div id="app" style="display:none;">
+        
+        <div id="p-universe" class="page active">
+            <h1 class="premium-font" style="font-size:35px; margin-bottom:40px;">Evren</h1>
+            <div id="universe-list">
+                <div class="universe-item" onclick="openWhisper('Melis')">
+                    <div class="universe-av"><div>M</div></div>
+                    <div><b style="font-size:16px;">Melis</b><br><small style="opacity:0.4;">"Geceye bir şarkı bırak..."</small></div>
+                </div>
+                <div class="universe-item" onclick="openWhisper('Aura Lounge')">
+                    <div class="universe-av" style="border-color:white;"><div>✨</div></div>
+                    <div><b class="premium-font" style="font-size:18px;">Canlı Oda: Lounge</b><br><small style="color:var(--soft-gold);">4 kişi fısıldaşıyor...</small></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-self" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Benlik</h1>
+            <div class="aura-card">
+                <textarea id="p-text" class="aura-input" style="height:80px; background:transparent; border:none; padding:0;" placeholder="Şu anki enerjin nedir?"></textarea>
+                <button class="btn-send" onclick="addPost()">Paylaş</button>
+            </div>
+            <div id="my-stats" style="display:flex; gap:10px;">
+                <div class="aura-card" style="flex:1; text-align:center;"><small>ENERJİ</small><br><b class="premium-font">Spark</b></div>
+                <div class="aura-card" style="flex:1; text-align:center;"><small>PUAN</small><br><b class="premium-font">120</b></div>
+            </div>
+        </div>
+
+        <div id="p-msgs" class="page">
+            <h1 class="premium-font" style="font-size:35px;">Fısıltılar</h1>
+            <div id="inbox-list">
+                <p style="opacity:0.2; text-align:center; margin-top:100px;">Henüz bir fısıltı gelmedi.</p>
+            </div>
+        </div>
+
+        <div class="aura-nav">
+            <div class="nav-orb active" onclick="tab('universe', this)"></div>
+            <div class="nav-orb" onclick="tab('self', this)"></div>
+            <div class="nav-orb" onclick="tab('msgs', this)"></div>
+        </div>
+    </div>
+
+    <div id="whisper-panel">
+        <h2 id="w-name" class="premium-font"></h2>
+        <div id="chat-flow" style="height:200px; overflow-y:auto; margin-bottom:20px; font-size:14px; opacity:0.8;"></div>
+        <input type="text" id="w-input" class="aura-input" placeholder="Bir fısıltı gönder...">
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn-send" style="margin:0;" onclick="sendWhisper()">GÖNDER</button>
+            <button class="btn-send" style="margin:0; background:white; color:black;" onclick="closeWhisper()">KAPAT</button>
+        </div>
+    </div>
+
+    <script>
+        let me = "";
+        function startApp() {
+            me = document.getElementById('u-in').value;
+            if(!me) return;
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+        }
+
+        function tab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-orb').forEach(o => o.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function openWhisper(name) {
+            document.getElementById('w-name').innerText = name;
+            document.getElementById('whisper-panel').classList.add('open');
+        }
+
+        function closeWhisper() {
+            document.getElementById('whisper-panel').classList.remove('open');
+        }
+
+        function sendWhisper() {
+            const txt = document.getElementById('w-input').value;
+            if(!txt) return;
+            const flow = document.getElementById('chat-flow');
+            flow.innerHTML += `<p><b>Sen:</b> ${txt}</p>`;
+            document.getElementById('w-input').value = '';
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        function addPost() {
+            alert("Enerjin Evren'e gönderildi. ✨");
+            document.getElementById('p-text').value = '';
+            tab('universe', document.querySelectorAll('.nav-orb')[0]);
         }
     </script>
 </body>
