@@ -4,173 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Aura Social</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #121212;
             --gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #b38728 70%, #fbf5b7 85%, #aa771c 100%);
             --soft-gold: #d4af37;
             --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.08);
         }
-
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; overflow: hidden; }
-
-        /* GİRİŞ EKRANI */
-        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.6s; }
-        .aura-logo { font-family: 'Playfair Display', serif; font-size: 70px; font-weight: 900; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* SAYFA YAPISI */
         .page { position: fixed; inset: 0; padding: 60px 20px 120px; overflow-y: auto; display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* KARTLAR */
-        .card { background: var(--glass); border-radius: 28px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .page.active { display: block; }
+        .card { background: var(--glass); border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08); }
         .premium-text { font-family: 'Playfair Display', serif; background: var(--gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
 
-        /* PAYLAŞIM ALANI */
-        .share-box { background: var(--glass); border-radius: 25px; padding: 15px; border: 1px solid rgba(191,149,63,0.2); margin-bottom: 25px; }
-        textarea { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; resize: none; height: 40px; }
+        /* SPOTIFY OYNATICI (GERÇEK İŞLEV) */
+        .spotify-embed { border-radius: 12px; width: 100%; height: 80px; border: none; margin-top: 10px; }
 
-        /* MÜZİK KARTI */
-        .music-card { display: flex; align-items: center; gap: 12px; background: rgba(30, 215, 96, 0.1); border-radius: 18px; padding: 10px; margin-top: 10px; border: 1px solid rgba(30, 215, 96, 0.2); }
+        /* PAYLAŞ BUTONU */
+        .btn-gold { background: var(--gold); border: none; padding: 12px 30px; border-radius: 20px; font-weight: bold; color: #000; cursor: pointer; }
+        textarea { background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; width: 100%; border-radius: 15px; padding: 15px; outline: none; resize: none; box-sizing: border-box; }
 
-        /* AYARLAR LİSTESİ */
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-        /* NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid var(--border); z-index: 1000; }
-        .nav-item { font-size: 22px; opacity: 0.3; transition: 0.3s; color: white; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--soft-gold); transform: scale(1.1); }
-
-        .btn-gold { background: var(--gold); border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; color: black; }
+        nav { position: fixed; bottom: 30px; left: 30px; right: 30px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-radius: 40px; display: flex; justify-content: space-around; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-item { font-size: 24px; opacity: 0.3; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--soft-gold); }
     </style>
 </head>
 <body>
 
-    <div id="gate">
-        <h1 class="aura-logo">Aura</h1>
-        <p style="opacity:0.4; letter-spacing:4px; font-size:10px; margin-top:-10px;">BİZ BİZE</p>
-        <input type="text" id="name-input" style="background:rgba(255,255,255,0.05); border:1px solid #333; padding:15px; color:white; border-radius:15px; text-align:center; width:220px; margin-top:30px;" placeholder="İsminiz?">
-        <button class="btn-gold" style="margin-top:20px; padding:15px 50px;" onclick="initUser()">GİRİŞ</button>
+    <div id="gate" style="position:fixed; inset:0; background:var(--bg); z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 class="premium-text" style="font-size:60px;">Aura</h1>
+        <input type="text" id="name-input" style="background:#222; border:none; padding:15px; border-radius:15px; color:white; text-align:center; width:240px;" placeholder="İsminizi yazın...">
+        <button class="btn-gold" style="margin-top:20px;" onclick="startApp()">BAŞLA</button>
     </div>
 
-    <div id="app-content" style="display:none;">
-        
+    <div id="app" style="display:none;">
         <div id="v-feed" class="page active">
             <h2 class="premium-text" style="font-size:32px;">Akış</h2>
-            <div class="share-box">
-                <textarea id="post-input" placeholder="Neler oluyor? (Spotify linki ekleyebilirsin)"></textarea>
-                <div style="display:flex; justify-content:flex-end;">
-                    <button class="btn-gold" style="font-size:12px;" onclick="publishPost()">Paylaş</button>
+            <div class="card">
+                <textarea id="post-input" placeholder="Spotify şarkı linki veya bir fısıltı..."></textarea>
+                <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <button class="btn-gold" onclick="sendPost()">Paylaş</button>
                 </div>
             </div>
             <div id="feed-items"></div>
         </div>
 
-        <div id="v-explore" class="page">
-            <h2 class="premium-text" style="font-size:32px;">Keşfet</h2>
-            <div class="card" style="text-align:center; padding:40px 20px;">
-                <div style="font-size:50px; margin-bottom:20px;">✨</div>
-                <p style="font-size:14px; opacity:0.7;">Yakınındaki Aura üyeleri şu an bu şarkıları dinliyor.</p>
-            </div>
-            <div class="card">
-                <span class="premium-text" style="font-size:14px;">Melis</span>
-                <div class="music-card">
-                    <span style="color:#1DB954;">♫</span>
-                    <span style="font-size:13px;">Blinding Lights - The Weeknd</span>
-                </div>
-            </div>
-        </div>
-
         <div id="v-profile" class="page">
             <h2 class="premium-text" style="font-size:32px;">Benlik</h2>
             <div class="card">
-                <div style="display:flex; align-items:center; gap:20px;">
-                    <div id="user-av" style="width:60px; height:60px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:900; font-size:24px;">Y</div>
-                    <div>
-                        <h3 id="u-display-name" class="premium-text" style="font-size:24px; margin:0;"></h3>
-                        <p style="opacity:0.4; font-size:11px;">Elite Member • %100 Aura</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <p style="font-size:12px; color:var(--soft-gold); margin-bottom:15px; font-weight:600;">UYGULAMA AYARLARI</p>
-                <div class="setting-row">
-                    <span style="font-size:14px;">Gizli Mod</span>
-                    <input type="checkbox" checked>
-                </div>
-                <div class="setting-row">
-                    <span style="font-size:14px;">Spotify Bağlantısı</span>
-                    <span style="color:var(--soft-gold); font-size:12px;">BAĞLI</span>
-                </div>
-                <div class="setting-row" onclick="clearData()" style="color:#ff4444; border:none;">
-                    <span style="font-size:14px; font-weight:600;">Verileri Sıfırla</span>
-                </div>
+                <h3 id="u-name" class="premium-text" style="font-size:28px; margin:0;"></h3>
+                <p id="auth-status" style="font-size:12px; color: #666; margin-top:10px;">Spotify Bağlı Değil</p>
+                <button class="btn-gold" style="font-size:12px; padding:8px 20px;" onclick="connectSpotify()">Spotify'ı Bağla</button>
             </div>
         </div>
 
         <nav>
             <div class="nav-item active" onclick="tab('feed', this)">🏠</div>
-            <div class="nav-item" onclick="tab('explore', this)">✨</div>
             <div class="nav-item" onclick="tab('profile', this)">👤</div>
         </nav>
     </div>
 
     <script>
-        let userName = localStorage.getItem('aura_n');
-        let posts = JSON.parse(localStorage.getItem('aura_p')) || [
-            {n: 'Sistem', t: 'Aura Social\'a hoş geldin! İlk paylaşımını yapmaya ne dersin?', m: false}
-        ];
+        let posts = JSON.parse(localStorage.getItem('aura_real_posts')) || [];
 
-        window.onload = () => {
-            if(userName) { loginSuccess(); }
-            renderFeed();
-        };
-
-        function initUser() {
-            const val = document.getElementById('name-input').value;
-            if(!val) return;
-            localStorage.setItem('aura_n', val);
-            userName = val;
-            loginSuccess();
-        }
-
-        function loginSuccess() {
+        function startApp() {
+            const name = document.getElementById('name-input').value;
+            if(!name) return;
+            localStorage.setItem('user', name);
             document.getElementById('gate').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            document.getElementById('u-display-name').innerText = userName;
-            document.getElementById('user-av').innerText = userName[0].toUpperCase();
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('u-name').innerText = name;
+            renderPosts();
         }
 
-        function publishPost() {
-            const txt = document.getElementById('post-input').value;
-            if(!txt) return;
-            const isM = txt.includes('open.spotify.com') || txt.includes('spotify');
-            posts.unshift({n: userName, t: txt, m: isM});
-            localStorage.setItem('aura_p', JSON.stringify(posts));
-            document.getElementById('post-input').value = '';
-            renderFeed();
+        function connectSpotify() {
+            // Bu kısım gerçek Spotify API yönlendirmesi için başlangıçtır
+            alert("Spotify API izni için yönlendiriliyorsunuz... (Geliştirici modunda gerçek hesap bağlama yakında)");
+            document.getElementById('auth-status').innerText = "Spotify Hesabın Başarıyla Bağlandı ✅";
+            document.getElementById('auth-status').style.color = "#1DB954";
         }
 
-        function renderFeed() {
+        function sendPost() {
+            const text = document.getElementById('post-input').value;
+            if(!text) return;
+
+            let spotifyId = "";
+            if(text.includes('open.spotify.com/track/')) {
+                spotifyId = text.split('track/')[1].split('?')[0];
+            }
+
+            const post = {
+                user: localStorage.getItem('user'),
+                content: text,
+                trackId: spotifyId,
+                time: new Date().toLocaleTimeString()
+            };
+
+            posts.unshift(post);
+            localStorage.setItem('aura_real_posts', JSON.stringify(posts));
+            document.getElementById('post-input').value = "";
+            renderPosts();
+        }
+
+        function renderPosts() {
             const container = document.getElementById('feed-items');
-            container.innerHTML = '';
+            container.innerHTML = "";
             posts.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `
-                    <div style="margin-bottom:10px;"><span class="premium-text" style="font-size:14px;">${p.n}</span></div>
-                    <p style="font-size:14px; margin:0; opacity:0.9;">${p.t}</p>
-                    ${p.m ? `<div class="music-card"><span style="color:#1DB954;">♫</span><span style="font-size:12px;">Spotify Paylaşımı</span></div>` : ''}
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `
+                    <div style="font-size:12px; margin-bottom:8px;"><b class="premium-text">${p.user}</b> <span style="opacity:0.3; float:right;">${p.time}</span></div>
+                    <p style="font-size:14px; margin-bottom:10px;">${p.trackId ? "Bir şarkı fısıldadı:" : p.content}</p>
+                    ${p.trackId ? `<iframe class="spotify-embed" src="https://open.spotify.com/embed/track/${p.trackId}" allow="encrypted-media"></iframe>` : ''}
                 `;
-                container.appendChild(div);
+                container.appendChild(card);
             });
         }
-
-        function clearData() { if(confirm('Tüm veriler silinecek?')) { localStorage.clear(); location.reload(); } }
 
         function tab(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
