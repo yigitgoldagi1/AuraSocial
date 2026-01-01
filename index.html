@@ -3,251 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Premium Experience</title>
+    <title>Aura: The Living Ecosystem</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --aura: #FF8E53; --bg: #000; --text: #fff;
-            --nav-bg: rgba(255, 255, 255, 0.05);
-            --card: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
+            --card: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.1);
         }
-
         body.light-mode {
-            --bg: #f8f9fa; --text: #1a1a1a; --nav-bg: rgba(0, 0, 0, 0.05); --card: #fff; --border: rgba(0,0,0,0.05);
+            --bg: #f8f9fa; --text: #1a1a1a; --card: #fff; --border: rgba(0,0,0,0.05);
         }
-
         body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; transition: 0.3s; }
 
-        /* SAYFALAR */
+        /* SAYFA YÖNETİMİ */
         .view { position: fixed; inset: 0; display: none; padding-bottom: 100px; overflow-y: auto; z-index: 10; }
         .view.active { display: block; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* POST & MEDYA */
-        .post { background: var(--card); border-radius: 30px; margin: 15px; padding: 20px; border: 1px solid var(--border); }
+        /* POST & VIBE TASARIMI */
+        .post { background: var(--card); border-radius: 30px; margin: 15px; padding: 20px; border: 1px solid var(--border); position: relative; }
+        .vibe-tag { display: inline-block; padding: 5px 12px; border-radius: 12px; background: var(--aura); color: #fff; font-size: 10px; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
         .post-media { width: 100%; border-radius: 20px; margin-top: 15px; max-height: 400px; object-fit: cover; }
-        
-        /* PROFİL STİLİ */
-        .profile-header { padding: 60px 20px 20px; text-align: center; background: linear-gradient(to bottom, rgba(255,142,83,0.1), transparent); }
-        .profile-avatar { width: 90px; height: 90px; border-radius: 35px; background: var(--aura); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: white; box-shadow: 0 10px 20px rgba(255,142,83,0.3); }
-        .stats { display: flex; justify-content: center; gap: 30px; margin: 20px 0; }
-        .stat-item { text-align: center; }
-        .stat-item b { display: block; font-size: 18px; }
-        .stat-item span { font-size: 12px; opacity: 0.5; }
+        .music-bar { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; }
 
-        /* MODAL & EDITOR */
-        .modal { position: fixed; inset: 0; background: var(--bg); z-index: 30000; display: none; flex-direction: column; padding: 40px 25px; }
-        .aura-input { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 18px; border-radius: 20px; margin-bottom: 15px; font-family: inherit; font-size: 16px; outline: none; }
-        
-        /* AYARLAR MENÜSÜ */
-        .settings-item { padding: 18px; background: var(--card); border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid var(--border); }
-        .settings-item:active { transform: scale(0.98); }
-
-        /* NAVİGASYON */
-        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: var(--nav-bg); backdrop-filter: blur(30px); border-radius: 35px; border: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 20000; }
-        .nav-item { font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.3s; }
+        /* NAVİGASYON (HER ŞEY AKTİF) */
+        nav { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 75px; background: rgba(255,255,255,0.05); backdrop-filter: blur(30px); border-radius: 35px; border: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 20000; }
+        .nav-item { font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.3s; color: var(--text); }
         .nav-item.active { opacity: 1; color: var(--aura); }
-        .nav-plus { font-size: 32px; color: var(--aura); opacity: 1; filter: drop-shadow(0 0 5px var(--aura)); }
+        .nav-plus { font-size: 32px; color: var(--aura); filter: drop-shadow(0 0 5px var(--aura)); }
 
-        .btn-main { background: var(--aura); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 16px; width: 100%; cursor: pointer; margin-top: 10px; }
-        #preview-container { width: 100%; height: 200px; border-radius: 20px; background: var(--card); margin-bottom: 15px; display: none; overflow: hidden; position: relative; }
-        #preview-container img, #preview-container video { width: 100%; height: 100%; object-fit: cover; }
+        /* MODALLAR */
+        .modal { position: fixed; inset: 0; background: var(--bg); z-index: 30000; display: none; flex-direction: column; padding: 40px 25px; overflow-y: auto; }
+        .aura-input { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 18px; border-radius: 20px; margin-bottom: 15px; font-family: inherit; font-size: 16px; outline: none; }
+        .btn-main { background: var(--aura); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; width: 100%; cursor: pointer; }
+        
+        /* PREVIEW */
+        #preview-box { width: 100%; height: 200px; border-radius: 20px; background: var(--card); margin-bottom: 15px; display: none; overflow: hidden; }
+        #preview-box img, #preview-box video { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
     <div id="v-home" class="view active">
         <div style="padding: 60px 20px 20px;">
-            <h1 style="font-weight: 800; font-size: 32px; margin-bottom: 10px;">Aura.</h1>
+            <h1 style="font-weight: 800; font-size: 32px; margin: 0;">Aura.</h1>
+            <p style="opacity:0.4; font-size:12px; margin-bottom:20px;">Senin frekansında neler oluyor?</p>
             <div id="main-feed"></div>
         </div>
     </div>
 
-    <div id="v-profile" class="view">
-        <div class="profile-header">
-            <div class="profile-avatar">A</div>
-            <h2 style="margin: 0;">Aura Kullanıcısı</h2>
-            <p id="bio-display" style="opacity: 0.6; font-size: 14px; margin: 10px 0;">Henüz bir biyografi eklenmedi.</p>
-            <div class="stats">
-                <div class="stat-item"><b>12</b><span>Takip</span></div>
-                <div class="stat-item"><b>432</b><span>Aura</span></div>
-                <div class="stat-item"><b>8</b><span>Paylaşım</span></div>
+    <div id="v-chat" class="view">
+        <div style="padding: 60px 25px;">
+            <h1 style="font-weight: 800;">Fısıltılar</h1>
+            <div id="match-list">
+                <div style="background:var(--card); padding:20px; border-radius:20px; text-align:center; opacity:0.5;">
+                    Benzer auralar aranıyor... <br><small>Bir post paylaşarak eşleşmeyi başlat!</small>
+                </div>
             </div>
-            <button class="btn-main" style="width: auto; padding: 10px 30px; font-size: 14px;" onclick="openEditProfile()">Profili Düzenle</button>
         </div>
-        <div id="profile-feed"></div>
+    </div>
+
+    <div id="v-profile" class="view">
+        <div style="padding: 60px 25px; text-align:center;">
+            <div id="p-avatar" style="width:100px; height:100px; border-radius:35px; background:var(--aura); margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:35px; font-weight:800; color:#fff;">A</div>
+            <h2 id="p-name" style="margin:0;">Aura Sakini</h2>
+            <p id="p-bio" style="opacity:0.5; font-size:14px; margin:10px 0;">Modunu buraya yansıt...</p>
+            <div style="display:flex; justify-content:center; gap:25px; margin:20px 0;">
+                <div><b id="count-post">0</b><br><small style="opacity:0.4">Paylaşım</small></div>
+                <div><b>432</b><br><small style="opacity:0.4">Enerji</small></div>
+            </div>
+            <button class="btn-main" onclick="openModal('edit-modal')" style="width:auto; padding:10px 30px; font-size:14px;">Düzenle</button>
+        </div>
+        <div id="p-feed"></div>
     </div>
 
     <div id="v-settings" class="view">
         <div style="padding: 60px 25px;">
             <h1 style="font-weight: 800;">Ayarlar</h1>
-            
-            <p style="font-size: 12px; opacity: 0.4; margin-bottom: 10px; letter-spacing: 1px;">GÖRÜNÜM</p>
-            <div class="settings-item" onclick="toggleTheme()">
-                <b>Gündüz / Gece Modu</b>
-                <span id="theme-icon">🌙</span>
-            </div>
-
-            <p style="font-size: 12px; opacity: 0.4; margin: 20px 0 10px; letter-spacing: 1px;">HESAP</p>
-            <div class="settings-item" onclick="copyUserID()">
-                <b>Profil Linkini Kopyala</b>
-                <span style="font-size: 12px; opacity: 0.5;">aura.app/user_82</span>
-            </div>
-            <div class="settings-item">
-                <b>Bildirim Ayarları</b>
-                <span>🔔</span>
-            </div>
-            <div class="settings-item" style="color: #ff4444;">
-                <b>Çıkış Yap</b>
+            <div style="background:var(--card); border-radius:20px; padding:10px; border:1px solid var(--border);">
+                <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;" onclick="toggleTheme()">
+                    <b>Gündüz / Gece</b> <span id="t-icon">🌙</span>
+                </div>
+                <div style="padding:15px; border-top:1px solid var(--border);" onclick="copyLink()">
+                    <b>Profil Linki</b> <small style="opacity:0.4">Kopyala</small>
+                </div>
+                <div style="padding:15px; border-top:1px solid var(--border);">
+                    <b>Bildirimler</b> <small style="color:var(--aura)">Açık</small>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="share-modal" class="modal">
-        <h2 style="font-weight: 800;">Yeni Paylaşım</h2>
-        
-        <div id="preview-container"></div>
-
-        <textarea id="post-text" class="aura-input" rows="4" placeholder="Neler hissediyorsun?"></textarea>
-        
-        <input type="file" id="media-input" accept="image/*,video/*" style="display: none;" onchange="handleFile(event)">
-        <button class="btn-main" style="background: var(--card); color: var(--text); border: 1px solid var(--border);" onclick="document.getElementById('media-input').click()">📁 Galeriden Seç</button>
-        
-        <button class="btn-main" onclick="publishPost()">Yayınla</button>
-        <button onclick="closeModal('share-modal')" style="background:none; border:none; color:gray; margin-top:20px; width:100%;">Vazgeç</button>
+        <h2 style="font-weight:800;">Paylaş</h2>
+        <div id="preview-box"></div>
+        <textarea id="in-text" class="aura-input" rows="4" placeholder="Neler oluyor?"></textarea>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select id="in-mood" class="aura-input" style="margin:0; flex:1;">
+                <option value="Huzurlu">Huzurlu 🍃</option>
+                <option value="Enerjik">Enerjik 🔥</option>
+                <option value="Hüzünlü">Hüzünlü 🌧️</option>
+                <option value="Yorgun">Yorgun ☕</option>
+            </select>
+            <input type="text" id="in-music" class="aura-input" style="margin:0; flex:1;" placeholder="Müzik (Örn: Lofi)">
+        </div>
+        <input type="file" id="in-file" style="display:none" onchange="previewMedia(this)">
+        <button class="btn-main" style="background:#222; margin-bottom:10px;" onclick="document.getElementById('in-file').click()">📸 Medya Ekle</button>
+        <button class="btn-main" onclick="publish()">Yayınla</button>
+        <button onclick="closeModal('share-modal')" style="background:none; border:none; color:gray; width:100%; margin-top:20px;">Vazgeç</button>
     </div>
 
-    <div id="profile-modal" class="modal">
-        <h2 style="font-weight: 800;">Profili Düzenle</h2>
-        <input type="text" id="edit-name" class="aura-input" placeholder="İsim">
-        <textarea id="edit-bio" class="aura-input" rows="3" placeholder="Biyografi"></textarea>
+    <div id="edit-modal" class="modal">
+        <h2 style="font-weight:800;">Profili Güncelle</h2>
+        <input type="text" id="ed-name" class="aura-input" placeholder="İsim">
+        <textarea id="ed-bio" class="aura-input" placeholder="Biyografi"></textarea>
         <button class="btn-main" onclick="saveProfile()">Kaydet</button>
-        <button onclick="closeModal('profile-modal')" style="background:none; border:none; color:gray; margin-top:20px; width:100%;">Vazgeç</button>
+        <button onclick="closeModal('edit-modal')" style="background:none; border:none; color:gray; width:100%; margin-top:20px;">Vazgeç</button>
     </div>
 
     <nav>
         <div class="nav-item active" onclick="nav('home', this)">🏠</div>
         <div class="nav-item">🧭</div>
-        <div class="nav-plus" onclick="document.getElementById('share-modal').style.display='flex'">⊕</div>
-        <div class="nav-item">💬</div>
+        <div class="nav-plus" onclick="openModal('share-modal')">⊕</div>
+        <div class="nav-item" onclick="nav('chat', this)">💬</div>
         <div class="nav-item" onclick="nav('profile', this)">👤</div>
         <div class="nav-item" onclick="nav('settings', this)">⚙️</div>
     </nav>
 
     <script>
-        let posts = JSON.parse(localStorage.getItem('aura_v10_posts')) || [];
-        let profile = JSON.parse(localStorage.getItem('aura_v10_prof')) || { name: "Aura Kullanıcısı", bio: "Frekansını buraya yaz..." };
-        let selectedFile = null;
+        let posts = JSON.parse(localStorage.getItem('aura_v11_posts')) || [];
+        let user = JSON.parse(localStorage.getItem('aura_v11_user')) || {name: "Aura Sakini", bio: "Modunu buraya yansıt..."};
+        let tempMedia = null;
 
-        // NAVİGASYON
         function nav(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
+            const target = document.getElementById('v-' + id);
+            if(target) target.classList.add('active');
             if(el) el.classList.add('active');
             render();
         }
 
-        // MEDYA İŞLEME
-        function handleFile(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            selectedFile = file;
+        function previewMedia(input) {
+            const file = input.files[0];
+            if(!file) return;
             const reader = new FileReader();
-            const preview = document.getElementById('preview-container');
-            preview.style.display = 'block';
-            
-            reader.onload = function(event) {
-                if (file.type.startsWith('image')) {
-                    preview.innerHTML = `<img src="${event.target.result}">`;
-                } else {
-                    preview.innerHTML = `<video src="${event.target.result}" autoplay muted loop></video>`;
-                }
-            }
+            reader.onload = e => {
+                tempMedia = {data: e.target.result, type: file.type};
+                const box = document.getElementById('preview-box');
+                box.style.display = 'block';
+                box.innerHTML = file.type.includes('video') ? `<video src="${e.target.result}" autoplay muted loop></video>` : `<img src="${e.target.result}">`;
+            };
             reader.readAsDataURL(file);
         }
 
-        // PAYLAŞ
-        function publishPost() {
-            const txt = document.getElementById('post-text').value;
-            if (!txt && !selectedFile) return;
+        function publish() {
+            const txt = document.getElementById('in-text').value;
+            const mood = document.getElementById('in-mood').value;
+            const music = document.getElementById('in-music').value || "Sessizliğin Sesi";
+            if(!txt && !tempMedia) return;
 
-            const reader = new FileReader();
-            if (selectedFile) {
-                reader.onload = function(e) {
-                    saveAndRender(txt, e.target.result, selectedFile.type);
-                };
-                reader.readAsDataURL(selectedFile);
-            } else {
-                saveAndRender(txt, null, null);
-            }
-        }
-
-        function saveAndRender(txt, mediaData, type) {
-            const post = { txt, media: mediaData, type, date: new Date().toLocaleString(), id: Date.now() };
-            posts.unshift(post);
-            localStorage.setItem('aura_v10_posts', JSON.stringify(posts));
-            resetShare();
+            posts.unshift({txt, mood, music, media: tempMedia, user: user.name, date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})});
+            localStorage.setItem('aura_v11_posts', JSON.stringify(posts));
+            
+            // RESET & REDIRECT
+            document.getElementById('in-text').value = '';
+            document.getElementById('preview-box').style.display = 'none';
+            tempMedia = null;
+            closeModal('share-modal');
             nav('home', document.querySelector('.nav-item'));
-        }
-
-        function resetShare() {
-            document.getElementById('share-modal').style.display = 'none';
-            document.getElementById('post-text').value = '';
-            document.getElementById('preview-container').style.display = 'none';
-            selectedFile = null;
-        }
-
-        // PROFİL SİSTEMİ
-        function openEditProfile() {
-            document.getElementById('profile-modal').style.display = 'flex';
-            document.getElementById('edit-name').value = profile.name;
-            document.getElementById('edit-bio').value = profile.bio;
-        }
-
-        function saveProfile() {
-            profile.name = document.getElementById('edit-name').value;
-            profile.bio = document.getElementById('edit-bio').value;
-            localStorage.setItem('aura_v10_prof', JSON.stringify(profile));
-            document.getElementById('profile-modal').style.display = 'none';
-            renderProfileData();
-        }
-
-        function renderProfileData() {
-            document.querySelector('.profile-header h2').innerText = profile.name;
-            document.getElementById('bio-display').innerText = profile.bio;
+            checkMatches();
         }
 
         function render() {
-            const html = posts.map(p => `
+            const feedHtml = posts.map(p => `
                 <div class="post">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                        <div style="width:35px; height:35px; border-radius:12px; background:var(--aura); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">${profile.name[0]}</div>
-                        <div><b>${profile.name}</b><br><small style="opacity:0.3; font-size:10px;">${p.date}</small></div>
+                    <div class="vibe-tag">${p.mood}</div>
+                    <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                        <div style="width:35px; height:35px; border-radius:12px; background:var(--aura); display:flex; align-items:center; justify-content:center; font-weight:800; color:white;">${p.user[0]}</div>
+                        <b>${p.user} <small style="opacity:0.3; font-weight:400;">• ${p.date}</small></b>
                     </div>
-                    <div style="font-size:15px; line-height:1.5;">${p.txt}</div>
-                    ${p.media ? (p.type.startsWith('image') ? `<img src="${p.media}" class="post-media">` : `<video src="${p.media}" class="post-media" controls autoplay muted loop></video>`) : ''}
+                    <div style="font-size:15px; line-height:1.6;">${p.txt}</div>
+                    ${p.media ? (p.media.type.includes('video') ? `<video src="${p.media.data}" class="post-media" controls autoplay muted loop></video>` : `<img src="${p.media.data}" class="post-media">`) : ''}
+                    <div class="music-bar">🎵 ${p.music}</div>
                 </div>
             `).join('');
-            document.getElementById('main-feed').innerHTML = html || '<p style="text-align:center; opacity:0.2; margin-top:100px;">Henüz bir paylaşım yok.</p>';
-            document.getElementById('profile-feed').innerHTML = html;
+            document.getElementById('main-feed').innerHTML = feedHtml || '<div style="text-align:center; padding:100px; opacity:0.2;">Henüz kimse fısıldamadı...</div>';
+            document.getElementById('p-feed').innerHTML = feedHtml;
+            document.getElementById('count-post').innerText = posts.length;
+        }
+
+        function checkMatches() {
+            if(posts.length > 0) {
+                document.getElementById('match-list').innerHTML = `
+                    <div class="post" style="border: 2px solid var(--aura); animation: pulse 2s infinite;">
+                        <div style="text-align:center;">
+                            <b style="color:var(--aura);">YENİ EŞLEŞME!</b>
+                            <p style="font-size:13px;">${posts[0].mood} modunda olan 2 kişi daha var.</p>
+                            <button class="btn-main" style="padding:10px; font-size:12px;" onclick="alert('Özel oda açılıyor...')">Sohbete Gir</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function saveProfile() {
+            user.name = document.getElementById('ed-name').value || user.name;
+            user.bio = document.getElementById('ed-bio').value || user.bio;
+            localStorage.setItem('aura_v11_user', JSON.stringify(user));
+            document.getElementById('p-name').innerText = user.name;
+            document.getElementById('p-bio').innerText = user.bio;
+            document.getElementById('p-avatar').innerText = user.name[0];
+            closeModal('edit-modal');
         }
 
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('theme-icon').innerText = isLight ? '☀️' : '🌙';
+            document.getElementById('t-icon').innerText = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
         }
 
-        function copyUserID() {
-            alert("Profil linki kopyalandı!");
+        function copyLink() { alert("Profil linkin panoya kopyalandı!"); }
+        function openModal(id) { 
+            document.getElementById(id).style.display = 'flex'; 
+            if(id === 'edit-modal') {
+                document.getElementById('ed-name').value = user.name;
+                document.getElementById('ed-bio').value = user.bio;
+            }
         }
-
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Başlangıç
-        renderProfileData();
+        // START
+        document.getElementById('p-name').innerText = user.name;
+        document.getElementById('p-bio').innerText = user.bio;
+        document.getElementById('p-avatar').innerText = user.name[0];
         render();
     </script>
 </body>
