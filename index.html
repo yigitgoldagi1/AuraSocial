@@ -3,226 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: The Rainy Library</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;500&display=swap" rel="stylesheet">
+    <title>Aura: Premium Social Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --amber: #ffbf00;
-            --ink: #0a0a0c;
-            --paper: #f1e7d0;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
+            --aura: #FF8E53;
+            --bg: #000;
+            --text: #fff;
+            --nav-bg: rgba(255, 255, 255, 0.05);
+            --card: rgba(255, 255, 255, 0.08);
+            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* LÜKS IŞIK MODU */
+        body.light-mode {
+            --bg: #f8f9fa;
+            --text: #1a1a1a;
+            --nav-bg: rgba(0, 0, 0, 0.05);
+            --card: rgba(0, 0, 0, 0.03);
         }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            background: var(--ink); color: #ececed; 
+            background: var(--bg); color: var(--text); 
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
+            transition: background var(--transition), color var(--transition);
         }
 
-        /* 1. YAĞMUR ATMOSFERİ (CAM EFEKTİ) */
-        #rain-canvas {
-            position: fixed; inset: 0; z-index: 1; opacity: 0.4; pointer-events: none;
+        /* SAYFA YAPISI */
+        .view { position: fixed; inset: 0; display: none; padding-bottom: 90px; overflow-y: auto; }
+        .view.active { display: block; animation: viewFade 0.5s ease; }
+        @keyframes viewFade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* HİKAYE BAR (PREMIUM) */
+        .story-bar { display: flex; gap: 15px; padding: 60px 20px 20px; overflow-x: auto; scrollbar-width: none; }
+        .story-node { 
+            flex: 0 0 70px; height: 70px; border-radius: 50%;
+            padding: 3px; background: linear-gradient(135deg, var(--aura), #FE6B8B);
+            cursor: pointer; position: relative;
         }
+        .story-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg); }
 
-        .ambient-glow {
-            position: fixed; bottom: -10%; left: 50%; transform: translateX(-50%);
-            width: 100%; height: 70%;
-            background: radial-gradient(circle, rgba(255, 191, 0, 0.15) 0%, transparent 70%);
-            z-index: 2; pointer-events: none; transition: 1s;
+        /* KEŞFET (TIKTOK DİNAMİĞİ) */
+        .explore-stream { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .explore-item { 
+            height: 100vh; scroll-snap-align: center; position: relative;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 25px 120px;
         }
+        .vibe-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); z-index: 1; }
 
-        /* 2. SAYFA YAPISI */
-        .page { position: fixed; inset: 0; padding: 80px 25px 120px; display: none; overflow-y: auto; z-index: 10; }
-        .page.active { display: block; animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 3. KİTAP AYRACI KARTLARI (KAYDIRILABİLİR) */
-        .bookmark-card {
-            background: var(--glass); border-left: 3px solid var(--amber);
-            border-radius: 4px 25px 25px 4px; padding: 25px; margin-bottom: 20px;
-            backdrop-filter: blur(20px); transition: 0.3s; position: relative;
-            box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
-        }
-        .bookmark-card:active { transform: scale(0.98); background: rgba(255,255,255,0.06); }
-        .author { font-family: 'Playfair Display', serif; font-style: italic; font-size: 13px; color: var(--amber); margin-bottom: 10px; display: block; }
-        .content { font-size: 16px; line-height: 1.7; opacity: 0.9; }
-
-        /* 4. NAVİGASYON (GAZ LAMBASI RUHU) */
+        /* ALT NAVİGASYON (THE PENTAGON) */
         nav {
-            position: fixed; bottom: 35px; left: 25px; right: 25px; height: 75px; 
-            background: rgba(10, 10, 12, 0.9); border-radius: 40px;
-            border: 1px solid var(--border); display: flex; justify-content: space-around;
-            align-items: center; z-index: 10000; backdrop-filter: blur(30px);
+            position: fixed; bottom: 25px; left: 15px; right: 15px; height: 75px;
+            background: var(--nav-bg); backdrop-filter: blur(30px);
+            border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-around; align-items: center; z-index: 10000;
         }
-        .nav-link { font-size: 20px; opacity: 0.3; transition: 0.4s; cursor: pointer; color: white; border: none; background: none; }
-        .nav-link.active { opacity: 1; color: var(--amber); text-shadow: 0 0 15px var(--amber); }
+        .nav-item { font-size: 22px; opacity: 0.3; transition: var(--transition); cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--aura); transform: translateY(-5px); }
 
-        /* 5. ÖZEL ODA (DM) */
-        #chat-overlay {
-            position: fixed; inset: 0; background: var(--ink); z-index: 50000; display: none; flex-direction: column;
-        }
+        /* AYARLAR */
+        .setting-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .toggle { width: 50px; height: 26px; background: #333; border-radius: 13px; position: relative; cursor: pointer; }
+        .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        body.light-mode .toggle.active::after { left: 27px; background: var(--aura); }
 
-        /* GİRİŞ EKRANI */
-        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .gate-title { font-family: 'Playfair Display', serif; font-size: 50px; font-weight: 800; color: var(--amber); margin-bottom: 5px; }
-        .btn-ink { background: var(--amber); color: #000; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 800; cursor: pointer; margin-top: 30px; }
+        /* BUTONLAR */
+        .btn-premium { background: var(--aura); border: none; padding: 12px 25px; border-radius: 18px; font-weight: 800; color: #fff; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <canvas id="rain-canvas"></canvas>
-    <div class="ambient-glow" id="main-glow"></div>
-
-    <div id="gate">
-        <div class="gate-title">Aura</div>
-        <p style="letter-spacing: 5px; opacity: 0.3; font-size: 10px;">THE RAINY LIBRARY</p>
-        <input type="text" id="user-name" placeholder="İsmin nedir?" style="background:none; border:none; border-bottom:1px solid #333; color:white; text-align:center; font-size:20px; outline:none; margin-top:40px; width:200px;">
-        <button class="btn-ink" onclick="enterLibrary()">KAPIYI AÇ</button>
-    </div>
-
-    <div id="app" style="display:none;">
-        
-        <div style="position:fixed; top:45px; right:25px; z-index:20000; cursor:pointer; opacity:0.4; font-size:20px;" onclick="toggleSettings()">⚙️</div>
-
-        <div id="p-shelves" class="page active">
-            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Kütüphane Rafları</h2>
-            <div id="shelf-list"></div>
+    <div id="v-home" class="view active">
+        <div class="story-bar">
+            <div class="story-node"><img src="https://i.pravatar.cc/150?u=1"></div>
+            <div class="story-node"><img src="https://i.pravatar.cc/150?u=2"></div>
+            <div class="story-node"><img src="https://i.pravatar.cc/150?u=3"></div>
+            <div class="story-node"><img src="https://i.pravatar.cc/150?u=4"></div>
         </div>
-
-        <div id="p-write" class="page">
-            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Not Bırak</h2>
-            <div class="bookmark-card">
-                <textarea id="note-in" style="width:100%; background:none; border:none; color:white; outline:none; height:120px; font-family:inherit; font-size:18px;" placeholder="Bu kütüphanenin bir köşesine fısıltını bırak..."></textarea>
-                <button class="btn-ink" style="float:right; padding:10px 25px; font-size:12px;" onclick="addNote()">AYRACI BIRAK</button>
-                <div style="clear:both;"></div>
+        <div style="padding: 20px;">
+            <div style="background:var(--card); border-radius:30px; padding:30px; margin-bottom:20px;">
+                <h2 style="margin:0">Hoş geldin ✨</h2>
+                <p style="opacity:0.6">Çevrendeki auralar bugün çok canlı.</p>
             </div>
         </div>
+    </div>
 
-        <div id="p-bonds" class="page">
-            <h2 style="font-family:'Playfair Display'; font-size:32px; font-style:italic; margin-bottom:30px;">Frekans Bağları</h2>
-            <div id="bond-list">
-                <div class="bookmark-card" style="opacity:0.5; text-align:center; border:none;">Henüz bir ruhla eşleşmedin. Kitaplara enerji vermeyi dene.</div>
+    <div id="v-explore" class="view" style="padding:0">
+        <div class="explore-stream">
+            <div class="explore-item" style="background: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000') center/cover;">
+                <div class="vibe-overlay"></div>
+                <div style="position:relative; z-index:2;">
+                    <h2 style="font-weight:800; margin-bottom:5px;">@GeceKuşu</h2>
+                    <p>Bu şehrin ışıkları asla sönmüyor... 🌃</p>
+                </div>
+            </div>
+            <div class="explore-item" style="background: url('https://images.unsplash.com/photo-1514525253361-bee8718a300a?q=80&w=1000') center/cover;">
+                <div class="vibe-overlay"></div>
+                <div style="position:relative; z-index:2;">
+                    <h2 style="font-weight:800; margin-bottom:5px;">@MüzikRuhu</h2>
+                    <p>Ritme teslim ol. 🎧</p>
+                </div>
             </div>
         </div>
-
-        <nav>
-            <div class="nav-link active" onclick="tab('shelves', this)">📖</div>
-            <div class="nav-link" onclick="tab('write', this)">✒️</div>
-            <div class="nav-link" onclick="tab('bonds', this)">🕯️</div>
-        </nav>
     </div>
 
-    <div id="settings-ui" style="position:fixed; inset:0; background:rgba(0,0,0,0.98); z-index:100000; display:none; padding:60px 30px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:50px;">
-            <h2 style="font-family:'Playfair Display'; font-size:28px;">Kütüphane Ayarları</h2>
-            <span onclick="toggleSettings()" style="font-size:30px;">✕</span>
+    <div id="v-chat" class="view">
+        <div style="padding: 60px 20px;">
+            <h1 style="font-weight:800; font-size:32px;">Fısıltılar</h1>
+            <div class="setting-card">
+                <div><b>Aura Destek</b><br><small style="opacity:0.5">Merhaba! Sana nasıl yardım edebilirim?</small></div>
+                <span style="color:var(--aura)">●</span>
+            </div>
         </div>
-        <p style="opacity:0.4; font-size:11px; letter-spacing:2px; margin-bottom:20px;">IŞIK ŞİDDETİ</p>
-        <input type="range" min="0" max="50" value="15" style="width:100%; accent-color:var(--amber);" oninput="adjustGlow(this.value)">
-        <p style="opacity:0.4; font-size:11px; letter-spacing:2px; margin-top:40px; margin-bottom:20px;">YAĞMUR YOĞUNLUĞU</p>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-ink" style="background:#222; color:white; flex:1;" onclick="setRain(20)">Hafif</button>
-            <button class="btn-ink" style="background:#222; color:white; flex:1;" onclick="setRain(60)">Sağanak</button>
-        </div>
-        <button class="btn-ink" style="width:100%; margin-top:100px; background:none; border:1px solid #444; color:#666;" onclick="localStorage.clear(); location.reload();">Işıkları Kapat (Çıkış)</button>
     </div>
+
+    <div id="v-profile" class="view">
+        <div style="padding: 60px 20px; text-align:center;">
+            <div style="width:120px; height:120px; border-radius:50%; background:var(--aura); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:800; color:white;">A</div>
+            <h2 style="margin:0">Senin Auran</h2>
+            <p style="opacity:0.5">Frekans: 432Hz</p>
+            <button class="btn-premium">Profili Düzenle</button>
+        </div>
+    </div>
+
+    <div id="v-settings" class="view">
+        <div style="padding: 60px 20px;">
+            <h1 style="font-weight:800; font-size:32px; margin-bottom:30px;">Ayarlar</h1>
+            <div class="setting-card">
+                <b>Işık Modu</b>
+                <div class="toggle" id="theme-toggle" onclick="toggleTheme()"></div>
+            </div>
+            <div class="setting-card">
+                <b>Bildirimler</b>
+                <div class="toggle active"></div>
+            </div>
+            <div class="setting-card">
+                <b>Gizli Aura</b>
+                <div class="toggle"></div>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-item active" onclick="nav('home', this)">🏠</div>
+        <div class="nav-item" onclick="nav('explore', this)">🧭</div>
+        <div class="nav-item" onclick="nav('chat', this)">💬</div>
+        <div class="nav-item" onclick="nav('profile', this)">👤</div>
+        <div class="nav-item" onclick="nav('settings', this)">⚙️</div>
+    </nav>
 
     <script>
-        let me = localStorage.getItem('aura_lib_user') || "";
-        let notes = JSON.parse(localStorage.getItem('aura_lib_notes')) || [
-            {n: "Mevlana", t: "Dün akıllıydım, dünyayı değiştirmek istedim. Bugün bilgeyim, kendimi değiştiriyorum."},
-            {n: "Anonim", t: "Yağmurun sesinde saklı bir huzur var, sadece sessiz olanlar duyar."},
-            {n: "Dostoyevski", t: "Her şeyin üzerinden geçip gidilir ama hiçbir şey unutulmaz."}
-        ];
-
-        // 1. GİRİŞ MANTIĞI
-        function enterLibrary() {
-            const n = document.getElementById('user-name').value.trim();
-            if(!n) return;
-            localStorage.setItem('aura_lib_user', n);
-            me = n;
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            renderNotes();
-            initRain();
-        }
-        if(me) enterLibrary();
-
-        // 2. NAVİGASYON
-        function tab(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('p-' + id).classList.add('active');
+        function nav(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
             el.classList.add('active');
         }
 
-        // 3. NOT EKLEME (BOOKMARK)
-        function addNote() {
-            const t = document.getElementById('note-in').value.trim();
-            if(!t) return;
-            notes.unshift({n: me, t: t});
-            localStorage.setItem('aura_lib_notes', JSON.stringify(notes));
-            document.getElementById('note-in').value = '';
-            renderNotes();
-            tab('shelves', document.querySelectorAll('.nav-link')[0]);
-        }
-
-        function renderNotes() {
-            document.getElementById('shelf-list').innerHTML = notes.map(n => `
-                <div class="bookmark-card" ondbclick="matchAlert('${n.n}')">
-                    <span class="author">@${n.n} bir ayrac bıraktı:</span>
-                    <div class="content">${n.t}</div>
-                    <div style="margin-top:15px; font-size:10px; opacity:0.3; letter-spacing:1px;">ENERJİ VERMEK İÇİN BASILI TUT</div>
-                </div>
-            `).join('');
-        }
-
-        // 4. MATCH SİSTEMİ (OYUNCAKLI ETKİLEŞİM)
-        function matchAlert(user) {
-            alert(user + " ile frekansınız uyuştu! Bond (Bağlar) sekmesine eklendi.");
-        }
-
-        // 5. AYARLAR
-        function toggleSettings() {
-            const s = document.getElementById('settings-ui');
-            s.style.display = s.style.display === 'block' ? 'none' : 'block';
-        }
-        function adjustGlow(v) {
-            document.getElementById('main-glow').style.opacity = v / 100;
-        }
-
-        // 6. YAĞMUR MOTORU (CANVAS)
-        const canvas = document.getElementById('rain-canvas');
-        const ctx = canvas.getContext('2d');
-        let rainDrops = [];
-        let rainCount = 40;
-
-        function initRain() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            for(let i = 0; i < rainCount; i++) {
-                rainDrops.push({x: Math.random() * canvas.width, y: Math.random() * canvas.height, l: Math.random() * 20, v: Math.random() * 5 + 2});
-            }
-            animateRain();
-        }
-
-        function setRain(count) { rainCount = count; rainDrops = []; initRain(); }
-
-        function animateRain() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-            ctx.lineWidth = 1;
-            rainDrops.forEach(d => {
-                ctx.beginPath();
-                ctx.moveTo(d.x, d.y);
-                ctx.lineTo(d.x, d.y + d.l);
-                ctx.stroke();
-                d.y += d.v;
-                if(d.y > canvas.height) d.y = -20;
-            });
-            requestAnimationFrame(animateRain);
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            document.getElementById('theme-toggle').classList.toggle('active');
         }
     </script>
 </body>
