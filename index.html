@@ -3,168 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aura: Premium Social Space</title>
+    <title>Aura: Genuine Social Space</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --aura: #FF8E53;
-            --bg: #000;
-            --text: #fff;
+            --aura: #FF8E53; --bg: #000; --text: #fff;
             --nav-bg: rgba(255, 255, 255, 0.05);
             --card: rgba(255, 255, 255, 0.08);
-            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* LÜKS IŞIK MODU */
         body.light-mode {
-            --bg: #f8f9fa;
-            --text: #1a1a1a;
-            --nav-bg: rgba(0, 0, 0, 0.05);
-            --card: rgba(0, 0, 0, 0.03);
+            --bg: #f5f5f7; --text: #1a1a1a; --nav-bg: rgba(0, 0, 0, 0.05); --card: #fff;
         }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; 
             background: var(--bg); color: var(--text); 
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
-            transition: background var(--transition), color var(--transition);
         }
 
-        /* SAYFA YAPISI */
-        .view { position: fixed; inset: 0; display: none; padding-bottom: 90px; overflow-y: auto; }
-        .view.active { display: block; animation: viewFade 0.5s ease; }
-        @keyframes viewFade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        /* DİNAMİK SAYFALAR */
+        .view { position: fixed; inset: 0; display: none; padding-bottom: 100px; overflow-y: auto; z-index: 10; }
+        .view.active { display: block; }
 
-        /* HİKAYE BAR (PREMIUM) */
-        .story-bar { display: flex; gap: 15px; padding: 60px 20px 20px; overflow-x: auto; scrollbar-width: none; }
-        .story-node { 
-            flex: 0 0 70px; height: 70px; border-radius: 50%;
-            padding: 3px; background: linear-gradient(135deg, var(--aura), #FE6B8B);
-            cursor: pointer; position: relative;
+        /* POST TASARIMI (INSTA + TWITTER HYBRID) */
+        .post { background: var(--card); border-radius: 25px; margin: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .post-media { width: 100%; border-radius: 15px; margin-top: 15px; display: block; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--aura); }
+
+        /* PAYLAŞIM MERKEZİ MODAL */
+        #share-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
-        .story-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg); }
-
-        /* KEŞFET (TIKTOK DİNAMİĞİ) */
-        .explore-stream { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
-        .explore-item { 
-            height: 100vh; scroll-snap-align: center; position: relative;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 25px 120px;
+        .share-option { 
+            width: 80%; padding: 25px; border-radius: 25px; background: var(--card); 
+            text-align: center; font-weight: 800; font-size: 18px; cursor: pointer; border: 1px solid var(--aura);
         }
-        .vibe-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); z-index: 1; }
 
-        /* ALT NAVİGASYON (THE PENTAGON) */
+        /* ALT NAVİGASYON (ÇALIŞAN) */
         nav {
             position: fixed; bottom: 25px; left: 15px; right: 15px; height: 75px;
             background: var(--nav-bg); backdrop-filter: blur(30px);
             border-radius: 35px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 10000;
+            display: flex; justify-content: space-around; align-items: center; z-index: 15000;
         }
-        .nav-item { font-size: 22px; opacity: 0.3; transition: var(--transition); cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--aura); transform: translateY(-5px); }
+        .nav-item { font-size: 22px; opacity: 0.3; cursor: pointer; color: var(--text); }
+        .nav-item.active { opacity: 1; color: var(--aura); transform: scale(1.1); }
+        .nav-plus { font-size: 30px; color: var(--aura); opacity: 1; }
 
-        /* AYARLAR */
-        .setting-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .toggle { width: 50px; height: 26px; background: #333; border-radius: 13px; position: relative; cursor: pointer; }
-        .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; }
-        body.light-mode .toggle.active::after { left: 27px; background: var(--aura); }
-
-        /* BUTONLAR */
-        .btn-premium { background: var(--aura); border: none; padding: 12px 25px; border-radius: 18px; font-weight: 800; color: #fff; cursor: pointer; }
+        /* INPUTS */
+        .aura-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div id="v-home" class="view active">
-        <div class="story-bar">
-            <div class="story-node"><img src="https://i.pravatar.cc/150?u=1"></div>
-            <div class="story-node"><img src="https://i.pravatar.cc/150?u=2"></div>
-            <div class="story-node"><img src="https://i.pravatar.cc/150?u=3"></div>
-            <div class="story-node"><img src="https://i.pravatar.cc/150?u=4"></div>
-        </div>
-        <div style="padding: 20px;">
-            <div style="background:var(--card); border-radius:30px; padding:30px; margin-bottom:20px;">
-                <h2 style="margin:0">Hoş geldin ✨</h2>
-                <p style="opacity:0.6">Çevrendeki auralar bugün çok canlı.</p>
-            </div>
+        <div style="padding: 60px 20px 20px;">
+            <h1 style="font-weight: 800; font-size: 28px;">Aura.</h1>
+            <div id="feed-container">
+                </div>
         </div>
     </div>
 
     <div id="v-explore" class="view" style="padding:0">
-        <div class="explore-stream">
-            <div class="explore-item" style="background: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000') center/cover;">
-                <div class="vibe-overlay"></div>
-                <div style="position:relative; z-index:2;">
-                    <h2 style="font-weight:800; margin-bottom:5px;">@GeceKuşu</h2>
-                    <p>Bu şehrin ışıkları asla sönmüyor... 🌃</p>
-                </div>
-            </div>
-            <div class="explore-item" style="background: url('https://images.unsplash.com/photo-1514525253361-bee8718a300a?q=80&w=1000') center/cover;">
-                <div class="vibe-overlay"></div>
-                <div style="position:relative; z-index:2;">
-                    <h2 style="font-weight:800; margin-bottom:5px;">@MüzikRuhu</h2>
-                    <p>Ritme teslim ol. 🎧</p>
-                </div>
-            </div>
+        <div id="explore-container" style="height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory;">
+            <div style="height:100vh; scroll-snap-align:center; background:#111; display:flex; align-items:center; justify-content:center;">Buraya videolar gelecek (Snap-Flow)</div>
         </div>
     </div>
 
     <div id="v-chat" class="view">
         <div style="padding: 60px 20px;">
-            <h1 style="font-weight:800; font-size:32px;">Fısıltılar</h1>
-            <div class="setting-card">
-                <div><b>Aura Destek</b><br><small style="opacity:0.5">Merhaba! Sana nasıl yardım edebilirim?</small></div>
-                <span style="color:var(--aura)">●</span>
-            </div>
+            <h1 style="font-weight: 800;">Mesajlar</h1>
+            <p style="opacity:0.5;">Sohbetlerin burada görünecek.</p>
         </div>
     </div>
 
     <div id="v-profile" class="view">
         <div style="padding: 60px 20px; text-align:center;">
-            <div style="width:120px; height:120px; border-radius:50%; background:var(--aura); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:800; color:white;">A</div>
-            <h2 style="margin:0">Senin Auran</h2>
-            <p style="opacity:0.5">Frekans: 432Hz</p>
-            <button class="btn-premium">Profili Düzenle</button>
+            <div class="avatar" style="width:100px; height:100px; margin:0 auto 20px;"></div>
+            <h2 id="prof-name">Kullanıcı</h2>
+            <div id="my-posts"></div>
         </div>
     </div>
 
     <div id="v-settings" class="view">
         <div style="padding: 60px 20px;">
-            <h1 style="font-weight:800; font-size:32px; margin-bottom:30px;">Ayarlar</h1>
-            <div class="setting-card">
-                <b>Işık Modu</b>
-                <div class="toggle" id="theme-toggle" onclick="toggleTheme()"></div>
-            </div>
-            <div class="setting-card">
-                <b>Bildirimler</b>
-                <div class="toggle active"></div>
-            </div>
-            <div class="setting-card">
-                <b>Gizli Aura</b>
-                <div class="toggle"></div>
-            </div>
+            <h1 style="font-weight: 800;">Ayarlar</h1>
+            <button onclick="toggleTheme()" style="width:100%; padding:20px; background:var(--card); border:none; color:var(--text); border-radius:20px; font-weight:800;">TEMA DEĞİŞTİR (Gündüz/Gece)</button>
         </div>
+    </div>
+
+    <div id="share-modal">
+        <div class="share-option" onclick="openEditor('text')">✍️ YAZI PAYLAŞ (Twitter gibi)</div>
+        <div class="share-option" onclick="openEditor('media')">📸 VİDEO/RESİM (Insta gibi)</div>
+        <div style="margin-top:20px; color:white;" onclick="closeModal()">İPTAL ET</div>
+    </div>
+
+    <div id="editor-panel" style="position:fixed; inset:0; background:var(--bg); z-index:30000; display:none; padding:40px 20px;">
+        <h2 id="edit-title">Paylaş</h2>
+        <textarea id="post-text" class="aura-input" rows="5" placeholder="Neler oluyor?"></textarea>
+        <input type="text" id="post-url" class="aura-input" placeholder="Resim/Video URL (Opsiyonel)">
+        <button onclick="savePost()" style="width:100%; padding:20px; background:var(--aura); border:none; color:white; border-radius:20px; font-weight:800;">YAYINLA</button>
+        <button onclick="closeEditor()" style="width:100%; background:none; border:none; color:gray; margin-top:20px;">Vazgeç</button>
     </div>
 
     <nav>
         <div class="nav-item active" onclick="nav('home', this)">🏠</div>
         <div class="nav-item" onclick="nav('explore', this)">🧭</div>
+        <div class="nav-plus" onclick="openShare()">⊕</div>
         <div class="nav-item" onclick="nav('chat', this)">💬</div>
         <div class="nav-item" onclick="nav('profile', this)">👤</div>
         <div class="nav-item" onclick="nav('settings', this)">⚙️</div>
     </nav>
 
     <script>
+        let posts = JSON.parse(localStorage.getItem('aura_posts')) || [];
+
+        // 1. NAVİGASYON (HER ŞEY AKTİF)
         function nav(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
-            el.classList.add('active');
+            if(el) el.classList.add('active');
+            if(id === 'home' || id === 'profile') renderPosts();
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            document.getElementById('theme-toggle').classList.toggle('active');
+        // 2. PAYLAŞIM SİSTEMİ
+        function openShare() { document.getElementById('share-modal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('share-modal').style.display = 'none'; }
+        
+        function openEditor(type) {
+            closeModal();
+            document.getElementById('editor-panel').style.display = 'block';
+            document.getElementById('edit-title').innerText = type === 'text' ? 'Fikir Paylaş' : 'Medya Paylaş';
+            document.getElementById('post-url').style.display = type === 'text' ? 'none' : 'block';
         }
+
+        function closeEditor() { document.getElementById('editor-panel').style.display = 'none'; }
+
+        function savePost() {
+            const txt = document.getElementById('post-text').value;
+            const url = document.getElementById('post-url').value;
+            if(!txt) return alert("Boş bırakamazsın!");
+
+            const newPost = { txt, url, date: new Date().toLocaleString() };
+            posts.unshift(newPost);
+            localStorage.setItem('aura_posts', JSON.stringify(posts));
+            
+            document.getElementById('post-text').value = '';
+            document.getElementById('post-url').value = '';
+            closeEditor();
+            nav('home', document.querySelectorAll('.nav-item')[0]);
+        }
+
+        // 3. RENDER (POSTLARI GÖSTER)
+        function renderPosts() {
+            const container = document.getElementById('feed-container');
+            const myContainer = document.getElementById('my-posts');
+            const content = posts.map(p => `
+                <div class="post">
+                    <div class="post-header">
+                        <div class="avatar"></div>
+                        <b>Sen</b> <small style="opacity:0.3">${p.date}</small>
+                    </div>
+                    <div>${p.txt}</div>
+                    ${p.url ? `<img src="${p.url}" class="post-media" onerror="this.style.display='none'">` : ''}
+                </div>
+            `).join('');
+            container.innerHTML = content || '<p style="text-align:center; opacity:0.3; margin-top:50px;">Henüz bir şey paylaşılmadı.</p>';
+            if(myContainer) myContainer.innerHTML = content;
+        }
+
+        // 4. TEMA
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+        renderPosts();
     </script>
 </body>
 </html>
